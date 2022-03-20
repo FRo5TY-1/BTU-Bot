@@ -44,6 +44,7 @@ module.exports = new Command({
         value: progress,
       })
       .setColor("PURPLE")
+      .setThumbnail(queue.current.thumbnail)
       .setFooter({
         text: "BTU ",
         iconURL:

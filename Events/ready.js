@@ -11,9 +11,11 @@ module.exports = new Event("ready", async (client) => {
     ],
     status: "online",
   });
-  
-  const guild = client.guilds.cache.get("913318880561205268");
-  await guild.commands.set(client.slashCommands).then(
-    console.log(`${client.slashCommands.size} slash commands registered`)
-  )
+
+  const guild = client.guilds.cache
+    .get("914216652705517668")
+    .commands.set(client.slashCommands)
+    .then(
+      console.log(`${client.slashCommands.size} slash commands registered`)
+    );
 });

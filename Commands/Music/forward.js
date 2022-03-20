@@ -25,15 +25,19 @@ module.exports = new Command({
     
     const time = interaction.options.getInteger('amount') * 1000;
 
-    const progress = queue.createProgressBar();
-    const perc = queue.getPlayerTimestamp();
+    const percBefore = queue.getPlayerTimestamp().current;
+
+    const oldTime = 
 
     queue.seek(time);
+
+    const progress = queue.createProgressBar();
+    const perc = queue.getPlayerTimestamp().current;
 
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Forwarded")
-      .setDescription(`⠀`)
+      .setDescription(`From: \`${percBefore}\`, To: \`${perc}\``)
       .setAuthor({
         name: queue.current.requestedBy.username,
         iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),

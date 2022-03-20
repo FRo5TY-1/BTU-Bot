@@ -39,6 +39,7 @@ module.exports = new Command({
         value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
       })
       .setColor("PURPLE")
+      .setThumbnail(queue.current.thumbnail)
       .setFooter({
         text: "BTU ",
         iconURL:
