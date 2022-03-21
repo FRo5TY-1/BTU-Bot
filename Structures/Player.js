@@ -11,15 +11,13 @@ const player = new Player(client, {
 });
 
 player.on("trackStart", (queue, track) => {
-  if (
-    queue.repeatMode === QueueRepeatMode.QUEUE ||
-    queue.repeatMode === QueueRepeatMode.TRACK
-  )
-    return;
+  if (queue.repeatMode === QueueRepeatMode.TRACK) return;
   const embed = new Discord.MessageEmbed();
   embed
     .setTitle("Started Playing")
-    .setDescription(`🎶 | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`)
+    .setDescription(
+      `🎶 | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
+    )
     .setAuthor({
       name: queue.current.requestedBy.username,
       iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),

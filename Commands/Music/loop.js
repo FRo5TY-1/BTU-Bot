@@ -1,5 +1,5 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType, QueueRepeatMode } = require("discord-player");
+const { QueueRepeatMode } = require("discord-player");
 const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 

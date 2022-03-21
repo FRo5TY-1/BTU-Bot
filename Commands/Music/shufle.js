@@ -3,8 +3,8 @@ const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
-  name: "shufle",
-  description: "Shufle Queue",
+  name: "shuffle",
+  description: "Shuffle Queue",
   type: "SLASH",
 
   async run(interaction, args, client) {
@@ -13,6 +13,8 @@ module.exports = new Command({
       return interaction.followUp({
         content: "ამჟამად მუსიკა არაა ჩართული",
       });
+
+    queue.shuffle();
 
     const progress = queue.createProgressBar();
     const perc = queue.getPlayerTimestamp();

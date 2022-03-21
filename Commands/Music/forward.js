@@ -3,7 +3,7 @@ const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
-  name: "forward-to",
+  name: "forward",
   description: "გადაახვიეთ მუსიკა",
   type: "SLASH",
   options: [
@@ -23,6 +23,7 @@ module.exports = new Command({
       });
     
     const time = interaction.options.getInteger('amount') * 1000;
+    percBefore = queue.getPlayerTimestamp().current;
 
     queue.seek(time);
 
