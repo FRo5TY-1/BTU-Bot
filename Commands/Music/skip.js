@@ -31,7 +31,7 @@ module.exports = new Command({
 
     const embed = new Discord.MessageEmbed();
     embed
-      .setTitle("Skipped Song")
+      .setTitle("Current Song Skipped")
       .setDescription(
         `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
       )

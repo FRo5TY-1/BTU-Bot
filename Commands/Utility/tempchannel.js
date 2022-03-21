@@ -95,6 +95,7 @@ module.exports = new Command({
       })
       .setFooter({
         text: `ჩათში მონიშნეთ ყველა ის პიროვნება ვისი გაწევრიანებაც გსურთ ამ Channel-ში, ან დაწერეთ cancel გასაუქმებლად`,
+        iconURL: 'https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png'
       })
       .setColor("PURPLE")
       .setTimestamp();
@@ -103,14 +104,14 @@ module.exports = new Command({
 
     const userChannel = interaction.channel;
     const collector = userChannel.createMessageCollector({
-      time: 15000,
+      time: 60000,
       errors: ["time"],
       filter: (m) => m.author.id === interaction.user.id,
     });
 
     collector.on("collect", async (message) => {
       if (message.content.toLowerCase() === "cancel")
-        return message.reply(`Channel-ის შექმნა გაუქმდა`) && collector.stop();
+        return interaction.editReply({ content: `Channel-ის შექმნა გაუქმდა`, embeds: [] }) && collector.stop();
 
       userPerms = [
         {

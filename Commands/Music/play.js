@@ -47,9 +47,9 @@ module.exports = new Command({
 
     const embed = new Discord.MessageEmbed();
     embed
-      .setTitle("Added")
+      .setTitle("Song Added")
       .setDescription(
-        `[**${searchResult.tracks[0]}**](${searchResult.tracks[0].url}) - <@!${interaction.user.id}>`
+        `<a:CatJam:924585442450489404> | [**${searchResult.tracks[0].title}**](${searchResult.tracks[0].url}) - <@!${interaction.user.id}>`
       )
       .setAuthor({
         name: interaction.user.username,

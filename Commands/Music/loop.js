@@ -11,24 +11,24 @@ module.exports = new Command({
     {
       name: "type",
       description: "აირჩიეთ Loop-ის ტიპი",
-      type: "STRING",
+      type: "INTEGER",
       required: true,
       choices: [
         {
           name: "Queue",
-          value: "QUEUE",
+          value: QueueRepeatMode.QUEUE,
         },
         {
           name: "Song",
-          value: "TRACK",
+          value: QueueRepeatMode.TRACK,
         },
         {
           name: "Autoplay",
-          value: "AUTOPLAY",
+          value: QueueRepeatMode.AUTOPLAY,
         },
         {
           name: "OFF",
-          value: "OFF",
+          value: QueueRepeatMode.OFF,
         },
       ],
     },
@@ -41,11 +41,18 @@ module.exports = new Command({
         content: "ამჟამად მუსიკა არაა ჩართული",
       });
 
-    const mode = interaction.options.getString("type");
+    const mode = interaction.options.getInteger("type");
+    const modeBefore = queue.repeatMode;
+    const loopBefore = modeBefore === QueueRepeatMode.TRACK ? 'Song' : modeBefore === QueueRepeatMode.QUEUE ? 'Queue' : modeBefore === QueueRepeatMode.AUTOPLAY ? 'Autoplay' : 'OFF';
+
+    queue.setRepeatMode(mode);
+
+    const loopAfter = mode === QueueRepeatMode.TRACK ? 'Song' : mode === QueueRepeatMode.QUEUE ? 'Queue' : mode === QueueRepeatMode.AUTOPLAY ? 'Autoplay' : 'OFF';
 
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Loop Mode Changed")
+      .setDescription(`From: \`${loopBefore}\`, To: \`${loopAfter}\``)
       .setAuthor({
         name: queue.current.requestedBy.username,
         iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
@@ -62,19 +69,6 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    if (mode === 'QUEUE') {
-      embed.setDescription(`Loop Mode: **Queue**`);
-      queue.setRepeatMode(QueueRepeatMode.QUEUE);
-    } else if (mode === "TRACK") {
-      embed.setDescription(`Loop Mode: **Song**`);
-      queue.setRepeatMode(QueueRepeatMode.TRACK);
-    } else if (mode === "AUTOPLAY") {
-      embed.setDescription(`Loop Mode: **Autoplay**`);
-      queue.setRepeatMode(QueueRepeatMode.AUTOPLAY);
-    } else if (mode === "OFF") {
-      embed.setDescription(`Loop Mode: **OFF**`);
-      queue.setRepeatMode(QueueRepeatMode.OFF);
-    }
     return interaction.followUp({ embeds: [embed] });
   },
 });

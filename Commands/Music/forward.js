@@ -1,16 +1,15 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType } = require("discord-player");
 const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
-  name: "forward",
+  name: "forward-to",
   description: "გადაახვიეთ მუსიკა",
   type: "SLASH",
   options: [
     {
         name: "amount",
-        description: "რომელ წამზე გადავახვიო",
+        description: "რომელ წამზე გადავიდე",
         type: "INTEGER",
         required: false,
     }
@@ -24,10 +23,6 @@ module.exports = new Command({
       });
     
     const time = interaction.options.getInteger('amount') * 1000;
-
-    const percBefore = queue.getPlayerTimestamp().current;
-
-    const oldTime = 
 
     queue.seek(time);
 

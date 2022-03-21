@@ -3,8 +3,8 @@ const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
-  name: "now-playing",
-  description: "ინფორმაცია მიმდინარე მუსიკაზე",
+  name: "shufle",
+  description: "Shufle Queue",
   type: "SLASH",
 
   async run(interaction, args, client) {
@@ -19,15 +19,16 @@ module.exports = new Command({
 
     const embed = new Discord.MessageEmbed();
     embed
-      .setTitle("Now Playing")
-      .setDescription(
-        `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
-      )
+      .setTitle("Queue Shuffled")
       .setAuthor({
-        name: queue.current.requestedBy.username,
-        iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
+        name: interaction.user.username,
+        iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
       })
       .addFields(
+          {
+              name: "Now Playing",
+              value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
+          },
         {
           name: "⠀",
           value: progress,

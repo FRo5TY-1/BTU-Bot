@@ -13,7 +13,7 @@ module.exports = new Event("ready", async (client) => {
   });
 
   const guild = client.guilds.cache
-    .get("914216652705517668")
+    .get("913318880561205268")
     .commands.set(client.slashCommands)
     .then(
       console.log(`${client.slashCommands.size} slash commands registered`)
