@@ -8,8 +8,7 @@ let targetData;
 module.exports = new Command({
   name: "pay",
   description: "მოახდინეთ BTU Coin-ების გადარიცხვა",
-  aliases: ["give"],
-  type: "BOTH",
+  type: "SLASH",
   options: [
     {
       type: "USER",
@@ -26,152 +25,83 @@ module.exports = new Command({
     },
   ],
 
-  async run(message, args) {
-    if (message.isCommand) {
-      profileData = await profileModel.findOne({ userID: message.user.id });
+  async run(interaction, args) {
+    profileData = await profileModel.findOne({ userID: interaction.user.id });
 
-      if (!profileData) {
-        profileData = await profileModel.create({
-          userID: message.user.id,
+    if (!profileData) {
+      profileData = await profileModel.create({
+        userID: interaction.user.id,
+        BTUcoins: 500,
+      });
+      profileData.save();
+    }
+
+    const target = interaction.options.getMember("user");
+    if (!target)
+      return interaction.followUp({
+        content: "მომხმარებელი არ არსებობს!",
+        ephemeral: true,
+      });
+    if (target.id === interaction.user.id)
+      return interaction.followUp({
+        content: "საკუთარ თავს ვერ გადაურიცხავთ!",
+        ephemeral: true,
+      });
+    if (target.roles.botRole)
+      return interaction.followUp({
+        content: "Bot-ებს ვერ გადაურიცხავთ!",
+        ephemeral: true,
+      });
+    const amount = interaction.options.getInteger("amount");
+    if (amount % 1 != 0 || amount <= 0)
+      return interaction.followUp({
+        content: "მიუთითეთ მთელი დადებით რიცხვი",
+        ephemeral: true,
+      });
+    if (amount > profileData.BTUcoins)
+      return interaction.followUp({
+        content: `თქვენ არ გაქვთ ${amount} BTU Coin`,
+        ephemeral: true,
+      });
+    const cutAmount = amount - amount * 0.02;
+
+    try {
+      targetData = await profileModel.findOne({ userID: target.id });
+      if (!targetData) {
+        targetData = await profileModel.create({
+          userID: target.id,
           BTUcoins: 500,
         });
-        profileData.save();
+        targetData.save();
       }
 
-      const target = message.options.getMember("user");
-      if (!target)
-        return message.followUp({
-          content: "მომხმარებელი არ არსებობს!",
-          ephemeral: true,
-        });
-      if (target.id === message.user.id)
-        return message.followUp({
-          content: "საკუთარ თავს ვერ გადაურიცხავთ!",
-          ephemeral: true,
-        });
-      if (target.roles.botRole)
-        return message.followUp({
-          content: "Bot-ებს ვერ გადაურიცხავთ!",
-          ephemeral: true,
-        });
-      const amount = message.options.getInteger('amount');
-      if (amount % 1 != 0 || amount <= 0)
-        return message.followUp({
-          content: "მიუთითეთ მთელი დადებით რიცხვი",
-          ephemeral: true,
-        });
-      if (amount > profileData.BTUcoins)
-        return message.followUp({
-          content: `თქვენ არ გაქვთ ${amount} BTU Coin`,
-          ephemeral: true,
-        });
-      const cutAmount = amount - amount * 0.02;
-
-      try {
-        targetData = await profileModel.findOne({ userID: target.id });
-        if (!targetData) {
-          targetData = await profileModel.create({
-            userID: target.id,
-            BTUcoins: 500,
-          });
-          targetData.save();
+      await profileModel.findOneAndUpdate(
+        {
+          userID: interaction.user.id,
+        },
+        {
+          $inc: {
+            BTUcoins: -amount,
+          },
         }
+      );
 
-        let send = await profileModel.findOneAndUpdate(
-          {
-            userID: message.user.id,
+      await profileModel.findOneAndUpdate(
+        {
+          userID: target.id,
+        },
+        {
+          $inc: {
+            BTUcoins: +cutAmount,
           },
-          {
-            $inc: {
-              BTUcoins: -amount,
-            },
-          }
-        );
-
-        let recieve = await profileModel.findOneAndUpdate(
-          {
-            userID: target.id,
-          },
-          {
-            $inc: {
-              BTUcoins: +cutAmount,
-            },
-          }
-        );
-
-        return message.followUp({
-          content: `ტრანზაქცია წარმატებით დასრულდა, თქვენ ჩამოგეჭრათ **${amount}** BTU Coin, და ${target.username}-ს ჩაერიცხა **${cutAmount}** BTU Coin`,
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      profileData = await profileModel.findOne({ userID: message.author.id });
-
-      if (!profileData) {
-        profileData = await profileModel.create({
-          userID: message.author.id,
-          BTUcoins: 500,
-        });
-        profileData.save();
-      }
-
-      if (!args.length)
-        return message.reply(
-          "მიუთითეთ მომხმარებელი ვისთანაც გსურთ გადარიცხვა @-ით და რაოდენობა!"
-        );
-
-      const target = message.mentions.members.first();
-      if (!target) return message.reply("მომხმარებელი არ არსებობს!");
-      if (target.id === message.author.id)
-        return message.reply("საკუთარ თავს ვერ გადაურიცხავთ!");
-      if (target.roles.botRole)
-        return message.reply("Bot-ებს ვერ გადაურიცხავთ!");
-      const amount = Number(args[1]);
-      if (amount % 1 != 0 || amount <= 0)
-        return message.reply("მიუთითეთ მთელი დადებით რიცხვი");
-      if (amount > profileData.BTUcoins)
-        return message.reply(`თქვენ არ გაქვთ ${amount} BTU Coin`);
-      const cutAmount = amount - amount * 0.02;
-
-      try {
-        targetData = await profileModel.findOne({ userID: target.id });
-        if (!targetData) {
-          targetData = await profileModel.create({
-            userID: target.id,
-            BTUcoins: 500,
-          });
-          targetData.save();
         }
+      );
 
-        let send = await profileModel.findOneAndUpdate(
-          {
-            userID: message.author.id,
-          },
-          {
-            $inc: {
-              BTUcoins: -amount,
-            },
-          }
-        );
-
-        let recieve = await profileModel.findOneAndUpdate(
-          {
-            userID: target.id,
-          },
-          {
-            $inc: {
-              BTUcoins: +cutAmount,
-            },
-          }
-        );
-
-        return message.channel.send(
-          `ტრანზაქცია წარმატებით დასრულდა, თქვენ ჩამოგეჭრათ **${amount}** BTU Coin, და ${target.username}-ს ჩაერიცხა **${cutAmount}** BTU Coin`
-        );
-      } catch (err) {
-        console.log(err);
-      }
+      return interaction.followUp({
+        content: `ტრანზაქცია წარმატებით დასრულდა, თქვენ ჩამოგეჭრათ **${amount}** BTU Coin, და ${target.username}-ს ჩაერიცხა **${cutAmount}** BTU Coin`,
+      });
+    } catch (err) {
+      console.log(err);
     }
   },
 });

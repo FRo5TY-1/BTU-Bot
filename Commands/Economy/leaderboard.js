@@ -5,26 +5,33 @@ const Discord = require("discord.js");
 module.exports = new Command({
   name: "leaderboard",
   description: "shows leaderboard",
-  aliases: ["lb", "top"],
+  type: "SLASH",
+  options: [
+    {
+      name: "page",
+      description: "გვერდი",
+      type: "INTEGER",
+      minValue: 1,
+      required: false,
+    },
+  ],
 
-  async run(message, args, client) {
-    let page = args[0];
-    if (!page) page = 1;
-    if (isNaN(page) || Number(page) < 1)
-      return message.reply("მიუთითეთ გვერდი: 1-დან ზევით მთელი რიცხვი");
+  async run(interaction, args, client) {
+    let page = interaction.options.getInteger("page") || 1;
+
     const end = page * 10;
     const start = page * 10 - 10;
 
-    const file = new Discord.MessageAttachment("Pictures/BTULogo.png");
-
-    embed1 = new Discord.MessageEmbed()
+    embed = new Discord.MessageEmbed();
+    embed
       .setTitle("BTU Coins Leaderboard")
       .setColor("PURPLE")
-      .setThumbnail("attachment://BTULogo.png")
-      .setDescription("⠀")
       .setFooter({
-        text: `Page: ${page}`,
-      });
+        text: `Page ${page}`,
+        iconURL:
+          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+      })
+      .setTimestamp();
 
     const row = new Discord.MessageActionRow().addComponents(
       new Discord.MessageButton()
@@ -44,97 +51,102 @@ module.exports = new Command({
         if (err) console.log(err);
 
         if (res.length <= start) {
-          embed1.addField(`მონაცემები არ არსებობს`, "⠀");
-          return message.channel.send({ embeds: [embed1], files: [file] });
+          embed.setDescription(`მონაცემები არ არსებობს`);
+          return interaction.followUp({ embeds: [embed] });
         }
+
+        const usersArray = [];
 
         for (i = start; i < end; i++) {
           if (!res[i]) continue;
-          embed1.addField(
-            `${i + 1}. ${client.users.cache.get(res[i].userID).username}`,
-            `BTU Coins: **${res[i].BTUcoins}**`
+          usersArray.push(
+            `${i + 1}. <@!${res[i].userID}> \` | \` **${
+              res[i].BTUcoins
+            }** Coins`
           );
         }
 
-        const filter = (interaction) => {
-          if (interaction.user.id === message.author.id) return true;
-          else
-            return interaction.followUp({
-              content: "ეს არ არის თქვენი ბრძანება",
-              ephemeral: true,
-            });
-        };
+        embed.setDescription(usersArray.join("\n"));
 
-        message.channel
-          .send({ embeds: [embed1], files: [file], components: [row] })
-          .then((message) => {
-            const collector = message.createMessageComponentCollector(filter, {
-              time: 5000,
-            });
+        interaction.followUp({ embeds: [embed], components: [row] });
 
-            collector.on("collect", async (i) => {
-              if (i.customId === "prevpage") {
-                if (page <= 1) return;
-                page--;
-                const end = page * 10;
-                const start = page * 10 - 10;
+        const userChannel = interaction.channel;
+        const collector = userChannel.createMessageComponentCollector({
+          time: 15000,
+          errors: ["time"],
+          filter: (i) => i.user.id === interaction.user.id,
+        });
 
-                const embed2 = new Discord.MessageEmbed()
-                  .setTitle("BTU Coins Leaderboard")
-                  .setColor("PURPLE")
-                  .setThumbnail("attachment://BTULogo.png")
-                  .setFooter({
-                    text: `Page: ${page}`,
-                  });
+        collector.on("collect", async (i) => {
+          if (i.customId === "prevpage") {
+            if (page <= 1) return;
+            page--;
+            const end = page * 10;
+            const start = page * 10 - 10;
 
-                if (res.length <= start) {
-                  embed2.addField(`მონაცემები არ არსებობს`, "⠀");
-                  return message.edit({ embeds: [embed2], files: [file] });
-                }
+            embed
+              .setTitle("BTU Coins Leaderboard")
+              .setColor("PURPLE")
+              .setFooter({
+                text: `Page ${page}`,
+                iconURL:
+                  "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+              })
+              .setTimestamp();
 
-                for (k = start; k < end; k++) {
-                  if (!res[k]) continue;
-                  embed2.addField(
-                    `${k + 1}. ${
-                      client.users.cache.get(res[k].userID).username
-                    }`,
-                    `BTU Coins: **${res[k].BTUcoins}**`
-                  );
-                }
-                message.edit({ embeds: [embed2], files: [file] });
-              } else if (i.customId === "nextpage") {
-                page = page + 1;
-                const end = page * 10;
-                const start = page * 10 - 10;
+            if (res.length <= start) {
+              embed.setDescription(`მონაცემები არ არსებობს`);
+              return i.message.edit({ embeds: [embed] })
+            }
+            const buttonUsersArray = [];
+            for (k = start; k < end; k++) {
+              if (!res[k]) continue;
+              buttonUsersArray.push(
+                `${k + 1}. <@!${res[k].userID}> \` | \` **${
+                  res[k].BTUcoins
+                }** Coins`
+              );
+            }
+            embed.setDescription(buttonUsersArray.join("\n"));
+            i.message.edit({ embeds: [embed] });
+          } else if (i.customId === "nextpage") {
+            page = page + 1;
+            const end = page * 10;
+            const start = page * 10 - 10;
 
-                const embed2 = new Discord.MessageEmbed()
-                  .setTitle("BTU Coins Leaderboard")
-                  .setColor("PURPLE")
-                  .setThumbnail("attachment://BTULogo.png")
-                  .setFooter({
-                    text: `Page: ${page}`,
-                  });
+            embed
+              .setTitle("BTU Coins Leaderboard")
+              .setColor("PURPLE")
+              .setFooter({
+                text: `Page ${page}`,
+                iconURL:
+                  "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+              })
+              .setTimestamp();
 
-                if (res.length <= start) {
-                  embed2.addField(`მონაცემები არ არსებობს`, "⠀");
-                  return message.edit({ embeds: [embed2], files: [file] });
-                }
+            if (res.length <= start) {
+              embed.setDescription(`მონაცემები არ არსებობს`);
+              return i.message.edit({ embeds: [embed] });
+            }
 
-                for (k = start; k < end; k++) {
-                  if (!res[k]) continue;
-                  embed2.addField(
-                    `${k + 1}. ${
-                      client.users.cache.get(res[k].userID).username
-                    }`,
-                    `BTU Coins: **${res[k].BTUcoins}**`
-                  );
-                }
-                message.edit({ embeds: [embed2], files: [file] });
-              }
-            });
+            const buttonUsersArray = [];
+            for (k = start; k < end; k++) {
+              if (!res[k]) continue;
+              buttonUsersArray.push(
+                `${k + 1}. <@!${res[k].userID}> \` | \` **${
+                  res[k].BTUcoins
+                }** Coins`
+              );
+            }
+            embed.setDescription(buttonUsersArray.join("\n"));
+            return i.message.edit({ embeds: [embed] });
+          }
+        });
 
-            collector.on("end", async (i) => {});
-          });
+        collector.on("end", (reason) => {
+          if (reason === "time")
+          interaction.editReply({ components: [] });
+        });
       });
   },
 });

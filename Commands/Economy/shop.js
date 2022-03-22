@@ -66,9 +66,9 @@ module.exports = new Command({
       const itemIndex = interaction.options.getInteger("item") - 1;
 
       const itemList = [
-        { name: "🟠 ბეთეუს N1 ლობიანი", price: 2000 },
-        { name: "🔴 ბეთეუს 2 ბირთვიანი AIO", price: 1000 },
-        { name: "🔵 ბეთეუს Parking Spot", price: 500 },
+        { name: "🟠 ბეთეუს N1 ლობიანი", price: 2000, tier: 1 },
+        { name: "🔴 ბეთეუს 2 ბირთვიანი AIO", price: 1000, tier: 2 },
+        { name: "🔵 ბეთეუს Parking Spot", price: 500, tier: 3 },
       ];
 
       profileData =
@@ -123,6 +123,7 @@ module.exports = new Command({
             userID: interaction.user.id,
             itemName: itemList[itemIndex].name,
             itemAmount: 1,
+            itemTier: itemList[itemIndex].tier,
           });
           itemData.save();
         }

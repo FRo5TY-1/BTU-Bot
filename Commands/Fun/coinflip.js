@@ -4,11 +4,9 @@ const Discord = require("discord.js");
 module.exports = new Command({
   name: "coinflip",
   description: "ააგდეთ მონეტა",
-  aliases: ["cf", "flip"],
-  type: "BOTH",
+  type: "SLASH",
 
-  async run(message) {
-    const file = new Discord.MessageAttachment("Pictures/BTULogo.png");
+  async run(interaction) {
     const embed = new Discord.MessageEmbed();
     const coins = ["Heads", "Tails"];
     const coin = coins[Math.floor(Math.random() * 2)];
@@ -16,23 +14,17 @@ module.exports = new Command({
       .setTitle("Flipped coin is...")
       .setDescription(`**${coin}**`)
       .setColor("PURPLE")
-      .setThumbnail("attachment://BTULogo.png")
+      .setAuthor({
+        name: interaction.user.username,
+        iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+      })
+      .setFooter({
+        text: "BTU ",
+        iconURL:
+          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+      })
       .setTimestamp();
 
-    if (message.isCommand) {
-      embed.setAuthor({
-        name: message.user.username,
-        iconURL: message.user.displayAvatarURL({ dynamic: true }),
-      });
-
-      message.followUp({ embeds: [embed], files: [file] });
-    } else {
-      embed.setAuthor({
-        name: message.author.username,
-        iconURL: message.author.displayAvatarURL({ dynamic: true }),
-      });
-
-      message.reply({ embeds: [embed], files: [file] });
-    }
+    interaction.followUp({ embeds: [embed] });
   },
 });

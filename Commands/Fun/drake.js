@@ -3,7 +3,7 @@ const Command = require("../../Structures/Command.js");
 module.exports = new Command({
   name: "drake",
   description: "შექმენით Drake Meme",
-  type: "BOTH",
+  type: "SLASH",
   options: [
     {
       type: "STRING",
@@ -19,28 +19,13 @@ module.exports = new Command({
     },
   ],
 
-  async run(message, args) {
-    if (message.isCommand) {
-      const text1 = args[0];
-      const text2 = args[1];
+  async run(interaction, args) {
+      const text1 = interaction.options.getString('text1');
+      const text2 = interaction.options.getString('text2');
       const Image = `https://api.popcatdev.repl.co/drake?text1=${encodeURIComponent(
         text1
       )}&text2=${encodeURIComponent(text2)}`;
 
-      message.followUp(Image);
-    } else {
-      const split = args.slice(0).join(" ").split("|");
-      const text1 = split[0];
-      const text2 = split[1];
-      if (!text1 || !text2)
-        return message.reply(
-          "შეიყვანეთ |-ით დაცალკევებული 2 წინადადება ან სიტყვა"
-        );
-      const Image = `https://api.popcatdev.repl.co/drake?text1=${encodeURIComponent(
-        text1
-      )}&text2=${encodeURIComponent(text2)}`;
-
-      message.channel.send(Image);
-    }
+      interaction.followUp(Image);
   },
 });

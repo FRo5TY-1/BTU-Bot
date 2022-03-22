@@ -16,14 +16,17 @@ module.exports = new Command({
   ],
 
   async run(interaction, args, client) {
-    let target = interaction.user;
-    const value = interaction.options.getMember("user");
-    if (value) target = client.users.cache.get(value.id);
+    if (interaction.options.getMember("user")?.roles.botRole)
+      return interaction.followUp({
+        content:
+          "Bot-ები არ მოიხმარენ ჩვენ სერვისს <:FeelsBadMan:924601273028857866>",
+      });
+    const target = interaction.options.getMember("user") || interaction.user;
     const embed = new Discord.MessageEmbed();
 
     embed
-    .setTitle(`${target.username}'s Inventory`)
-    .setAuthor({
+      .setTitle(`${target.username}'s Inventory`)
+      .setAuthor({
         name: target.username,
         iconURL: target.displayAvatarURL({ dynamic: true }),
       })
@@ -35,26 +38,25 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-
     const itemData = await itemModel
-      .find({ 
-          userID: target.id,
+      .find({
+        userID: target.id,
       })
-      .sort([["itemName", 1]])
+      .sort([["itemTier", -1]])
       .exec((err, res) => {
         if (res.length < 1) {
-            embed.setDescription('\`Inventory ცარიელია\`')
-            return interaction.followUp({ embeds: [embed] })
+          embed.setDescription("`Inventory ცარიელია`");
+          return interaction.followUp({ embeds: [embed] });
         }
 
-        const itemArray = []
+        const itemArray = [];
 
         for (i = 0; i < 15; i++) {
-            if (!res[i]) continue;
-            itemArray.push(`\`${res[i].itemName}\` x **${res[i].itemAmount}**`)
-          }
-        embed.setDescription(itemArray.join('\n'))
-        return interaction.followUp({ embeds: [embed] })
+          if (!res[i]) continue;
+          itemArray.push(`\`${res[i].itemName}\` x **${res[i].itemAmount}**`);
+        }
+        embed.setDescription(itemArray.join("\n"));
+        return interaction.followUp({ embeds: [embed] });
       });
   },
 });
