@@ -23,7 +23,9 @@ module.exports = new Command({
         content:
           "Bot-ები არ მოიხმარენ ჩვენ სერვისს <:FeelsBadMan:924601273028857866>",
       });
-    const target = interaction.options.getMember("user") || interaction.user;
+      const target =
+      client.users.cache.get(interaction.options.getMember("user")?.id) ||
+      interaction.user;
 
     profileData = (await profileModel.findOne({ userID: target.id })) || null;
 

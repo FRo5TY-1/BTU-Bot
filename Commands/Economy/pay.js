@@ -35,8 +35,14 @@ module.exports = new Command({
       });
       profileData.save();
     }
-
-    const target = interaction.options.getMember("user");
+    if (interaction.options.getMember("user")?.roles.botRole)
+      return interaction.followUp({
+        content:
+          "Bot-ები არ მოიხმარენ ჩვენ სერვისს <:FeelsBadMan:924601273028857866>",
+      });
+    const target = client.users.cache.get(
+      interaction.options.getMember("user")?.id
+    );
     if (!target)
       return interaction.followUp({
         content: "მომხმარებელი არ არსებობს!",
@@ -45,11 +51,6 @@ module.exports = new Command({
     if (target.id === interaction.user.id)
       return interaction.followUp({
         content: "საკუთარ თავს ვერ გადაურიცხავთ!",
-        ephemeral: true,
-      });
-    if (target.roles.botRole)
-      return interaction.followUp({
-        content: "Bot-ებს ვერ გადაურიცხავთ!",
         ephemeral: true,
       });
     const amount = interaction.options.getInteger("amount");

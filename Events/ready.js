@@ -5,7 +5,7 @@ module.exports = new Event("ready", async (client) => {
   client.user.setPresence({
     activities: [
       {
-        name: "BTU Help",
+        name: "BTU ❤️",
         type: "WATCHING",
       },
     ],
