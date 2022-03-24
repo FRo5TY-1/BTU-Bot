@@ -3,7 +3,7 @@ const Command = require("../../Structures/Command.js");
 module.exports = new Command({
   name: "clear",
   showHelp: false,
-  permissions: ["ADMINISTRATOR", "MANAGE_MESSAGES"],
+  permissions: ["MANAGE_MESSAGES"],
   description: "Bulk Deletes Messages",
   type: "SLASH",
   options: [

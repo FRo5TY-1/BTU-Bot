@@ -7,6 +7,7 @@ let profileData;
 module.exports = new Command({
   name: "embed",
   description: "make an embed",
+  showHelp: false,
   type: "SLASH",
   permissions: ["ADMINISTRATOR"],
   options: [
@@ -46,6 +47,24 @@ module.exports = new Command({
       description: "მესიჯი Embed-ის წინ",
       required: false,
     },
+    {
+      type: "STRING",
+      name: "field1",
+      description: "Embed-ის Field, Name და Value გამოყავით ^-ით",
+      required: false,
+    },
+    {
+      type: "STRING",
+      name: "field2",
+      description: "Embed-ის Field, Name და Value გამოყავით ^-ით",
+      required: false,
+    },
+    {
+      type: "STRING",
+      name: "field3",
+      description: "Embed-ის Field, Name და Value გამოყავით ^-ით",
+      required: false,
+    },
   ],
 
   async run(interaction, args, client) {
@@ -57,10 +76,13 @@ module.exports = new Command({
       client.users.cache.get(interaction.options.getMember("author")?.id) ||
       null;
     const channel = interaction.options.getChannel("channel");
+    const field1 = interaction.options.getString("field1") || null;
+    const field2 = interaction.options.getString("field2") || null;
+    const field3 = interaction.options.getString("field3") || null;
 
     const embed = new Discord.MessageEmbed();
 
-    embed.setTitle(title).setDescription(description);
+    embed.setTitle(title).setDescription(description.replaceAll("|", "\n"));
 
     if (target !== null) {
       embed.setAuthor({
@@ -77,6 +99,40 @@ module.exports = new Command({
           "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
       })
       .setTimestamp();
+
+    if (field1 !== null) {
+      if (field1.slice(-4).toLowerCase() === "true") {
+        inline = true;
+        splitField = field1.slice(0, -4).replaceAll("|", "\n").split("^");
+        embed.addField(splitField[0], splitField[1], inline);
+      } else {
+        inline = false;
+        splitField = field1.replaceAll("|", "\n").split("^");
+        embed.addField(splitField[0], splitField[1], inline);
+      }
+    }
+    if (field2 !== null) {
+      if (field2.slice(-4).toLowerCase() === "true") {
+        inline = true;
+        splitField = field2.slice(0, -4).replaceAll("|", "\n").split("^");
+        embed.addField(splitField[0], splitField[1], inline);
+      } else {
+        inline = false;
+        splitField = field2.replaceAll("|", "\n").split("^");
+        embed.addField(splitField[0], splitField[1], inline);
+      }
+    }
+    if (field3 !== null) {
+      if (field3.slice(-4).toLowerCase() === "true") {
+        inline = true;
+        splitField = field3.slice(0, -4).replaceAll("|", "\n").split("^");
+        embed.addField(splitField[0], splitField[1], inline);
+      } else {
+        inline = false;
+        splitField = field3.replaceAll("|", "\n").split("^");
+        embed.addField(splitField[0], splitField[1], inline);
+      }
+    }
 
     interaction.followUp({ content: `Embed შეიქმნა და გაიგზავნა` });
     channel.send({ content: content, embeds: [embed] });

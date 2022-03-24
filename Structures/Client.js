@@ -34,6 +34,7 @@ class Client extends Discord.Client {
         }
         if (["BOTH", "SLASH"].includes(command.type)) {
           console.log(`Slash Command ${command.name} loaded`);
+          if (command.permissions) command.defaultPermission = false;
           this.slashCommands.set(command.name, command);
         }
       }
