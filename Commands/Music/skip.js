@@ -8,14 +8,13 @@ module.exports = new Command({
   description: "გამოტოვეთ მუსიკა",
   type: "SLASH",
   options: [
-      {
-          name: "amount",
-          description: "რამდენი მუსიკა გამოვტოვო",
-          type: "INTEGER",
-          required: false,
-          maxValue: 5,
-          minValue: 1,
-      }
+    {
+      name: "amount",
+      description: "რამდენი მუსიკა გამოვტოვო",
+      type: "INTEGER",
+      required: false,
+      minValue: 1,
+    },
   ],
 
   async run(interaction, args, client) {
@@ -24,7 +23,7 @@ module.exports = new Command({
       return interaction.followUp({
         content: "ამჟამად მუსიკა არაა ჩართული",
       });
-    const amount = interaction.options.getInteger('amount') || 1;
+    const amount = interaction.options.getInteger("amount") || 1;
 
     const progress = queue.createProgressBar();
     const perc = queue.getPlayerTimestamp();
@@ -53,13 +52,12 @@ module.exports = new Command({
       .setTimestamp();
 
     if (amount > 1) {
-        queue.skipTo(amount);
-        embed.setTitle(`Skipped \`${amount}\` Songs`)
-        return interaction.followUp({ embeds: [embed] });
-    }
-    else{
-        queue.skip();
-        return interaction.followUp({ embeds: [embed] });
+      queue.skipTo(amount);
+      embed.setTitle(`Skipped \`${amount}\` Songs`);
+      return interaction.followUp({ embeds: [embed] });
+    } else {
+      queue.skip();
+      return interaction.followUp({ embeds: [embed] });
     }
   },
 });

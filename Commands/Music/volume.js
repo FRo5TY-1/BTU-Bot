@@ -13,7 +13,7 @@ module.exports = new Command({
           description: "ხმის მოცულობა",
           type: "INTEGER",
           required: true,
-          maxValue: 100,
+          maxValue: 200,
           minValue: 1,
       }
   ],

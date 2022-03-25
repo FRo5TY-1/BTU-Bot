@@ -121,7 +121,7 @@ module.exports = new Command({
       });
     } else if (mode === "OFF") {
       queue.setFilters({
-        normalizer2: true,
+        mono: true,
       });
     }
 
