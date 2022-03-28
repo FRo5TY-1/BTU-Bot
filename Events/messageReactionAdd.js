@@ -7,7 +7,7 @@ module.exports = new Event(
     if (reaction.partial) await reaction.fetch();
     if (User.bot) return;
 
-    upvotable_channel_list = ["925809120446148639", "940551819128614934"];
+    upvotable_channel_list = ["940551819128614934"];
 
     if (upvotable_channel_list.includes(reaction.message.channel.id)) {
       const message = reaction.message;

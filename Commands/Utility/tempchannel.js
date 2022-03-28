@@ -45,7 +45,6 @@ module.exports = new Command({
   ],
 
   async run(interaction, args, client) {
-
     let channelType = interaction.options.getString("channel-type");
     const channelName = interaction.options.getString("channel-name");
     const time = interaction.options.getInteger("time") * 3600000; //3600000
@@ -68,25 +67,33 @@ module.exports = new Command({
       } else {
         getChannel = client.channels.cache.get(channelId);
         await getChannel.delete();
-        tempChannelData.remove({ userID: interaction.user.id, channelType: channelType });
+        tempChannelData.remove({
+          userID: interaction.user.id,
+          channelType: channelType,
+        });
       }
     }
 
     embed1 = new Discord.MessageEmbed()
-      .setTitle(`\`${channelName}\``)
-      .setDescription("ㅤ")
+      .setTitle(`Creating Channel Named \`${channelName}\``)
+      .setDescription(
+        `\`\`\`ჩათში მონიშნეთ ყველა ის პიროვნება ვისი გაწევრიანებაც გსურთ ამ Channel-ში, ან დაწერეთ cancel გასაუქმებლად\`\`\``
+      )
       .addFields(
         {
-          name: `Channel-ის ტიპი ⬇️`,
+          name: `Channel Type`,
           value: `\`${channelType}\``,
+          inline: true,
         },
         {
-          name: `Channel-ის სახელი ⬇️`,
+          name: `Channel Name`,
           value: `\`${channelName}\``,
+          inline: true,
         },
         {
-          name: `Channel-ის წაშლამდე დრო ⬇️`,
+          name: `Available For`,
           value: `\`${ms(time)}\``,
+          inline: true,
         }
       )
       .setAuthor({
@@ -94,8 +101,9 @@ module.exports = new Command({
         iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
       })
       .setFooter({
-        text: `ჩათში მონიშნეთ ყველა ის პიროვნება ვისი გაწევრიანებაც გსურთ ამ Channel-ში, ან დაწერეთ cancel გასაუქმებლად`,
-        iconURL: 'https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png'
+        text: `BTU `,
+        iconURL:
+          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
       })
       .setColor("PURPLE")
       .setTimestamp();
@@ -111,7 +119,12 @@ module.exports = new Command({
 
     collector.on("collect", async (message) => {
       if (message.content.toLowerCase() === "cancel")
-        return interaction.editReply({ content: `Channel-ის შექმნა გაუქმდა`, embeds: [] }) && collector.stop();
+        return (
+          interaction.editReply({
+            content: `Channel-ის შექმნა გაუქმდა`,
+            embeds: [],
+          }) && collector.stop()
+        );
 
       userPerms = [
         {
@@ -140,8 +153,7 @@ module.exports = new Command({
         .then(async (channel) => {
           if (channelType === "GUILD_TEXT") {
             channel.setParent("951840310663725076", { lockPermissions: false });
-          }
-          else {
+          } else {
             channel.setParent("954371750592938014", { lockPermissions: false });
           }
 
@@ -164,11 +176,8 @@ module.exports = new Command({
               {
                 name: "Channel-ში დამატებული ხალხის სია ⬇️",
                 value: message.mentions.members
-                  .map(
-                    (x) =>
-                      `<@!${x.id}>`
-                  )
-                  .join("\` | \`"),
+                  .map((x) => `<@!${x.id}>`)
+                  .join("` | `"),
               }
             )
             .setAuthor({
@@ -191,7 +200,10 @@ module.exports = new Command({
         .then(
           setTimeout(() => {
             getChannel.delete();
-            tempChannelData.remove({ userID: interaction.user.id, channelType: channelType });
+            tempChannelData.remove({
+              userID: interaction.user.id,
+              channelType: channelType,
+            });
           }, time)
         );
     });

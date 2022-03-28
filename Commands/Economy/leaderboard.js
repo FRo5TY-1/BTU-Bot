@@ -96,7 +96,7 @@ module.exports = new Command({
 
             if (res.length <= start) {
               embed.setDescription(`მონაცემები არ არსებობს`);
-              return i.message.edit({ embeds: [embed] })
+              return i.message.edit({ embeds: [embed] });
             }
             const buttonUsersArray = [];
             for (k = start; k < end; k++) {
@@ -144,7 +144,6 @@ module.exports = new Command({
         });
 
         collector.on("end", (reason) => {
-          if (reason === "time")
           interaction.editReply({ components: [] });
         });
       });
