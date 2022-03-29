@@ -1,5 +1,5 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType } = require("discord-player");
+const { QueryType, QueueRepeatMode } = require("discord-player");
 const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
@@ -16,7 +16,23 @@ module.exports = new Command({
       });
 
     const progress = queue.createProgressBar();
-    const perc = queue.getPlayerTimestamp();
+
+    const loopMode =
+      queue.repeatMode === QueueRepeatMode.TRACK
+        ? "Song"
+        : queue.repeatMode === QueueRepeatMode.QUEUE
+        ? "Queue"
+        : queue.repeatMode === QueueRepeatMode.AUTOPLAY
+        ? "Autoplay"
+        : "OFF";
+
+    const previousTracks = queue.previousTracks.filter(function (v, i) {
+      return i % 2 == 0;
+    });
+
+    const fullQueue = previousTracks
+      .concat(queue.tracks)
+      .slice(0, queue.tracks.length);
 
     const embed = new Discord.MessageEmbed();
     embed
@@ -28,12 +44,32 @@ module.exports = new Command({
         name: queue.current.requestedBy.username,
         iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
       })
-      .addFields({
-        name: "⠀",
-        value: progress,
-      })
+      .addFields(
+        {
+          name: "Filter",
+          value: `\`\`\` ${
+            !queue.getFiltersEnabled().length
+              ? "OFF"
+              : queue.getFiltersEnabled()
+          } \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Loop Mode",
+          value: `\`\`\` ${loopMode} \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Volume",
+          value: `\`\`\` ${queue.volume} \`\`\``,
+          inline: true,
+        },
+        {
+          name: "⠀",
+          value: progress,
+        }
+      )
       .setColor("PURPLE")
-      .setThumbnail(queue.current.thumbnail)
       .setFooter({
         text: "BTU ",
         iconURL:

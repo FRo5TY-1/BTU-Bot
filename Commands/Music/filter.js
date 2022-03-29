@@ -63,25 +63,9 @@ module.exports = new Command({
 
     const mode = interaction.options.getString("type");
 
-    const embed = new Discord.MessageEmbed();
-    embed
-      .setTitle("Filter Changed")
-      .setDescription(`Filter: **${mode}**`)
-      .setAuthor({
-        name: queue.current.requestedBy.username,
-        iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
-      })
-      .addFields({
-        name: "Now Playing",
-        value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
-      })
-      .setColor("PURPLE")
-      .setFooter({
-        text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
-      })
-      .setTimestamp();
+    const filterBefore = !queue.getFiltersEnabled().length
+      ? "OFF"
+      : queue.getFiltersEnabled();
 
     if (mode === "NightCore") {
       queue.setFilters({
@@ -121,9 +105,29 @@ module.exports = new Command({
       });
     } else if (mode === "OFF") {
       queue.setFilters({
-        mono: true,
+        nightcore: false,
       });
     }
+
+    const embed = new Discord.MessageEmbed();
+    embed
+      .setTitle("Filter Changed")
+      .setDescription(`From: \` ${filterBefore} \`, To: \` ${mode} \``)
+      .setAuthor({
+        name: queue.current.requestedBy.username,
+        iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
+      })
+      .addFields({
+        name: "Now Playing",
+        value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+      })
+      .setColor("PURPLE")
+      .setFooter({
+        text: "BTU ",
+        iconURL:
+          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+      })
+      .setTimestamp();
 
     return interaction.followUp({ embeds: [embed] });
   },

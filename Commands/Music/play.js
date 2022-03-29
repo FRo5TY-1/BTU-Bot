@@ -1,5 +1,5 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType } = require("discord-player");
+const { QueryType, QueueRepeatMode } = require("discord-player");
 const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
@@ -31,7 +31,7 @@ module.exports = new Command({
     });
 
     if (!searchResult || !searchResult.tracks.length) {
-        return interaction.followUp({ content: 'მუსიკა ვერ მოიძებნა!' })
+      return interaction.followUp({ content: "მუსიკა ვერ მოიძებნა!" });
     }
 
     const queue = await player.createQueue(interaction.guild, {
@@ -40,6 +40,15 @@ module.exports = new Command({
 
     if (!queue.connection)
       await queue.connect(interaction.member.voice.channel);
+
+    const loopMode =
+      queue.repeatMode === QueueRepeatMode.TRACK
+        ? "Song"
+        : queue.repeatMode === QueueRepeatMode.QUEUE
+        ? "Queue"
+        : queue.repeatMode === QueueRepeatMode.AUTOPLAY
+        ? "Autoplay"
+        : "OFF";
 
     searchResult.playlist
       ? queue.addTracks(searchResult.tracks)
@@ -57,8 +66,21 @@ module.exports = new Command({
       })
       .addFields(
         {
-          name: "Possition In Queue",
-          value: `${queue.getTrackPosition(searchResult.tracks[0]) + 1}`,
+          name: "Possition",
+          value: `\`\`\` ${
+            queue.getTrackPosition(searchResult.tracks[0]) + 1
+          } \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Loop Mode",
+          value: `\`\`\` ${loopMode} \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Volume",
+          value: `\`\`\` ${queue.volume} \`\`\``,
+          inline: true,
         },
         {
           name: "Now Playing",
@@ -66,8 +88,12 @@ module.exports = new Command({
         }
       )
       .setColor("PURPLE")
-      .setThumbnail(searchResult.tracks[0].thumbnail)
-      .setFooter({ text: "BTU ", iconURL: 'https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png' })
+      .setImage(searchResult.tracks[0].thumbnail)
+      .setFooter({
+        text: "BTU ",
+        iconURL:
+          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+      })
       .setTimestamp();
 
     interaction.followUp({ embeds: [embed] });

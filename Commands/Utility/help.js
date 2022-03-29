@@ -32,7 +32,7 @@ module.exports = new Command({
                     : "`"
                 }`
             )
-            .join(" <:BatChest:924385583567081492> ")
+            .join("** | **")
       )
       .setFooter({
         text: `BTU `,

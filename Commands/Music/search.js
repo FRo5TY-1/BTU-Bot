@@ -1,5 +1,5 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType } = require("discord-player");
+const { QueryType, QueueRepeatMode } = require("discord-player");
 const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
@@ -19,12 +19,6 @@ module.exports = new Command({
   async run(interaction, args, client) {
     const songTitle = interaction.options.getString("title");
 
-    if (!interaction.member.voice.channel)
-      return interaction.followUp({
-        content: "ბრძანების გამოსაყენებლად უნდა იყოთ voice channel-ში",
-        ephemeral: true,
-      });
-
     const searchResult = await player.search(songTitle, {
       requestedBy: interaction.user,
       searchEngine: QueryType.AUTO,
@@ -34,19 +28,17 @@ module.exports = new Command({
       return interaction.followUp({ content: "მუსიკა ვერ მოიძებნა!" });
     }
 
-    const queue = await player.createQueue(interaction.guild, {
-      metadata: interaction.channel,
-    });
-
     const maxTracks = searchResult.tracks.slice(0, 10);
+
+    const trackString = maxTracks
+      .map((track, i) => `**${i + 1}**. [**${track.title}**](${track.url})`)
+      .join("\n");
 
     const embed = new Discord.MessageEmbed();
     embed
-      .setTitle(`Results For ${songTitle}`)
+      .setTitle(`Results For \` ${songTitle} \``)
       .setDescription(
-        `${maxTracks
-          .map((track, i) => `**${i + 1}**. [**${track.title}**](${track.url})`)
-          .join("\n")}`
+        `${trackString} \`\`\`აირჩიეთ მუსიკა 1-დან ${maxTracks.length}-მდე ან დაწერეთ cancel რომ გააუქმოთ ძებნა!\`\`\``
       )
       .setAuthor({
         name: interaction.user.username,
@@ -54,7 +46,7 @@ module.exports = new Command({
       })
       .setColor("PURPLE")
       .setFooter({
-        text: `აირჩიეთ მუსიკა **1-დან** **${maxTracks.length}-მდე** ან დაწერეთ **cancel** რომ გააუქმოთ ძებნა! ⬇️`,
+        text: `BTU `,
         iconURL:
           "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
       })
@@ -69,11 +61,26 @@ module.exports = new Command({
     });
 
     collector.on("collect", async (query) => {
-      if (query.content.toLowerCase() === "cancel")
+      if (query.content.toLowerCase() === "cancel") {
+        embed.setDescription(`${trackString} \`\`\`ძებნა გაუქმდა!\`\`\``);
         return (
-          interaction.editReply({ content: `ძებნა გაუქმდა!`, embeds: [] }) &&
-          collector.stop()
+          interaction.editReply({
+            embeds: [embed],
+          }) && collector.stop()
         );
+      }
+
+      if (!interaction.member.voice.channel)
+        return (
+          interaction.editReply({
+            content: `თქვენ უნდა იყოთ Voice Channel-ში`,
+            embeds: [],
+          }) && collector.stop()
+        );
+
+      const queue = player.createQueue(interaction.guild, {
+        metadata: interaction.channel,
+      });
 
       const value = parseInt(query.content);
 
@@ -82,11 +89,20 @@ module.exports = new Command({
       collector.stop();
 
       if (!queue.connection)
-      await queue.connect(interaction.member.voice.channel);
+        await queue.connect(interaction.member.voice.channel);
 
       const track = searchResult.tracks[Number(query.content) - 1];
 
       queue.addTrack(track);
+
+      const loopMode =
+        queue.repeatMode === QueueRepeatMode.TRACK
+          ? "Song"
+          : queue.repeatMode === QueueRepeatMode.QUEUE
+          ? "Queue"
+          : queue.repeatMode === QueueRepeatMode.AUTOPLAY
+          ? "Autoplay"
+          : "OFF";
 
       embed
         .setTitle("Song Added")
@@ -99,8 +115,19 @@ module.exports = new Command({
         })
         .addFields(
           {
-            name: "Possition In Queue",
-            value: `${queue.getTrackPosition(track) + 1}`,
+            name: "Possition",
+            value: `\`\`\` ${queue.getTrackPosition(track) + 1} \`\`\``,
+            inline: true,
+          },
+          {
+            name: "Loop Mode",
+            value: `\`\`\` ${loopMode} \`\`\``,
+            inline: true,
+          },
+          {
+            name: "Volume",
+            value: `\`\`\` ${queue.volume} \`\`\``,
+            inline: true,
           },
           {
             name: "Now Playing",
@@ -108,7 +135,7 @@ module.exports = new Command({
           }
         )
         .setColor("PURPLE")
-        .setThumbnail(track.thumbnail)
+        .setImage(track.thumbnail)
         .setFooter({
           text: "BTU ",
           iconURL:
@@ -116,17 +143,18 @@ module.exports = new Command({
         })
         .setTimestamp();
 
-        interaction.editReply({ embeds: [embed] })
+      interaction.editReply({ embeds: [embed] });
 
       if (!queue.playing) await queue.play();
     });
 
     collector.on("end", (msg, reason) => {
-      if (reason === "time")
+      if (reason === "time") {
+        embed.setDescription(`${trackString} \`\`\`არჩევის დრო გავიდა!\`\`\``);
         return interaction.editReply({
-          content: "არჩევის დრო გავიდა!",
           embeds: [embed],
         });
+      }
     });
   },
 });

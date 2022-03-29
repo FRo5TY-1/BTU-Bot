@@ -8,14 +8,14 @@ module.exports = new Command({
   description: "შეცვალეთ ხმის მოცულობა",
   type: "SLASH",
   options: [
-      {
-          name: "amount",
-          description: "ხმის მოცულობა",
-          type: "INTEGER",
-          required: true,
-          maxValue: 200,
-          minValue: 1,
-      }
+    {
+      name: "amount",
+      description: "ხმის მოცულობა",
+      type: "INTEGER",
+      required: true,
+      maxValue: 200,
+      minValue: 1,
+    },
   ],
 
   async run(interaction, args, client) {
@@ -24,7 +24,7 @@ module.exports = new Command({
       return interaction.followUp({
         content: "ამჟამად მუსიკა არაა ჩართული",
       });
-    const amount = interaction.options.getInteger('amount');
+    const amount = interaction.options.getInteger("amount");
 
     const embed = new Discord.MessageEmbed();
     embed
@@ -39,7 +39,6 @@ module.exports = new Command({
         value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
       })
       .setColor("PURPLE")
-      .setThumbnail(queue.current.thumbnail)
       .setFooter({
         text: "BTU ",
         iconURL:
@@ -47,8 +46,8 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-      queue.setVolume(amount);
+    queue.setVolume(amount);
 
-      return interaction.followUp({ embeds: [embed] });
+    return interaction.followUp({ embeds: [embed] });
   },
 });
