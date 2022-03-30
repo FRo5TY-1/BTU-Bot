@@ -1,11 +1,10 @@
 
 <div id="top"></div>
-<div align="center">
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![MIT License][license-shield]][license-url]
-</div>
 
 <br />
 <div align="center">
