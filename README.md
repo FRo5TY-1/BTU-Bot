@@ -1,10 +1,10 @@
 
 <div id="top"></div>
 
-[![Contributors][contributors-shield]][https://github.com/Nikoloz-Grigalashvili/BTU-Bot/graphs/contributors]
-[![Forks][forks-shield]][https://github.com/Nikoloz-Grigalashvili/BTU-Bot/network/members]
-[![Stargazers][stars-shield]][https://github.com/Nikoloz-Grigalashvili/BTU-Bot/stargazers]
-[![MIT License][license-shield]][LICENSE]
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![MIT License][license-shield]][license-url]
 
 <br />
 <div align="center">
@@ -51,7 +51,11 @@ Project Link: [https://github.com/Nikoloz-Grigalashvili/BTU-Bot](https://github.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/Nikoloz-Grigalashvili/BTU-Bot.svg?style=for-the-badge
+[contributors-url]: https://github.com/Nikoloz-Grigalashvili/BTU-Bot/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Nikoloz-Grigalashvili/BTU-Bot.svg?style=for-the-badge
+[forks-url]: https://github.com/Nikoloz-Grigalashvili/BTU-Bot/network/members
+[stars-shield]: https://img.shields.io/github/stars/Nikoloz-Grigalashvili/BTU-Bot.svg?style=for-the-badge
+[stars-url]: https://github.com/Nikoloz-Grigalashvili/BTU-Bot/stargazers
+[license-shield]: https://img.shields.io/github/license/Nikoloz-Grigalashvili/BTU-Bot.svg?style=for-the-badge
+[license-url]: https://github.com/Nikoloz-Grigalashvili/BTU-Bot/blob/master/LICENSE.txt
