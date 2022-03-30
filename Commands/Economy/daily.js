@@ -20,11 +20,11 @@ module.exports = new Command({
     if (cooldownData) {
       cooldownExpiry = cooldownData.expiry;
       if (cooldownExpiry > new Date().getTime()) {
-        return interaction.followUp(
-          `თქვენ უკვე გამოიყენეთ ეს ბრძანება, დარჩენილი დრო: **${ms(
+        return interaction.followUp({
+          content: `თქვენ უკვე გამოიყენეთ ეს ბრძანება, დარჩენილი დრო: **${ms(
             cooldownExpiry - new Date().getTime()
-          )}**`
-        );
+          )}**`,
+        });
       } else {
         cooldownData.remove({ userID: interaction.user.id, command: "daily" });
       }
@@ -51,7 +51,9 @@ module.exports = new Command({
           },
         }
       );
-      interaction.followUp(`თქვენ დაგერიცხათ დღიური **${randomNumber}** BTU Coin`);
+      interaction.followUp(
+        `თქვენ დაგერიცხათ დღიური **${randomNumber}** BTU Coin`
+      );
 
       cooldownData = await cooldownModel.create({
         userID: interaction.user.id,

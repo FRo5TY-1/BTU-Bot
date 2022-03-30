@@ -11,14 +11,11 @@ module.exports = new Event("guildMemberAdd", (client, member) => {
 
   if (!channel) return;
 
-  const file = new Discord.MessageAttachment("Pictures/BTULogo.png");
   const embed = new Discord.MessageEmbed();
 
   embed
     .setTitle(
-      "<a:PepeDance:924590592326000640> Welcome " +
-        member.user.username +
-        " ! <a:PepeDance:924590592326000640>"
+      ` Welcome ${member.user.username} ! `
     )
     .setDescription(
       "გაეცანი სერვერის წესებს  :point_right:<#913320728563167262>!" +
@@ -29,8 +26,11 @@ module.exports = new Event("guildMemberAdd", (client, member) => {
       iconURL: member.user.displayAvatarURL({ dynamic: true }),
     })
     .setColor("PURPLE")
-    .setThumbnail("attachment://BTULogo.png")
-    .setFooter({ text: "სალობიე " })
+    .setFooter({
+      text: "BTU ",
+      iconURL:
+        "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+    })
     .setTimestamp();
 
   channel.send({ embeds: [embed], files: [file] });

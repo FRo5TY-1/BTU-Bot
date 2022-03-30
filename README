@@ -1,0 +1,50 @@
+
+[![Contributors][contributors-shield]][https://github.com/Nikoloz-Grigalashvili/BTU-Bot/graphs/contributors]
+[![Forks][forks-shield]][https://github.com/Nikoloz-Grigalashvili/BTU-Bot/network/members]
+[![Stargazers][stars-shield]][https://github.com/Nikoloz-Grigalashvili/BTU-Bot/stargazers]
+[![MIT License][license-shield]][LICENSE]
+
+<br />
+<div align="center">
+  <a href="https://github.com/Nikoloz-Grigalashvili/BTU-Bot">
+    <img src="Pictures/BTULogo.png" alt="Logo" width="80" height="80">
+  </a>
+
+  <h3 align="center">BTU Discord Bot</h3>
+</div>
+
+## About The Project
+
+A bot configured for use in a single guild, it has everything from simple to advanced commands, as mentioned bot is configured for use in a specific guild, if you wish to use the given code, please be sure to change some lines of code so it can be functional.
+
+
+### Built With
+
+* [node.js](https://nodejs.org/)
+* [discord.js](https://discord.js.org/)
+* [discord-player.js](https://discord-player.js.org/)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/your_username_/Project-Name.git
+   ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Contact
+
+Discord Username - FRo5TY#7344
+
+Project Link: [https://github.com/Nikoloz-Grigalashvili/BTU-Bot](https://github.com/Nikoloz-Grigalashvili/BTU-Bot)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
