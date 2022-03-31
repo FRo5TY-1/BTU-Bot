@@ -10,7 +10,7 @@ function RunFunction(message, args, client) {}
 
 class Command {
   /**
-   * @typedef {{name: string, description: string, showHelp: Boolean, aliases: string, permissions: Discord.PermissionString, type: String, options: Discord.ApplicationCommandOption[], run: RunFunction }} CommandOptions
+   * @typedef {{name: string, description: string, showHelp: Boolean, aliases: string, permissions: Discord.PermissionString, ephemeral: Boolean, type: String, options: Discord.ApplicationCommandOption[], run: RunFunction }} CommandOptions
    * @param {CommandOptions} Options
    */
   constructor(Options) {
@@ -19,9 +19,10 @@ class Command {
     this.description = Options.description;
     this.permissions = Options.permissions;
     this.aliases = Options.aliases;
-    this.type = ["BOTH", "SLASH", "TEXT"].includes(Options.type)
+    this.type = ["USER", "SLASH", "TEXT"].includes(Options.type)
       ? Options.type
       : "TEXT";
+    this.ephemeral = Options.ephemeral;
     this.options = Options.options || [];
     this.run = Options.run;
   }
