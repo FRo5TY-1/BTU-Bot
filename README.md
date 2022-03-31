@@ -32,7 +32,7 @@ A bot configured for use in a single guild, it has everything from simple to adv
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/Nikoloz-Grigalashvili/BTU-Bot.git
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
