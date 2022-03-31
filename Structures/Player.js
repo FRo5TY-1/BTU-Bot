@@ -22,6 +22,7 @@ player.on("trackStart", (queue, track) => {
       ? "Autoplay"
       : "OFF";
 
+  const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
   const embed = new Discord.MessageEmbed();
   embed
     .setTitle("Now Playing")
@@ -53,13 +54,12 @@ player.on("trackStart", (queue, track) => {
     )
     .setColor("PURPLE")
     .setFooter({
-      text: "BTU ",
-      iconURL:
-        "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+      text: `BTU `,
+      iconURL: "attachment://BTULogo.png",
     })
     .setImage(queue.current.thumbnail)
     .setTimestamp();
-  queue.metadata.send({ embeds: [embed] });
+  queue.metadata.send({ embeds: [embed], files: [Logo] });
 });
 
 module.exports = player;

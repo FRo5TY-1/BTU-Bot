@@ -17,13 +17,17 @@ module.exports = new Command({
     },
   ],
 
-  async run(interaction, args, client) {
+  /**
+   * @param {Discord.Interaction} interaction
+   * @param {Client} client
+   */
+  async run(interaction, client) {
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.followUp({
         content:
           "Bot-ები არ მოიხმარენ ჩვენ სერვისს <:FeelsBadMan:924601273028857866>",
       });
-      const target =
+    const target =
       client.users.cache.get(interaction.options.getMember("user")?.id) ||
       interaction.user;
 
@@ -37,6 +41,7 @@ module.exports = new Command({
       profileData.save();
     }
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
 
     embed
@@ -49,11 +54,10 @@ module.exports = new Command({
       .setColor("PURPLE")
       .setFooter({
         text: `BTU `,
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed] });
+    interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

@@ -1,5 +1,4 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType } = require("discord-player");
 const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
@@ -29,11 +28,14 @@ module.exports = new Command({
     const previousTracks = queue.previousTracks.filter(function (v, i) {
       return i % 2 == 0;
     });
-    const fullQueue = previousTracks.concat(queue.tracks).slice(0, queue.tracks.length);
+    const fullQueue = previousTracks
+      .concat(queue.tracks)
+      .slice(0, queue.tracks.length);
     const tracks = fullQueue.map((m, i) => {
       return `${i + 1}. [**${m.title}**](${m.url}) - <@!${m.requestedBy.id}>`;
     });
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Queue")
@@ -46,19 +48,13 @@ module.exports = new Command({
         name: "Now Playing",
         value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
       })
-      .setColor("PURPLE")
       .setFooter({
-        text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        text: `Page: ${page}, სულ ${tracks.length} მუსიკა`,
+        iconURL: "attachment://BTULogo.png",
       })
+      .setColor("PURPLE")
       .setTimestamp();
-    embed.setFooter({
-      text: `Page: ${page}, სულ ${tracks.length} მუსიკა`,
-      iconURL:
-        "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
-    });
 
-    return interaction.followUp({ embeds: [embed] });
+    return interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

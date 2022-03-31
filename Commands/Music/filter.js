@@ -109,6 +109,7 @@ module.exports = new Command({
       });
     }
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Filter Changed")
@@ -123,12 +124,11 @@ module.exports = new Command({
       })
       .setColor("PURPLE")
       .setFooter({
-        text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        text: `BTU `,
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-    return interaction.followUp({ embeds: [embed] });
+    return interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

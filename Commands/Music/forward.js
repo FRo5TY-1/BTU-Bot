@@ -8,12 +8,12 @@ module.exports = new Command({
   type: "SLASH",
   options: [
     {
-        name: "amount",
-        description: "რომელ წამზე გადავიდე",
-        type: "INTEGER",
-        required: false,
-    }
-],
+      name: "amount",
+      description: "რომელ წამზე გადავიდე",
+      type: "INTEGER",
+      required: false,
+    },
+  ],
 
   async run(interaction, args, client) {
     const queue = player.getQueue(interaction.guild);
@@ -21,8 +21,8 @@ module.exports = new Command({
       return interaction.followUp({
         content: "ამჟამად მუსიკა არაა ჩართული",
       });
-    
-    const time = interaction.options.getInteger('amount') * 1000;
+
+    const time = interaction.options.getInteger("amount") * 1000;
     percBefore = queue.getPlayerTimestamp().current;
 
     queue.seek(time);
@@ -30,6 +30,7 @@ module.exports = new Command({
     const progress = queue.createProgressBar();
     const perc = queue.getPlayerTimestamp().current;
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Forwarded")
@@ -44,12 +45,11 @@ module.exports = new Command({
       })
       .setColor("PURPLE")
       .setFooter({
-        text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        text: `BTU `,
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-      return interaction.followUp({ embeds: [embed] });
+    return interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

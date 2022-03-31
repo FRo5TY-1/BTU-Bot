@@ -24,6 +24,7 @@ module.exports = new Command({
     const target =
       client.users.cache.get(interaction.options.getMember("user")?.id) ||
       interaction.user;
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
 
     embed
@@ -34,9 +35,8 @@ module.exports = new Command({
       })
       .setColor("PURPLE")
       .setFooter({
-        text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        text: `BTU `,
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
@@ -48,7 +48,7 @@ module.exports = new Command({
       .exec((err, res) => {
         if (res.length < 1) {
           embed.setDescription("`Inventory ცარიელია`");
-          return interaction.followUp({ embeds: [embed] });
+          return interaction.followUp({ embeds: [embed], files: [Logo] });
         }
 
         const itemArray = [];
@@ -58,7 +58,7 @@ module.exports = new Command({
           itemArray.push(`\`${res[i].itemName}\` x **${res[i].itemAmount}**`);
         }
         embed.setDescription(itemArray.join("\n"));
-        return interaction.followUp({ embeds: [embed] });
+        return interaction.followUp({ embeds: [embed], files: [Logo] });
       });
   },
 });

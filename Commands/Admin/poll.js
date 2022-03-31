@@ -40,12 +40,15 @@ module.exports = new Command({
     const description = interaction.options.getString("description");
     const time = interaction.options.getInteger("time") * 3600000;
     const channel = client.channels.cache.find((c) => c.name == "📊polls");
-    const logsChannel = client.channels.cache.find((c) => c.name == "poll-logs");
+    const logsChannel = client.channels.cache.find(
+      (c) => c.name == "poll-logs"
+    );
 
     const date = `<t:${Math.floor(
       (interaction.createdTimestamp + time) / 1000
     )}:R>`;
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed()
       .setTitle(title)
       .setDescription(`${description.replaceAll("|", "\n")}`)
@@ -56,8 +59,7 @@ module.exports = new Command({
       })
       .setFooter({
         text: `BTU `,
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        iconURL: "attachment://BTULogo.png",
       })
       .addFields(
         {
@@ -91,7 +93,7 @@ module.exports = new Command({
     );
 
     interaction.followUp({ content: `Poll შეიქმნა და გაიგზავნა` });
-    channel.send({ embeds: [embed], components: [row] }).then((message) => {
+    channel.send({ embeds: [embed], components: [row], files: [Logo] }).then((message) => {
       const collector = message.createMessageComponentCollector({
         time: time,
       });
@@ -113,7 +115,9 @@ module.exports = new Command({
             (f) => f.name === "Yes"
           ).value = `**\`${yesCount}\`**`;
           message.edit({ embeds: [embed] });
-          logsChannel.send({ content: `<@!${i.user.id}> Voted Yes on Poll named ${title}` })
+          logsChannel.send({
+            content: `<@!${i.user.id}> Voted Yes on Poll named ${title}`,
+          });
         } else if (i.customId === "voteno") {
           if (noMemberArray.includes(i.user.id)) return;
           else if (yesMemberArray.includes(i.user.id)) {
@@ -130,7 +134,9 @@ module.exports = new Command({
             (f) => f.name === "No"
           ).value = `**\`${noCount}\`**`;
           message.edit({ embeds: [embed] });
-          logsChannel.send({ content: `<@!${i.user.id}> Voted No on Poll named ${title}` })
+          logsChannel.send({
+            content: `<@!${i.user.id}> Voted No on Poll named ${title}`,
+          });
         }
       });
 

@@ -43,12 +43,27 @@ module.exports = new Command({
 
     const mode = interaction.options.getInteger("type");
     const modeBefore = queue.repeatMode;
-    const loopBefore = modeBefore === QueueRepeatMode.TRACK ? 'Song' : modeBefore === QueueRepeatMode.QUEUE ? 'Queue' : modeBefore === QueueRepeatMode.AUTOPLAY ? 'Autoplay' : 'OFF';
+    const loopBefore =
+      modeBefore === QueueRepeatMode.TRACK
+        ? "Song"
+        : modeBefore === QueueRepeatMode.QUEUE
+        ? "Queue"
+        : modeBefore === QueueRepeatMode.AUTOPLAY
+        ? "Autoplay"
+        : "OFF";
 
     queue.setRepeatMode(mode);
 
-    const loopAfter = mode === QueueRepeatMode.TRACK ? 'Song' : mode === QueueRepeatMode.QUEUE ? 'Queue' : mode === QueueRepeatMode.AUTOPLAY ? 'Autoplay' : 'OFF';
+    const loopAfter =
+      mode === QueueRepeatMode.TRACK
+        ? "Song"
+        : mode === QueueRepeatMode.QUEUE
+        ? "Queue"
+        : mode === QueueRepeatMode.AUTOPLAY
+        ? "Autoplay"
+        : "OFF";
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Loop Mode Changed")
@@ -63,12 +78,11 @@ module.exports = new Command({
       })
       .setColor("PURPLE")
       .setFooter({
-        text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        text: `BTU `,
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-    return interaction.followUp({ embeds: [embed] });
+    return interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

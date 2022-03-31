@@ -7,6 +7,7 @@ module.exports = new Command({
   type: "SLASH",
 
   async run(interaction, args, client) {
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
 
     embed
@@ -16,31 +17,26 @@ module.exports = new Command({
         name: interaction.user.username,
         iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
       });
-    const commands = client.slashCommands.filter(
-      (x) => x.showHelp != false
-    );
+    const commands = client.slashCommands.filter((x) => x.showHelp != false);
 
     embed
       .addField(
         `${commands.size} Commands Available`,
-          commands
-            .map(
-              (x) =>
-                `\`${x.name}${
-                  x.aliases
-                    ? ` (${x.aliases.map((y) => y).join(", ")}) \``
-                    : "`"
-                }`
-            )
-            .join("** | **")
+        commands
+          .map(
+            (x) =>
+              `\`${x.name}${
+                x.aliases ? ` (${x.aliases.map((y) => y).join(", ")}) \`` : "`"
+              }`
+          )
+          .join("** | **")
       )
       .setFooter({
         text: `BTU `,
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed] });
+    interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

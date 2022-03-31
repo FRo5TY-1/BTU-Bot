@@ -1,7 +1,5 @@
 const Command = require("../../Structures/Command.js");
 const profileModel = require("../../DBModels/profileSchema.js");
-const { Interaction } = require("discord.js");
-const interactionCreate = require("../../Events/interactionCreate.js");
 let profileData;
 let targetData;
 

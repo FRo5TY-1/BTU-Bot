@@ -33,13 +33,16 @@ module.exports = new Command({
 
   async run(interaction, args, client) {
     if (interaction.options.getSubcommand() === "see") {
+      const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
       const shopEmbed = new Discord.MessageEmbed();
       shopEmbed
         .setTitle("⠀⠀▬▬▬▬▬▬▬▬▬ BTU Shop ▬▬▬▬▬▬▬▬▬⠀⠀")
-        .setDescription("```ყველა ნივთი რომლის ყიდვაც BTU Coin-ებით შეგიძლიათ```")
+        .setDescription(
+          "```ყველა ნივთი რომლის ყიდვაც BTU Coin-ებით შეგიძლიათ```"
+        )
         .addFields(
           {
-            name: "⠀⠀\ 👑 ▬▬▬▬▬▬▬▬ Legendary Tier ▬▬▬▬▬▬▬▬ 👑⠀⠀",
+            name: "⠀⠀ 👑 ▬▬▬▬▬▬▬▬ Legendary Tier ▬▬▬▬▬▬▬▬ 👑⠀⠀",
             value: "```🟠 1. ბეთეუს N1 ლობიანი  |  2000 Coins\n```",
           },
           {
@@ -54,12 +57,11 @@ module.exports = new Command({
         .setColor("PURPLE")
         .setFooter({
           text: "ნივთის საყიდლად გამოიყენეთ /shop buy ბრძანება",
-          iconURL:
-            "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+          iconURL: "attachment://BTULogo.png",
         })
         .setTimestamp();
 
-      return interaction.followUp({ embeds: [shopEmbed] });
+      return interaction.followUp({ embeds: [shopEmbed], files: [Logo] });
     } else {
       //buy sub command starts here
 
@@ -133,7 +135,9 @@ module.exports = new Command({
           .setTitle("Success")
           .setDescription(
             `წარმატებით შეიძინეთ \`${itemList[itemIndex].name}\`
-            \nძველი ბალანსი: \`${moneyBefore}\`, ახალი: \`${moneyBefore-itemList[itemIndex].price}\``
+            \nძველი ბალანსი: \`${moneyBefore}\`, ახალი: \`${
+              moneyBefore - itemList[itemIndex].price
+            }\``
           )
           .setAuthor({
             name: interaction.user.username,
@@ -142,11 +146,10 @@ module.exports = new Command({
           .setColor("PURPLE")
           .setFooter({
             text: "BTU ",
-            iconURL:
-              "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+            iconURL: "attachment://BTULogo.png",
           })
           .setTimestamp();
-        interaction.followUp({ embeds: [embed]})
+        interaction.followUp({ embeds: [embed], files: [Logo] });
       }
     }
   },

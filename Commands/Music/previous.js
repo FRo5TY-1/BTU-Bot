@@ -18,6 +18,7 @@ module.exports = new Command({
     const progress = queue.createProgressBar();
     const perc = queue.getPlayerTimestamp();
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Current Song Skipped")
@@ -34,13 +35,14 @@ module.exports = new Command({
       })
       .setColor("PURPLE")
       .setFooter({
-        text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        text: `BTU `,
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-    queue.back();
-    return interaction.followUp({ embeds: [embed] });
+    queue.back().catch((err) => {
+      return interaction.followUp("მუსიკის წინ არ არსებობს მუსიკა");
+    });
+    return interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

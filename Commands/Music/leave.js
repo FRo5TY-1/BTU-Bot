@@ -15,6 +15,7 @@ module.exports = new Command({
         content: "ამჟამად მუსიკა არაა ჩართული",
       });
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("I Left <:FeelsBadMan:924601273028857866>")
@@ -24,13 +25,12 @@ module.exports = new Command({
       })
       .setColor("PURPLE")
       .setFooter({
-        text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        text: `BTU `,
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
     queue.destroy();
-    return interaction.followUp({ embeds: [embed] });
+    return interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

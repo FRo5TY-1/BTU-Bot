@@ -7,6 +7,7 @@ module.exports = new Command({
   type: "SLASH",
 
   async run(interaction) {
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     const coins = ["Heads", "Tails"];
     const coin = coins[Math.floor(Math.random() * 2)];
@@ -20,11 +21,10 @@ module.exports = new Command({
       })
       .setFooter({
         text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed] });
+    interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

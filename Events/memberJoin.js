@@ -11,27 +11,26 @@ module.exports = new Event("guildMemberAdd", (client, member) => {
 
   if (!channel) return;
 
+  const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
+  const Banner = new Discord.MessageAttachment("./Pictures/WelcomeBanner.png");
   const embed = new Discord.MessageEmbed();
 
   embed
-    .setTitle(
-      ` Welcome ${member.user.username} ! `
-    )
+    .setTitle(`\`\`\`Welcome To BTU ${member.user.username} !\`\`\``)
     .setDescription(
-      "გაეცანი სერვერის წესებს  :point_right:<#913320728563167262>!" +
-        "\nაგრეთვე აირჩიე როლები  :point_right:<#919298186877734952>!"
+      "გაეცანი სერვერის წესებს  👉 <#913320728563167262>!\nაგრეთვე აირჩიე როლები 👉 <#919298186877734952>!"
     )
     .setAuthor({
       name: member.user.tag,
       iconURL: member.user.displayAvatarURL({ dynamic: true }),
     })
     .setColor("PURPLE")
+    .setImage("attachment://WelcomeBanner.png")
     .setFooter({
-      text: "BTU ",
-      iconURL:
-        "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+      text: `BTU `,
+      iconURL: "attachment://BTULogo.png",
     })
     .setTimestamp();
 
-  channel.send({ embeds: [embed], files: [file] });
+  channel.send({ embeds: [embed], files: [Logo, Banner] });
 });

@@ -74,6 +74,7 @@ module.exports = new Command({
       }
     }
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     embed1 = new Discord.MessageEmbed()
       .setTitle(`Creating Channel Named \`${channelName}\``)
       .setDescription(
@@ -102,13 +103,12 @@ module.exports = new Command({
       })
       .setFooter({
         text: `BTU `,
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        iconURL: "attachment://BTULogo.png",
       })
       .setColor("PURPLE")
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed1] });
+    interaction.followUp({ embeds: [embed1], files: [Logo] });
 
     const userChannel = interaction.channel;
     const collector = userChannel.createMessageCollector({
@@ -184,9 +184,13 @@ module.exports = new Command({
               name: interaction.user.username,
               iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
             })
+            .setFooter({
+              text: `BTU `,
+              iconURL: "attachment://BTULogo.png",
+            })
             .setColor("PURPLE");
 
-          message.reply({ embeds: [embed2] });
+          message.reply({ embeds: [embed2], files: [Logo] });
           channelId = channel.id;
           getChannel = client.channels.cache.get(channelId);
           tempChannelData = await tempChannelModel.create({

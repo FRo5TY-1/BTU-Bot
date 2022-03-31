@@ -22,14 +22,14 @@ module.exports = new Command({
     const end = page * 10;
     const start = page * 10 - 10;
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     embed = new Discord.MessageEmbed();
     embed
       .setTitle("BTU Coins Leaderboard")
       .setColor("PURPLE")
       .setFooter({
         text: `Page ${page}`,
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
@@ -68,7 +68,11 @@ module.exports = new Command({
 
         embed.setDescription(usersArray.join("\n"));
 
-        interaction.followUp({ embeds: [embed], components: [row] });
+        interaction.followUp({
+          embeds: [embed],
+          components: [row],
+          files: [Logo],
+        });
 
         const userChannel = interaction.channel;
         const collector = userChannel.createMessageComponentCollector({
@@ -89,8 +93,7 @@ module.exports = new Command({
               .setColor("PURPLE")
               .setFooter({
                 text: `Page ${page}`,
-                iconURL:
-                  "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+                iconURL: "attachment://BTULogo.png",
               })
               .setTimestamp();
 
@@ -119,8 +122,7 @@ module.exports = new Command({
               .setColor("PURPLE")
               .setFooter({
                 text: `Page ${page}`,
-                iconURL:
-                  "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+                iconURL: "attachment://BTULogo.png",
               })
               .setTimestamp();
 

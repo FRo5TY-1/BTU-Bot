@@ -54,6 +54,7 @@ module.exports = new Command({
       ? queue.addTracks(searchResult.tracks)
       : queue.addTrack(searchResult.tracks[0]);
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Song Added")
@@ -88,15 +89,13 @@ module.exports = new Command({
         }
       )
       .setColor("PURPLE")
-      .setImage(searchResult.tracks[0].thumbnail)
       .setFooter({
-        text: "BTU ",
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        text: `BTU `,
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed] });
+    interaction.followUp({ embeds: [embed], files: [Logo] });
 
     if (!queue.playing) await queue.play();
   },

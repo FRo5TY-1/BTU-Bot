@@ -80,6 +80,7 @@ module.exports = new Command({
     const field2 = interaction.options.getString("field2") || null;
     const field3 = interaction.options.getString("field3") || null;
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
 
     embed.setTitle(title).setDescription(description.replaceAll("|", "\n"));
@@ -95,8 +96,7 @@ module.exports = new Command({
       .setColor("PURPLE")
       .setFooter({
         text: footer,
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
@@ -135,6 +135,6 @@ module.exports = new Command({
     }
 
     interaction.followUp({ content: `Embed შეიქმნა და გაიგზავნა` });
-    channel.send({ content: content, embeds: [embed] });
+    channel.send({ content: content, embeds: [embed], files: [Logo] });
   },
 });

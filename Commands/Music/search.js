@@ -34,6 +34,7 @@ module.exports = new Command({
       .map((track, i) => `**${i + 1}**. [**${track.title}**](${track.url})`)
       .join("\n");
 
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle(`Results For \` ${songTitle} \``)
@@ -47,12 +48,11 @@ module.exports = new Command({
       .setColor("PURPLE")
       .setFooter({
         text: `BTU `,
-        iconURL:
-          "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+        iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed] });
+    interaction.followUp({ embeds: [embed], files: [Logo] });
 
     const collector = interaction.channel.createMessageCollector({
       time: 20000,
@@ -135,11 +135,9 @@ module.exports = new Command({
           }
         )
         .setColor("PURPLE")
-        .setImage(track.thumbnail)
         .setFooter({
-          text: "BTU ",
-          iconURL:
-            "https://media.discordapp.net/attachments/951926364221607936/955116148540731432/BTULogo.png",
+          text: `BTU `,
+          iconURL: "attachment://BTULogo.png",
         })
         .setTimestamp();
 

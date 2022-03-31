@@ -44,33 +44,72 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
     const message = interaction.message;
 
     const Member = interaction.member;
-    const MinecraftRole = "925813134151782401";
-    const LOLRole = "923571643891191848";
-    const BTUMember = "925255802850258984";
-    const OsuRole = "924939736999686154";
-    const I_IRole = "940267819180916756";
-    const II_IRole = "940267963137814599";
-    const III_IRole = "940276732714430484";
-    const IV_IRole = "940277151440191488";
-    const I_IIRole = "940267586564796417";
-    const II_IIRole = "940268000819445820";
-    const III_IIRole = "940276728360755310";
-    const IV_IIRole = "940277183396605972";
+    const BTUMemberRole = "925255802850258984";
 
-    course_roles_list = [
-      "კურსი I სემესტრი I",
-      "კურსი I სემესტრი II",
-      "კურსი II სემესტრი I",
-      "კურსი II სემესტრი II",
-      "კურსი III სემესტრი I",
-      "კურსი III სემესტრი II",
-      "კურსი IV სემესტრი I",
-      "კურსი IV სემესტრი II",
+    const nonchangable_roles = [
+      {
+        customID: "I-I",
+        name: "კურსი I სემესტრი I",
+        roleID: "940267819180916756",
+      },
+      {
+        customID: "I-II",
+        name: "კურსი I სემესტრი II",
+        roleID: "940267586564796417",
+      },
+      {
+        customID: "II-I",
+        name: "კურსი II სემესტრი I",
+        roleID: "940267963137814599",
+      },
+      {
+        customID: "II-II",
+        name: "კურსი II სემესტრი II",
+        roleID: "940268000819445820",
+      },
+      {
+        customID: "III-I",
+        name: "კურსი III სემესტრი I",
+        roleID: "940276732714430484",
+      },
+      {
+        customID: "III-II",
+        name: "კურსი III სემესტრი II",
+        roleID: "940276728360755310",
+      },
+      {
+        customID: "IV-I",
+        name: "კურსი IV სემესტრი I",
+        roleID: "940277151440191488",
+      },
+      {
+        customID: "IV-II",
+        name: "კურსი IV სემესტრი II",
+        roleID: "940277183396605972",
+      },
     ];
 
-    if (interaction.customId === "AgreeRole") {
+    const changable_roles = [
+      {
+        customID: "lolrole",
+        name: "LOL",
+        roleID: "923571643891191848",
+      },
+      {
+        customID: "minecraftrole",
+        name: "Minecraft",
+        roleID: "925813134151782401",
+      },
+      {
+        customID: "osurole",
+        name: "Osu",
+        roleID: "924939736999686154",
+      },
+    ];
+
+    if (interaction.customId === "rulesagree") {
       if (Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        interaction.followUp({
+        return interaction.followUp({
           content: "თქვენ უკვე ეთანხმებით წესებს",
           ephemeral: true,
         });
@@ -79,231 +118,62 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
           content: "თქვენ დაეთანხმეთ წესებს",
           ephemeral: true,
         });
-        Member.roles.add(BTUMember);
+        return Member.roles.add(BTUMemberRole);
       }
-    } else if (interaction.customId === "lolrole") {
-      if (Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        if (Member.roles.cache.some((role) => role.name === "LOL")) {
-          interaction.followUp({
-            content: "თქვენ ჩამოგერთვათ LOL როლი",
-            ephemeral: true,
-          });
-          Member.roles.remove(LOLRole);
-        } else {
-          interaction.followUp({
-            content: "თქვენ მოგენიჭათ LOL როლი",
-            ephemeral: true,
-          });
-          Member.roles.add(LOLRole);
+    }
+
+    if (Member.roles.cache.some((role) => role.name === "BTU Member")) {
+      const nonchangable_names = nonchangable_roles.map((value) => value.name);
+      for (i = 0; i < nonchangable_roles.length; i++) {
+        if (interaction.customId === nonchangable_roles[i].customID) {
+          if (
+            Member.roles.cache.some((role) =>
+              nonchangable_names.includes(role.name)
+            )
+          ) {
+            interaction.followUp({
+              content: `თქვენ უკვე გაქვთ ${nonchangable_roles[i].name} როლი!\n ამ როლის შეცვლა არ შეიძლება\n თუ როლის არჩევა შეგეშალათ დაუკავშრდით Mod-ს`,
+              ephemeral: true,
+            });
+            break;
+          } else {
+            interaction.followUp({
+              content: `თქვენ მოგენიჭათ ${nonchangable_roles[i].name} როლი`,
+              ephemeral: true,
+            });
+            Member.roles.add(nonchangable_roles[i].roleID);
+            break;
+          }
         }
-      } else {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
       }
-    } else if (interaction.customId === "minecraftrole") {
-      if (Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        if (Member.roles.cache.some((role) => role.name === "Minecraft")) {
-          interaction.followUp({
-            content: "თქვენ ჩამოგერთვათ Minecraft როლი",
-            ephemeral: true,
-          });
-          Member.roles.remove(MinecraftRole);
-        } else {
-          interaction.followUp({
-            content: "თქვენ მოგენიჭათ Minecraft როლი",
-            ephemeral: true,
-          });
-          Member.roles.add(MinecraftRole);
+      for (i = 0; i < changable_roles.length; i++) {
+        if (interaction.customId === changable_roles[i].customID) {
+          if (
+            Member.roles.cache.some(
+              (role) => changable_roles[i].name === role.name
+            )
+          ) {
+            interaction.followUp({
+              content: `თქვენ ჩამოგერთვათ ${changable_roles[i].name} როლი`,
+              ephemeral: true,
+            });
+            Member.roles.remove(changable_roles[i].roleID);
+            break;
+          } else {
+            interaction.followUp({
+              content: `თქვენ მოგენიჭათ ${changable_roles[i].name} როლი`,
+              ephemeral: true,
+            });
+            Member.roles.add(changable_roles[i].roleID);
+            break;
+          }
         }
-      } else {
-        message.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
       }
-    } else if (interaction.customId === "osurole") {
-      if (Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        if (Member.roles.cache.some((role) => role.name === "Osu!")) {
-          interaction.followUp({
-            content: "თქვენ ჩამოგერთვათ Osu! როლი",
-            ephemeral: true,
-          });
-          Member.roles.remove(OsuRole);
-        } else {
-          interaction.followUp({
-            content: "თქვენ მოგენიჭათ Osu! როლი",
-            ephemeral: true,
-          });
-          Member.roles.add(OsuRole);
-        }
-      } else {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
-      }
-    } else if (interaction.customId === "I-I") {
-      if (!Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
-      } else if (
-        Member.roles.cache.some((role) => course_roles_list.includes(role.name))
-      ) {
-        interaction.followUp({
-          content: "თქვენ უკვე აიჩიეთ კურსი",
-          ephemeral: true,
-        });
-      } else {
-        interaction.followUp({
-          content: "თქვენ მოგენიჭათ კურსი I სემესტრი I როლი",
-          ephemeral: true,
-        });
-        Member.roles.add(I_IRole);
-      }
-    } else if (interaction.customId === "I-II") {
-      if (!Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
-      } else if (
-        Member.roles.cache.some((role) => course_roles_list.includes(role.name))
-      ) {
-        interaction.followUp({
-          content: "თქვენ უკვე აიჩიეთ კურსი",
-          ephemeral: true,
-        });
-      } else {
-        interaction.followUp({
-          content: "თქვენ მოგენიჭათ კურსი I სემესტრი II როლი",
-          ephemeral: true,
-        });
-        Member.roles.add(I_IIRole);
-      }
-    } else if (interaction.customId === "II-I") {
-      if (!Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
-      } else if (
-        Member.roles.cache.some((role) => course_roles_list.includes(role.name))
-      ) {
-        interaction.followUp({
-          content: "თქვენ უკვე აიჩიეთ კურსი",
-          ephemeral: true,
-        });
-      } else {
-        interaction.followUp({
-          content: "თქვენ მოგენიჭათ კურსი II სემესტრი I როლი",
-          ephemeral: true,
-        });
-        Member.roles.add(II_IRole);
-      }
-    } else if (interaction.customId === "II-II") {
-      if (!Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
-      } else if (
-        Member.roles.cache.some((role) => course_roles_list.includes(role.name))
-      ) {
-        interaction.followUp({
-          content: "თქვენ უკვე აიჩიეთ კურსი",
-          ephemeral: true,
-        });
-      } else {
-        interaction.followUp({
-          content: "თქვენ მოგენიჭათ კურსი II სემესტრი II როლი",
-          ephemeral: true,
-        });
-        Member.roles.add(II_IIRole);
-      }
-    } else if (interaction.customId === "III-I") {
-      if (!Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
-      } else if (
-        Member.roles.cache.some((role) => course_roles_list.includes(role.name))
-      ) {
-        interaction.followUp({
-          content: "თქვენ უკვე აიჩიეთ კურსი",
-          ephemeral: true,
-        });
-      } else {
-        interaction.followUp({
-          content: "თქვენ მოგენიჭათ კურსი III სემესტრი I როლი",
-          ephemeral: true,
-        });
-        Member.roles.add(III_IRole);
-      }
-    } else if (interaction.customId === "III-II") {
-      if (!Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
-      } else if (
-        Member.roles.cache.some((role) => course_roles_list.includes(role.name))
-      ) {
-        interaction.followUp({
-          content: "თქვენ უკვე აიჩიეთ კურსი",
-          ephemeral: true,
-        });
-      } else {
-        interaction.followUp({
-          content: "თქვენ მოგენიჭათ კურსი III სემესტრი II როლი",
-          ephemeral: true,
-        });
-        Member.roles.add(III_IIRole);
-      }
-    } else if (interaction.customId === "IV-I") {
-      if (!Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
-      } else if (
-        Member.roles.cache.some((role) => course_roles_list.includes(role.name))
-      ) {
-        interaction.followUp({
-          content: "თქვენ უკვე აიჩიეთ კურსი",
-          ephemeral: true,
-        });
-      } else {
-        interaction.followUp({
-          content: "თქვენ მოგენიჭათ კურსი IV სემესტრი I როლი",
-          ephemeral: true,
-        });
-        Member.roles.add(IV_IRole);
-      }
-    } else if (interaction.customId === "IV-II") {
-      if (!Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        interaction.followUp({
-          content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
-          ephemeral: true,
-        });
-      } else if (
-        Member.roles.cache.some((role) => course_roles_list.includes(role.name))
-      ) {
-        interaction.followUp({
-          content: "თქვენ უკვე აიჩიეთ კურსი",
-          ephemeral: true,
-        });
-      } else {
-        interaction.followUp({
-          content: "თქვენ მოგენიჭათ კურსი IV სემესტრი II როლი",
-          ephemeral: true,
-        });
-        Member.roles.add(IV_IIRole);
-      }
+    } else {
+      return interaction.followUp({
+        content: "როლის მისაღებად უნდა დაეთანხმოთ წესებს",
+        ephemeral: true,
+      });
     }
   }
 });
