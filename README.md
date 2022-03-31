@@ -58,4 +58,4 @@ Project Link: [https://github.com/Nikoloz-Grigalashvili/BTU-Bot](https://github.
 [stars-shield]: https://img.shields.io/github/stars/Nikoloz-Grigalashvili/BTU-Bot.svg?style=for-the-badge
 [stars-url]: https://github.com/Nikoloz-Grigalashvili/BTU-Bot/stargazers
 [license-shield]: https://img.shields.io/github/license/Nikoloz-Grigalashvili/BTU-Bot.svg?style=for-the-badge
-[license-url]: https://github.com/Nikoloz-Grigalashvili/BTU-Bot/blob/master/LICENSE.txt
+[license-url]: https://github.com/Nikoloz-Grigalashvili/BTU-Bot/blob/master/LICENSE
