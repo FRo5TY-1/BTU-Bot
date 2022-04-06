@@ -16,8 +16,20 @@ module.exports = new Command({
     },
     {
       type: "STRING",
-      name: "description",
-      description: "აღწერა",
+      name: "option1",
+      description: "პირველი არჩევანის სახელი",
+      required: true,
+    },
+    {
+      type: "STRING",
+      name: "option2",
+      description: "მეორე არჩევანის სახელი",
+      required: true,
+    },
+    {
+      type: "CHANNEL",
+      name: "channel",
+      description: "რომელ Channel-ში გაიგზავნოს embed",
       required: true,
     },
     {
@@ -28,6 +40,18 @@ module.exports = new Command({
       minValue: 1,
       maxValue: 72,
     },
+    {
+      type: "STRING",
+      name: "description",
+      description: "აღწერა",
+      required: false,
+    },
+    {
+      type: "STRING",
+      name: "content",
+      description: "მესიჯი Embed-ის წინ",
+      required: false,
+    },
   ],
 
   async run(interaction, args, client) {
@@ -37,9 +61,12 @@ module.exports = new Command({
     const noMemberArray = [];
 
     const title = interaction.options.getString("title");
-    const description = interaction.options.getString("description");
-    const time = interaction.options.getInteger("time") * 3600000;
-    const channel = client.channels.cache.find((c) => c.name == "📊polls");
+    const description = interaction.options.getString("description") || "\n";
+    const time = interaction.options.getInteger("time") * 3600000; //3600000
+    const channel = interaction.options.getChannel("channel");
+    const content = interaction.options.getString("content") || " ";
+    const option1 = interaction.options.getString("option1");
+    const option2 = interaction.options.getString("option2");
     const logsChannel = client.channels.cache.find(
       (c) => c.name == "poll-logs"
     );
@@ -63,12 +90,12 @@ module.exports = new Command({
       })
       .addFields(
         {
-          name: "Yes",
+          name: option1,
           value: `**\`${yesCount}\`**`,
           inline: true,
         },
         {
-          name: "No",
+          name: option2,
           value: `**\`${noCount}\`**`,
           inline: true,
         },
@@ -82,71 +109,78 @@ module.exports = new Command({
     const row = new Discord.MessageActionRow().addComponents(
       new Discord.MessageButton()
         .setCustomId("voteyes")
-        .setEmoji("✔️")
-        .setLabel("Yes")
-        .setStyle("PRIMARY"),
+        .setLabel(option1)
+        .setStyle("SUCCESS"),
       new Discord.MessageButton()
         .setCustomId("voteno")
-        .setEmoji("❌")
-        .setLabel("No")
-        .setStyle("PRIMARY")
+        .setLabel(option2)
+        .setStyle("DANGER")
     );
 
     interaction.followUp({ content: `Poll შეიქმნა და გაიგზავნა` });
-    channel.send({ embeds: [embed], components: [row], files: [Logo] }).then((message) => {
-      const collector = message.createMessageComponentCollector({
-        time: time,
-      });
+    channel
+      .send({
+        content: content,
+        embeds: [embed],
+        components: [row],
+        files: [Logo],
+      })
+      .then((message) => {
+        const collector = message.createMessageComponentCollector({
+          time: time,
+        });
 
-      collector.on("collect", async (i) => {
-        if (i.customId === "voteyes") {
-          if (yesMemberArray.includes(i.user.id)) return;
-          else if (noMemberArray.includes(i.user.id)) {
-            const index = noMemberArray.indexOf(i.user.id);
-            noMemberArray.splice(index, 1);
-            noCount -= 1;
+        collector.on("collect", async (i) => {
+          if (i.customId === "voteyes") {
+            if (yesMemberArray.includes(i.user.id)) return;
+            else if (noMemberArray.includes(i.user.id)) {
+              const index = noMemberArray.indexOf(i.user.id);
+              noMemberArray.splice(index, 1);
+              noCount -= 1;
+              embed.fields.find(
+                (f) => f.name === option2
+              ).value = `**\`${noCount}\`**`;
+            }
+            yesMemberArray.push(i.user.id);
+            yesCount += 1;
             embed.fields.find(
-              (f) => f.name === "No"
-            ).value = `**\`${noCount}\`**`;
-          }
-          yesMemberArray.push(i.user.id);
-          yesCount += 1;
-          embed.fields.find(
-            (f) => f.name === "Yes"
-          ).value = `**\`${yesCount}\`**`;
-          message.edit({ embeds: [embed] });
-          logsChannel.send({
-            content: `<@!${i.user.id}> Voted Yes on Poll named ${title}`,
-          });
-        } else if (i.customId === "voteno") {
-          if (noMemberArray.includes(i.user.id)) return;
-          else if (yesMemberArray.includes(i.user.id)) {
-            const index = yesMemberArray.indexOf(i.user.id);
-            yesMemberArray.splice(index, 1);
-            yesCount -= 1;
-            embed.fields.find(
-              (f) => f.name === "Yes"
+              (f) => f.name === option1
             ).value = `**\`${yesCount}\`**`;
+            message.edit({ embeds: [embed] });
+            logsChannel.send({
+              content: `<@!${i.user.id}> Voted ${option1} on Poll named ${title}`,
+            });
+          } else if (i.customId === "voteno") {
+            if (noMemberArray.includes(i.user.id)) return;
+            else if (yesMemberArray.includes(i.user.id)) {
+              const index = yesMemberArray.indexOf(i.user.id);
+              yesMemberArray.splice(index, 1);
+              yesCount -= 1;
+              embed.fields.find(
+                (f) => f.name === option1
+              ).value = `**\`${yesCount}\`**`;
+            }
+            noMemberArray.push(i.user.id);
+            noCount += 1;
+            embed.fields.find(
+              (f) => f.name === option2
+            ).value = `**\`${noCount}\`**`;
+            message.edit({ embeds: [embed] });
+            logsChannel.send({
+              content: `<@!${i.user.id}> Voted ${option2} on Poll named ${title}`,
+            });
           }
-          noMemberArray.push(i.user.id);
-          noCount += 1;
-          embed.fields.find(
-            (f) => f.name === "No"
-          ).value = `**\`${noCount}\`**`;
-          message.edit({ embeds: [embed] });
-          logsChannel.send({
-            content: `<@!${i.user.id}> Voted No on Poll named ${title}`,
-          });
-        }
-      });
+        });
 
-      collector.on("end", (reason) => {
-        embed.fields.find((f) => f.name === "⠀").value = `Voting Ended ${date}`;
-        message.edit({
-          embeds: [embed],
-          components: [],
+        collector.on("end", (reason) => {
+          embed.fields.find(
+            (f) => f.name === "⠀"
+          ).value = `Voting Ended ${date}`;
+          message.edit({
+            embeds: [embed],
+            components: [],
+          });
         });
       });
-    });
   },
 });

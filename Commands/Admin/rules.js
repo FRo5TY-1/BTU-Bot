@@ -8,9 +8,6 @@ module.exports = new Command({
   description: "Rules Message",
   type: "SLASH",
 
-  /**
-   * @param {Discord.Interaction} interaction
-   */
   async run(interaction) {
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed()

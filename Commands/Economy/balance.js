@@ -17,11 +17,7 @@ module.exports = new Command({
     },
   ],
 
-  /**
-   * @param {Discord.Interaction} interaction
-   * @param {Client} client
-   */
-  async run(interaction, client) {
+  async run(interaction, args,client) {
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.followUp({
         content:

@@ -1,8 +1,5 @@
 const Command = require("../../Structures/Command.js");
-const profileModel = require("../../DBModels/profileSchema.js");
 const Discord = require("discord.js");
-
-let profileData;
 
 module.exports = new Command({
   name: "embed",
