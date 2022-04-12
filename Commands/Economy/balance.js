@@ -2,8 +2,6 @@ const Command = require("../../Structures/Command.js");
 const profileModel = require("../../DBModels/profileSchema.js");
 const Discord = require("discord.js");
 
-let profileData;
-
 module.exports = new Command({
   name: "balance",
   description: "shows user's balance",
@@ -27,7 +25,7 @@ module.exports = new Command({
       client.users.cache.get(interaction.options.getMember("user")?.id) ||
       interaction.user;
 
-    profileData = (await profileModel.findOne({ userID: target.id })) || null;
+    let profileData = (await profileModel.findOne({ userID: target.id })) || null;
 
     if (profileData === null) {
       profileData = await profileModel.create({

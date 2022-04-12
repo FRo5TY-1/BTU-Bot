@@ -2,8 +2,6 @@ const Command = require("../../Structures/Command.js");
 const profileModel = require("../../DBModels/profileSchema.js");
 const cooldownModel = require("../../DBModels/cooldownsSchema.js");
 const ms = require("ms");
-let profileData;
-let cooldownExpiry;
 
 module.exports = new Command({
   name: "daily",
@@ -11,14 +9,14 @@ module.exports = new Command({
   type: "SLASH",
 
   async run(interaction) {
-    profileData = await profileModel.findOne({ userID: interaction.user.id });
+    let profileData = await profileModel.findOne({ userID: interaction.user.id });
 
     let cooldownData = await cooldownModel.findOne({
       userID: interaction.user.id,
       command: "daily",
     });
     if (cooldownData) {
-      cooldownExpiry = cooldownData.expiry;
+      let cooldownExpiry = cooldownData.expiry;
       if (cooldownExpiry > new Date().getTime()) {
         return interaction.followUp({
           content: `თქვენ უკვე გამოიყენეთ ეს ბრძანება, დარჩენილი დრო: **${ms(

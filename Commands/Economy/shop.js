@@ -3,9 +3,6 @@ const profileModel = require("../../DBModels/profileSchema.js");
 const itemModel = require("../../DBModels/itemSchema.js");
 const Discord = require("discord.js");
 
-let profileData;
-let itemData;
-
 module.exports = new Command({
   name: "shop",
   description: "ნახეთ სერვერის მაღაზია",
@@ -73,7 +70,7 @@ module.exports = new Command({
         { name: "🔵 ბეთეუს Parking Spot", price: 500, tier: 3 },
       ];
 
-      profileData =
+      let profileData =
         (await profileModel.findOne({ userID: interaction.user.id })) || null;
 
       if (profileData === null) {
@@ -91,7 +88,7 @@ module.exports = new Command({
           content: "თანხა არ გყოფნით",
         });
       } else {
-        itemData =
+        let itemData =
           (await itemModel.findOne({
             userID: interaction.user.id,
             itemName: itemList[itemIndex].name,

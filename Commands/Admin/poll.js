@@ -67,7 +67,7 @@ module.exports = new Command({
     const content = interaction.options.getString("content") || " ";
     const option1 = interaction.options.getString("option1");
     const option2 = interaction.options.getString("option2");
-    const logsChannel = client.channels.cache.find(
+    const logsChannel = interaction.guild.channels.cache.find(
       (c) => c.name == "poll-logs"
     );
 
@@ -147,7 +147,7 @@ module.exports = new Command({
               (f) => f.name === option1
             ).value = `**\`${yesCount}\`**`;
             message.edit({ embeds: [embed] });
-            logsChannel.send({
+            logsChannel?.send({
               content: `<@!${i.user.id}> Voted ${option1} on Poll named ${title}`,
             });
           } else if (i.customId === "voteno") {
@@ -166,7 +166,7 @@ module.exports = new Command({
               (f) => f.name === option2
             ).value = `**\`${noCount}\`**`;
             message.edit({ embeds: [embed] });
-            logsChannel.send({
+            logsChannel?.send({
               content: `<@!${i.user.id}> Voted ${option2} on Poll named ${title}`,
             });
           }

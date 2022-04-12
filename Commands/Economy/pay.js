@@ -1,7 +1,5 @@
 const Command = require("../../Structures/Command.js");
 const profileModel = require("../../DBModels/profileSchema.js");
-let profileData;
-let targetData;
 
 module.exports = new Command({
   name: "pay",
@@ -24,7 +22,7 @@ module.exports = new Command({
   ],
 
   async run(interaction, args) {
-    profileData = await profileModel.findOne({ userID: interaction.user.id });
+    let profileData = await profileModel.findOne({ userID: interaction.user.id });
 
     if (!profileData) {
       profileData = await profileModel.create({
@@ -65,7 +63,7 @@ module.exports = new Command({
     const cutAmount = amount - amount * 0.02;
 
     try {
-      targetData = await profileModel.findOne({ userID: target.id });
+      let targetData = await profileModel.findOne({ userID: target.id });
       if (!targetData) {
         targetData = await profileModel.create({
           userID: target.id,

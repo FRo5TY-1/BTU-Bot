@@ -33,10 +33,10 @@ module.exports = new Command({
     const title = interaction.options.getString("title");
     const description = interaction.options.getString("description");
     const anonymous = interaction.options.getBoolean("anonymous");
-    const channel = client.channels.cache.find(
+    const channel = interaction.guild.channels.cache.find(
       (c) => c.name == "💡suggestions"
     );
-    const logsChannel = client.channels.cache.find(
+    const logsChannel = interaction.guild.channels.cache.find(
       (c) => c.name == "suggestion-logs"
     );
 
