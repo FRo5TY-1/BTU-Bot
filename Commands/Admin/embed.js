@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "embed",
-  description: "make an embed",
+  description: "Make An Embed",
   showHelp: false,
   type: "SLASH",
   permissions: ["ADMINISTRATOR"],
@@ -11,55 +11,58 @@ module.exports = new Command({
     {
       type: "STRING",
       name: "title",
-      description: "Embed-ის Title",
+      description: "Title",
       required: true,
     },
     {
       type: "STRING",
       name: "description",
-      description: "Embed-ის description",
+      description: "Description",
       required: true,
     },
     {
       type: "CHANNEL",
       name: "channel",
-      description: "რომელ Channel-ში გაიგზავნოს embed",
+      description: "Which Channel To Send In",
       required: true,
     },
     {
       type: "USER",
       name: "author",
-      description: "Embed-ის author",
+      description: "Embed Author",
       required: false,
     },
     {
       type: "STRING",
       name: "footer",
-      description: "Embed-ის footer",
+      description: "Footer",
       required: false,
     },
     {
       type: "STRING",
       name: "content",
-      description: "მესიჯი Embed-ის წინ",
+      description: "Content",
       required: false,
     },
     {
       type: "STRING",
       name: "field1",
-      description: "Embed-ის Field, Name და Value გამოყავით ^-ით",
+      description:
+        "Seperate Value And Name With ^, write 'true' at the end to make the field inline",
       required: false,
     },
     {
       type: "STRING",
       name: "field2",
-      description: "Embed-ის Field, Name და Value გამოყავით ^-ით",
+      description:
+        "Seperate Value And Name With ^, write 'true' at the end to make the field inline",
       required: false,
     },
     {
       type: "STRING",
       name: "field3",
-      description: "Embed-ის Field, Name და Value გამოყავით ^-ით",
+      description:
+        "Seperate Value And Name With ^, write 'true' at the end to make the field inline",
       required: false,
     },
   ],

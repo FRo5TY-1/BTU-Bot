@@ -107,6 +107,11 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
       },
     ];
 
+    const BIDList =
+      nonchangable_roles.map((value) => value.customID) +
+      changable_roles.map((value) => value.customID);
+    if (!BIDList.includes(interaction.customId)) return;
+
     if (interaction.customId === "rulesagree") {
       if (Member.roles.cache.some((role) => role.name === "BTU Member")) {
         return interaction.followUp({
