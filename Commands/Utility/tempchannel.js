@@ -40,7 +40,7 @@ module.exports = new Command({
           description: "Time In Hours, After Which The Channel WIll Be Deleted",
           type: "INTEGER",
           required: true,
-          maxValue: 72,
+          maxValue: 168,
           minValue: 1,
         },
       ],
@@ -152,7 +152,7 @@ module.exports = new Command({
 
     if (subCommand === "create") {
       const channelName = interaction.options.getString("channel-name");
-      const time = interaction.options.getInteger("time") * 10000; //3600000
+      const time = interaction.options.getInteger("time") * 3600000; //3600000
       const textCategory = interaction.guild.channels.cache.find(
         (c) => c.name.toUpperCase() == "TEMPORARY TEXT CHANNELS"
       );
