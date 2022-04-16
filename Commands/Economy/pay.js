@@ -22,7 +22,9 @@ module.exports = new Command({
   ],
 
   async run(interaction, args) {
-    let profileData = await profileModel.findOne({ userID: interaction.user.id });
+    let profileData = await profileModel.findOne({
+      userID: interaction.user.id,
+    });
 
     if (!profileData) {
       profileData = await profileModel.create({

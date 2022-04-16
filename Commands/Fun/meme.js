@@ -65,11 +65,6 @@ module.exports = new Command({
     });
 
     collector.on("collect", async (i) => {
-      if (!i.user.id === interaction.user.id)
-        return i.followUp({
-          content: "This Interation Is Not Yours",
-          ephemeral: true,
-        });
       if (i.customId === "nextmeme") {
         getMeme();
       } else if (i.customId === "finishmeme") {

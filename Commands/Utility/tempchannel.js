@@ -119,12 +119,13 @@ module.exports = new Command({
   async run(interaction, args, client) {
     const channelType = interaction.options.getString("channel-type");
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
+    const subCommand = interaction.options.getSubcommand();
     let tempChannelData = await tempChannelModel.findOne({
       userID: interaction.user.id,
       channelType: channelType,
     });
     async function deleteChannel(DB) {
-      const getChannel = client.channels.cache.get(DB.channelID);
+      const getChannel = interaction.guild.channels.cache.get(DB.channelID);
       await getChannel?.delete();
       DB?.remove({
         userID: interaction.user.id,
@@ -142,9 +143,25 @@ module.exports = new Command({
       },
     ];
 
-    if (interaction.options.getSubcommand() === "create") {
+    if (!tempChannelData && subCommand != "create")
+      return interaction.followUp({
+        content: "You Don't Have A Temporary Channel Created",
+      });
+
+    //create subcommand starts here
+
+    if (subCommand === "create") {
       const channelName = interaction.options.getString("channel-name");
-      const time = interaction.options.getInteger("time") * 3600000; //3600000
+      const time = interaction.options.getInteger("time") * 10000; //3600000
+      const textCategory = interaction.guild.channels.cache.find(
+        (c) => c.name.toUpperCase() == "TEMPORARY TEXT CHANNELS"
+      );
+      const voiceCategory = interaction.guild.channels.cache.find(
+        (c) => c.name.toUpperCase() == "TEMPORARY VOICE CHANNELS"
+      );
+
+      const category =
+        channelType === "GUILD_TEXT" ? textCategory : voiceCategory;
 
       if (tempChannelData) {
         const channelExpiry = tempChannelData.expiry;
@@ -160,7 +177,6 @@ module.exports = new Command({
         }
       }
       const embed = new Discord.MessageEmbed();
-      const channelExpiry = new Date().getTime() + time;
 
       await interaction.guild.channels
         .create(channelName, {
@@ -168,11 +184,7 @@ module.exports = new Command({
           permissionOverwrites: userPerms,
         })
         .then(async (channel) => {
-          if (channelType === "GUILD_TEXT") {
-            channel.setParent("951840310663725076", { lockPermissions: false });
-          } else {
-            channel.setParent("954371750592938014", { lockPermissions: false });
-          }
+          channel.setParent(category?.id, { lockPermissions: false });
 
           embed
             .setTitle(`Temporary Channel Created Successfully`)
@@ -221,13 +233,11 @@ module.exports = new Command({
             deleteChannel(tempChannelData);
           }, time)
         );
-    } else if (interaction.options.getSubcommand() === "delete") {
-      if (!tempChannelData)
-        return interaction.followUp({
-          content: "You Don't Have A Temporary Channel Created",
-        });
+    }
 
-      const channelName = client.channels.cache.get(
+    // delete subbcommand starts here
+    else if (interaction.options.getSubcommand() === "delete") {
+      const channelName = interaction.guild.channels.cache.get(
         tempChannelData.channelID
       ).name;
 
@@ -259,8 +269,14 @@ module.exports = new Command({
         .setTimestamp();
 
       interaction.followUp({ embeds: [embed], files: [Logo] });
-    } else if (interaction.options.getSubcommand() === "add") {
-      const channel = client.channels.cache.get(tempChannelData.channelID);
+    }
+
+    // add subcommand starts here
+    else if (interaction.options.getSubcommand() === "add") {
+      const channel = interaction.guild.channels.cache.get(
+        tempChannelData.channelID
+      );
+      const expiry = tempChannelData.expiry - new Date().getTime();
 
       const embed = new Discord.MessageEmbed()
         .setTitle("Adding Members To Channel")
@@ -280,9 +296,7 @@ module.exports = new Command({
           },
           {
             name: `Will Be Deleted In ⬇️`,
-            value: `**\`\`\`${ms(
-              tempChannelData.expiry - new Date().getTime()
-            )}\`\`\`**`,
+            value: `**\`\`\`${ms(expiry)}\`\`\`**`,
             inline: true,
           }
         )
@@ -291,7 +305,7 @@ module.exports = new Command({
           iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
         })
         .setFooter({
-          text: `Created by ${interaction.user.username}}`,
+          text: `Created by ${interaction.user.username}`,
           iconURL: "attachment://BTULogo.png",
         })
         .setColor("PURPLE");
@@ -309,49 +323,50 @@ module.exports = new Command({
 
         collector.stop();
 
-        message.mentions.members.forEach((user) => {
+        const mentions = message.mentions.members.first(5);
+
+        mentions.forEach((user) => {
           channel.permissionOverwrites.edit(user.id, { VIEW_CHANNEL: true });
         });
+        setTimeout(() => {
+          const successEmbed = new Discord.MessageEmbed()
+            .setTitle(`Added Members To Channel`)
+            .addFields(
+              {
+                name: `Channel Type ⬇️`,
+                value: `**\`\`\`${channelType}\`\`\`**`,
+                inline: true,
+              },
+              {
+                name: `Channel Name ⬇️`,
+                value: `**\`\`\`${channel.name}\`\`\`**`,
+                inline: true,
+              },
+              {
+                name: `Will Be Deleted In ⬇️`,
+                value: `**\`\`\`${ms(expiry)}\`\`\`**`,
+                inline: true,
+              },
+              {
+                name: "List OF People In Channel ⬇️",
+                value: channel.members
+                  .filter((m) => !m.permissions.has("ADMINISTRATOR"))
+                  .map((m) => `<@!${m.id}>`)
+                  .join("` | `"),
+              }
+            )
+            .setAuthor({
+              name: interaction.user.username,
+              iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+            })
+            .setFooter({
+              text: `Created by ${interaction.user.username}`,
+              iconURL: "attachment://BTULogo.png",
+            })
+            .setColor("PURPLE");
 
-        const successEmbed = new Discord.MessageEmbed()
-          .setTitle(`Added Members To Channel`)
-          .addFields(
-            {
-              name: `Channel Type ⬇️`,
-              value: `**\`\`\`${channelType}\`\`\`**`,
-              inline: true,
-            },
-            {
-              name: `Channel Name ⬇️`,
-              value: `**\`\`\`${channel.name}\`\`\`**`,
-              inline: true,
-            },
-            {
-              name: `Will Be Deleted In ⬇️`,
-              value: `**\`\`\`${ms(
-                tempChannelData.expiry - new Date().getTime()
-              )}\`\`\`**`,
-              inline: true,
-            },
-            {
-              name: "List OF People In Channel ⬇️",
-              value: channel.members
-                .filter((m) => !m.permissions.has("ADMINISTRATOR"))
-                .map((m) => `<@!${m.id}>`)
-                .join("` | `"),
-            }
-          )
-          .setAuthor({
-            name: interaction.user.username,
-            iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
-          })
-          .setFooter({
-            text: `Created by ${interaction.user.username}}`,
-            iconURL: "attachment://BTULogo.png",
-          })
-          .setColor("PURPLE");
-
-        interaction.editReply({ embeds: [successEmbed], files: [Logo] });
+          message.reply({ embeds: [successEmbed], files: [Logo] });
+        }, 1500);
       });
 
       collector.on("end", (msg, reason) => {
@@ -362,7 +377,10 @@ module.exports = new Command({
             files: [],
           });
       });
-    } else if (interaction.options.getSubcommand() === "remove") {
+    }
+
+    // remove subcommand starts here
+    else if (interaction.options.getSubcommand() === "remove") {
       const channel = client.channels.cache.get(tempChannelData.channelID);
 
       const embed = new Discord.MessageEmbed()
@@ -394,7 +412,7 @@ module.exports = new Command({
           iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
         })
         .setFooter({
-          text: `Created by ${interaction.user.username}}`,
+          text: `Created by ${interaction.user.username}`,
           iconURL: "attachment://BTULogo.png",
         })
         .setColor("PURPLE");
@@ -412,51 +430,55 @@ module.exports = new Command({
 
         collector.stop();
 
-        message.mentions.members
+        const mentions = message.mentions.members.first(5);
+
+        mentions
           .filter((user) => user.id != interaction.user.id)
           .forEach((user) => {
             channel.permissionOverwrites.edit(user.id, { VIEW_CHANNEL: false });
           });
 
-        const successEmbed = new Discord.MessageEmbed()
-          .setTitle(`Removed Members From Channel`)
-          .addFields(
-            {
-              name: `Channel Type ⬇️`,
-              value: `**\`\`\`${channelType}\`\`\`**`,
-              inline: true,
-            },
-            {
-              name: `Channel Name ⬇️`,
-              value: `**\`\`\`${channel.name}\`\`\`**`,
-              inline: true,
-            },
-            {
-              name: `Will Be Deleted In ⬇️`,
-              value: `**\`\`\`${ms(
-                tempChannelData.expiry - new Date().getTime()
-              )}\`\`\`**`,
-              inline: true,
-            },
-            {
-              name: "List OF People In Channel ⬇️",
-              value: channel.members
-                .filter((m) => !m.permissions.has("ADMINISTRATOR"))
-                .map((m) => `<@!${m.id}>`)
-                .join("` | `"),
-            }
-          )
-          .setAuthor({
-            name: interaction.user.username,
-            iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
-          })
-          .setFooter({
-            text: `Created by ${interaction.user.username}}`,
-            iconURL: "attachment://BTULogo.png",
-          })
-          .setColor("PURPLE");
+        setTimeout(() => {
+          const successEmbed = new Discord.MessageEmbed()
+            .setTitle(`Removed Members From Channel`)
+            .addFields(
+              {
+                name: `Channel Type ⬇️`,
+                value: `**\`\`\`${channelType}\`\`\`**`,
+                inline: true,
+              },
+              {
+                name: `Channel Name ⬇️`,
+                value: `**\`\`\`${channel.name}\`\`\`**`,
+                inline: true,
+              },
+              {
+                name: `Will Be Deleted In ⬇️`,
+                value: `**\`\`\`${ms(
+                  tempChannelData.expiry - new Date().getTime()
+                )}\`\`\`**`,
+                inline: true,
+              },
+              {
+                name: "List OF People In Channel ⬇️",
+                value: channel.members
+                  .filter((m) => !m.permissions.has("ADMINISTRATOR"))
+                  .map((m) => `<@!${m.id}>`)
+                  .join("` | `"),
+              }
+            )
+            .setAuthor({
+              name: interaction.user.username,
+              iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+            })
+            .setFooter({
+              text: `Created by ${interaction.user.username}}`,
+              iconURL: "attachment://BTULogo.png",
+            })
+            .setColor("PURPLE");
 
-        interaction.editReply({ embeds: [successEmbed], files: [Logo] });
+          message.reply({ embeds: [successEmbed], files: [Logo] });
+        }, 1500);
       });
 
       collector.on("end", (msg, reason) => {
