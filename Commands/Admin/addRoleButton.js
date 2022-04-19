@@ -132,7 +132,7 @@ module.exports = new Command({
       const components =
         buttonsArray.length == 0
           ? []
-          : buttonsArray.length <= 5
+          : buttonsArray.length <= 4
           ? [row1]
           : buttonsArray.length <= 10
           ? [row1, row2]
