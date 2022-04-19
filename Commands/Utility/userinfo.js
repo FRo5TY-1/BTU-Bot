@@ -1,5 +1,6 @@
 const Command = require("../../Structures/Command.js");
 const Discord = require("discord.js");
+const ignoredRoles = ["@everyone", "ㅤ⊱─── { Gaming Roles } ───⊰ㅤㅤ"];
 
 module.exports = new Command({
   name: "userinfo",
@@ -31,18 +32,22 @@ module.exports = new Command({
 
     const member = await interaction.guild.members.fetch(target.id);
     const roles = member.roles.cache
-      .map((r) => `${r.name}`)
-      .join("\n")
-      .replace("@everyone", "")
-      .replace("ㅤ⊱─── { Gaming Roles } ───⊰ㅤㅤ", "")
-      .trimEnd();
+      .map((r) => {
+        if (ignoredRoles.includes(r.name)) return null;
+        return `${r.name}`;
+      })
+      .filter((element) => {
+        return element != null;
+      })
+      .slice(0, 10)
+      .join("\n");
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed()
-      .setTitle(`Information About ${interaction.user.username}`)
+      .setDescription(`**Information About** <@!${target.id}>`)
       .addFields(
         {
-          name: `UserName`,
+          name: `Username`,
           value: `**\`\`\` ${target.tag} \`\`\`**`,
           inline: true,
         },
@@ -52,7 +57,7 @@ module.exports = new Command({
           inline: true,
         },
         {
-          name: `Roles`,
+          name: `Up To 10 Roles`,
           value: `**\`\`\`${roles}\`\`\`**`,
         },
         {
@@ -61,7 +66,7 @@ module.exports = new Command({
           inline: true,
         },
         {
-          name: `Joined Server`,
+          name: `Joined The Server`,
           value: `**${joined}**`,
           inline: true,
         }

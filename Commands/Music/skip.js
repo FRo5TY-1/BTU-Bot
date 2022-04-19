@@ -5,12 +5,12 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "skip",
-  description: "გამოტოვეთ მუსიკა",
+  description: "Skip Music",
   type: "SLASH",
   options: [
     {
       name: "amount",
-      description: "რამდენი მუსიკა გამოვტოვო",
+      description: "Amount To Be Skipped",
       type: "INTEGER",
       required: false,
       minValue: 1,
@@ -21,7 +21,7 @@ module.exports = new Command({
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
-        content: "ამჟამად მუსიკა არაა ჩართული",
+        content: "Music Is Not Being Played",
       });
     const amount = interaction.options.getInteger("amount") || 1;
 

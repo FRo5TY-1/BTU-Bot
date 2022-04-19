@@ -9,7 +9,9 @@ module.exports = new Command({
   type: "SLASH",
 
   async run(interaction) {
-    let profileData = await profileModel.findOne({ userID: interaction.user.id });
+    let profileData = await profileModel.findOne({
+      userID: interaction.user.id,
+    });
 
     let cooldownData = await cooldownModel.findOne({
       userID: interaction.user.id,
@@ -19,7 +21,7 @@ module.exports = new Command({
       let cooldownExpiry = cooldownData.expiry;
       if (cooldownExpiry > new Date().getTime()) {
         return interaction.followUp({
-          content: `თქვენ უკვე გამოიყენეთ ეს ბრძანება, დარჩენილი დრო: **${ms(
+          content: `You Already Used This Command, Time Left: **${ms(
             cooldownExpiry - new Date().getTime()
           )}**`,
         });
@@ -49,9 +51,7 @@ module.exports = new Command({
           },
         }
       );
-      interaction.followUp(
-        `თქვენ დაგერიცხათ დღიური **${randomNumber}** BTU Coin`
-      );
+      interaction.followUp(`You Received Daily **${randomNumber}** BTU Coins`);
 
       cooldownData = await cooldownModel.create({
         userID: interaction.user.id,

@@ -5,12 +5,12 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "filter",
-  description: "დააყენეთ Filter",
+  description: "Apply A Filter",
   type: "SLASH",
   options: [
     {
       name: "type",
-      description: "აირჩიეთ ფილტრის ტიპი",
+      description: "Choose A Filter",
       type: "STRING",
       required: true,
       choices: [
@@ -58,7 +58,7 @@ module.exports = new Command({
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
-        content: "ამჟამად მუსიკა არაა ჩართული",
+        content: "Music Is Not Being Played",
       });
 
     const mode = interaction.options.getString("type");

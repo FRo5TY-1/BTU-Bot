@@ -44,14 +44,14 @@ module.exports = new Command({
         .setStyle("PRIMARY")
     );
 
-    Data = await profileModel
+    Data = profileModel
       .find({})
       .sort([["BTUcoins", -1]])
       .exec((err, res) => {
         if (err) console.log(err);
 
         if (res.length <= start) {
-          embed.setDescription(`მონაცემები არ არსებობს`);
+          embed.setDescription("```This Page Is Empty```");
           return interaction.followUp({ embeds: [embed] });
         }
 
@@ -98,7 +98,7 @@ module.exports = new Command({
               .setTimestamp();
 
             if (res.length <= start) {
-              embed.setDescription(`მონაცემები არ არსებობს`);
+              embed.setDescription("```This Page Is Empty```");
               return i.message.edit({ embeds: [embed] });
             }
             const buttonUsersArray = [];
@@ -127,7 +127,7 @@ module.exports = new Command({
               .setTimestamp();
 
             if (res.length <= start) {
-              embed.setDescription(`მონაცემები არ არსებობს`);
+              embed.setDescription("```This Page Is Empty```");
               return i.message.edit({ embeds: [embed] });
             }
 

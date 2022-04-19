@@ -5,22 +5,22 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "shop",
-  description: "ნახეთ სერვერის მაღაზია",
+  description: "Shop Commands",
   type: "SLASH",
   options: [
     {
       name: "see",
-      description: "მაღაზიის ნახვა",
+      description: "See The Shop",
       type: "SUB_COMMAND",
     },
     {
       name: "buy",
-      description: "მაღაზიიდან ნივთის ყიდვა",
+      description: "Buy An Item From The Shop",
       type: "SUB_COMMAND",
       options: [
         {
           name: "item",
-          description: "იმ ნივთის ინდექსი რომლის ყიდვაც გსურთ",
+          description: "Index Of The Item You Wish To Purchase",
           type: "INTEGER",
           required: true,
         },
@@ -53,7 +53,7 @@ module.exports = new Command({
         )
         .setColor("PURPLE")
         .setFooter({
-          text: "ნივთის საყიდლად გამოიყენეთ /shop buy ბრძანება",
+          text: "Use Command /shop buy To Purchase An Item",
           iconURL: "attachment://BTULogo.png",
         })
         .setTimestamp();

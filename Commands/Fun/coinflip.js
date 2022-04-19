@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "coinflip",
-  description: "ააგდეთ მონეტა",
+  description: "Flip A Coin",
   type: "SLASH",
 
   async run(interaction) {

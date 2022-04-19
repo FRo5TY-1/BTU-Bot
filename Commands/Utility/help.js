@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "help",
-  description: "ნახეთ ბრძანებების ჩამონათვალი",
+  description: "Get A Help Embed",
   type: "SLASH",
 
   async run(interaction, args, client) {

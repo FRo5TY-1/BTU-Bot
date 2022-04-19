@@ -4,12 +4,12 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "queue",
-  description: "ნახეთ Queue / Playlist",
+  description: "See Queue",
   type: "SLASH",
   options: [
     {
       name: "page",
-      description: "გვერდი",
+      description: "Page Number",
       type: "INTEGER",
       required: false,
     },
@@ -22,7 +22,7 @@ module.exports = new Command({
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
-        content: "ამჟამად მუსიკა არაა ჩართული",
+        content: "Music Is Not Being Played",
       });
 
     const previousTracks = queue.previousTracks.filter(function (v, i) {
@@ -49,7 +49,7 @@ module.exports = new Command({
         value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
       })
       .setFooter({
-        text: `Page: ${page}, სულ ${tracks.length} მუსიკა`,
+        text: `Page: ${page}, Total Of ${tracks.length} Songs`,
         iconURL: "attachment://BTULogo.png",
       })
       .setColor("PURPLE")

@@ -36,30 +36,25 @@ module.exports = new Command({
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.followUp({
         content:
-          "Bot-ები არ მოიხმარენ ჩვენ სერვისს <:FeelsBadMan:924601273028857866>",
+          "Bots Don't Use Our Services <:FeelsBadMan:924601273028857866>",
       });
     const target = client.users.cache.get(
       interaction.options.getMember("user")?.id
     );
     if (!target)
       return interaction.followUp({
-        content: "მომხმარებელი არ არსებობს!",
+        content: "User Doesn't Exist!",
         ephemeral: true,
       });
     if (target.id === interaction.user.id)
       return interaction.followUp({
-        content: "საკუთარ თავს ვერ გადაურიცხავთ!",
+        content: "Can't Pay Yourself!",
         ephemeral: true,
       });
     const amount = interaction.options.getInteger("amount");
-    if (amount % 1 != 0 || amount <= 0)
-      return interaction.followUp({
-        content: "მიუთითეთ მთელი დადებით რიცხვი",
-        ephemeral: true,
-      });
     if (amount > profileData.BTUcoins)
       return interaction.followUp({
-        content: `თქვენ არ გაქვთ ${amount} BTU Coin`,
+        content: `Insufficent Funds!\nYour Balance: ${profileData.BTUcoinss}`,
         ephemeral: true,
       });
     const cutAmount = amount - amount * 0.02;
@@ -97,7 +92,7 @@ module.exports = new Command({
       );
 
       return interaction.followUp({
-        content: `ტრანზაქცია წარმატებით დასრულდა, თქვენ ჩამოგეჭრათ **${amount}** BTU Coin, და ${target.username}-ს ჩაერიცხა **${cutAmount}** BTU Coin`,
+        content: `Transaction Ended Successfully, **${amount}** BTU Coins Were Taken From Your Account\n${target.username} Received **${cutAmount}** BTU Coins`,
       });
     } catch (err) {
       console.log(err);

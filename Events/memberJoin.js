@@ -2,7 +2,9 @@ const Event = require("../Structures/Event.js");
 const Discord = require("discord.js");
 
 module.exports = new Event("guildMemberAdd", (client, member) => {
-  const roleDeviderRole = "925812454011842650";
+  const roleDeviderRole = member.guild.roles.cache.find(
+    (r) => r.name === "ㅤ⊱─── { Gaming Roles } ───⊰ㅤㅤ"
+  ).id;
   member.roles.add(roleDeviderRole);
 
   const channel = member.guild.channels.cache.find(
@@ -16,7 +18,7 @@ module.exports = new Event("guildMemberAdd", (client, member) => {
   const embed = new Discord.MessageEmbed();
 
   embed
-    .setTitle(`\`\`\`Welcome To BTU ${member.user.username} !\`\`\``)
+    .setTitle(`\`\`\`Welcome To BTU ${member.user.username} ! \`\`\``)
     .setDescription(
       "გაეცანი სერვერის წესებს  👉 <#913320728563167262>!\nაგრეთვე აირჩიე როლები 👉 <#919298186877734952>!"
     )

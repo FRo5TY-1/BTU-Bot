@@ -9,7 +9,7 @@ module.exports = new Command({
   options: [
     {
       name: "amount",
-      description: "რამდენი მესიჯის წაშლა გსურთ",
+      description: "Amount To Be Deleted",
       type: "INTEGER",
       maxValue: 100,
       minValue: 2,
@@ -22,8 +22,7 @@ module.exports = new Command({
 
     interaction.channel.bulkDelete(amount).catch((err) => {
       interaction.followUp({
-        content:
-          "ვერ წავშლი მესიჯებს რომლებიც 14 ან მეტი დღის წინაა გამოგზავნილი",
+        content: "Messages Older Which Are Older Than 14 Days Can't Be Deleted",
         ephemeral: true,
       });
     });

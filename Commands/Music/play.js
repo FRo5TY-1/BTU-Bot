@@ -5,12 +5,12 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "play",
-  description: "მუსიკის დასაკვრელად",
+  description: "Play Music",
   type: "SLASH",
   options: [
     {
       name: "title",
-      description: "მიუთითეთ მუსიკის სახელი",
+      description: "Music Name / Link",
       type: "STRING",
       required: true,
     },
@@ -21,7 +21,7 @@ module.exports = new Command({
 
     if (!interaction.member.voice.channel)
       return interaction.followUp({
-        content: "ბრძანების გამოსაყენებლად უნდა იყოთ voice channel-ში",
+        content: "Must Be In Voice Channel To Play Music",
         ephemeral: true,
       });
 
@@ -31,7 +31,7 @@ module.exports = new Command({
     });
 
     if (!searchResult || !searchResult.tracks.length) {
-      return interaction.followUp({ content: "მუსიკა ვერ მოიძებნა!" });
+      return interaction.followUp({ content: "Music Not Found!" });
     }
 
     const queue = await player.createQueue(interaction.guild, {

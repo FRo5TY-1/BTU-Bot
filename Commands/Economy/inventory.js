@@ -19,7 +19,7 @@ module.exports = new Command({
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.followUp({
         content:
-          "Bot-ები არ მოიხმარენ ჩვენ სერვისს <:FeelsBadMan:924601273028857866>",
+          "Bots Don't Use Our Services <:FeelsBadMan:924601273028857866>",
       });
     const target =
       client.users.cache.get(interaction.options.getMember("user")?.id) ||
@@ -47,7 +47,7 @@ module.exports = new Command({
       .sort([["itemTier", -1]])
       .exec((err, res) => {
         if (res.length < 1) {
-          embed.setDescription("`Inventory ცარიელია`");
+          embed.setDescription("```Inventory Is Empty```");
           return interaction.followUp({ embeds: [embed], files: [Logo] });
         }
 

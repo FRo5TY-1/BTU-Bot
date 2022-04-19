@@ -5,12 +5,12 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "loop",
-  description: "აამეორეთ მუსიკა ან Queue ან ჩართეთ AutoPlay",
+  description: "Loop The Playlist",
   type: "SLASH",
   options: [
     {
       name: "type",
-      description: "აირჩიეთ Loop-ის ტიპი",
+      description: "Choose Loop Type",
       type: "INTEGER",
       required: true,
       choices: [
@@ -38,7 +38,7 @@ module.exports = new Command({
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
-        content: "ამჟამად მუსიკა არაა ჩართული",
+        content: "Music Is Not Being Played",
       });
 
     const mode = interaction.options.getInteger("type");

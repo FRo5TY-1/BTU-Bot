@@ -5,14 +5,14 @@ const { QueueRepeatMode } = require("discord-player");
 
 module.exports = new Command({
   name: "now-playing",
-  description: "ინფორმაცია მიმდინარე მუსიკაზე",
+  description: "Check Current Song",
   type: "SLASH",
 
   async run(interaction, args, client) {
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
-        content: "ამჟამად მუსიკა არაა ჩართული",
+        content: "Music Is Not Being Played",
       });
 
     const progress = queue.createProgressBar();

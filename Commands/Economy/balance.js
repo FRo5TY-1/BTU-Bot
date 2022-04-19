@@ -10,22 +10,23 @@ module.exports = new Command({
     {
       type: "USER",
       name: "user",
-      description: "მომხმარებელი ვისი ბალანსიც გაინტერესებთ",
+      description: "User",
       required: false,
     },
   ],
 
-  async run(interaction, args,client) {
+  async run(interaction, args, client) {
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.followUp({
         content:
-          "Bot-ები არ მოიხმარენ ჩვენ სერვისს <:FeelsBadMan:924601273028857866>",
+          "Bots Don't Use Our Services <:FeelsBadMan:924601273028857866>",
       });
     const target =
       client.users.cache.get(interaction.options.getMember("user")?.id) ||
       interaction.user;
 
-    let profileData = (await profileModel.findOne({ userID: target.id })) || null;
+    let profileData =
+      (await profileModel.findOne({ userID: target.id })) || null;
 
     if (profileData === null) {
       profileData = await profileModel.create({

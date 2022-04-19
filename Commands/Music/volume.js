@@ -5,12 +5,12 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "volume",
-  description: "შეცვალეთ ხმის მოცულობა",
+  description: "Change Volume",
   type: "SLASH",
   options: [
     {
       name: "amount",
-      description: "ხმის მოცულობა",
+      description: "Number From 1 To 200",
       type: "INTEGER",
       required: true,
       maxValue: 200,

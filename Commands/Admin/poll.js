@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "poll",
-  description: "make a poll",
+  description: "Make A Poll",
   showHelp: false,
   type: "SLASH",
   permissions: ["ADMINISTRATOR"],
@@ -11,31 +11,31 @@ module.exports = new Command({
     {
       type: "STRING",
       name: "title",
-      description: "სახელი",
+      description: "TiTle Of The Poll",
       required: true,
     },
     {
       type: "STRING",
       name: "option1",
-      description: "პირველი არჩევანის სახელი",
+      description: "First Choice Text",
       required: true,
     },
     {
       type: "STRING",
       name: "option2",
-      description: "მეორე არჩევანის სახელი",
+      description: "Second Choice Text",
       required: true,
     },
     {
       type: "CHANNEL",
       name: "channel",
-      description: "რომელ Channel-ში გაიგზავნოს embed",
+      description: "Chich Channel To Be Sent In",
       required: true,
     },
     {
       type: "INTEGER",
       name: "time",
-      description: "დრო საათებში რომლის შემდეგაც დაიხურება ხმის დათვლა",
+      description: "Time In Hours, After Which The Poll Ends",
       required: true,
       minValue: 1,
       maxValue: 72,
@@ -43,13 +43,15 @@ module.exports = new Command({
     {
       type: "STRING",
       name: "description",
-      description: "აღწერა",
+      description:
+        "Description (Use '|' To Separate Lines, and '`' For Code Blocks)",
       required: false,
     },
     {
       type: "STRING",
       name: "content",
-      description: "მესიჯი Embed-ის წინ",
+      description:
+        "Text Before The Embed (Use '|' To Separate Lines, and '`' For Code Blocks)",
       required: false,
     },
   ],
@@ -78,7 +80,7 @@ module.exports = new Command({
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed()
       .setTitle(title)
-      .setDescription(`${description.replaceAll("|", "\n")}`)
+      .setDescription(`${description.replaceAll(("|", "\n"), ("`", "`"))}`)
       .setColor("PURPLE")
       .setAuthor({
         name: interaction.user.username,
@@ -120,7 +122,7 @@ module.exports = new Command({
     interaction.followUp({ content: `Poll შეიქმნა და გაიგზავნა` });
     channel
       .send({
-        content: content,
+        content: content.replaceAll(("|", "\n"), ("`", "`")),
         embeds: [embed],
         components: [row],
         files: [Logo],

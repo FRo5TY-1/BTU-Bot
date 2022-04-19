@@ -83,7 +83,9 @@ module.exports = new Command({
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
 
-    embed.setTitle(title).setDescription(description.replaceAll("|", "\n"));
+    embed
+      .setTitle(title)
+      .setDescription(description.replaceAll(("|", "\n"), ("`", "`")));
 
     if (target !== null) {
       embed.setAuthor({
@@ -103,38 +105,51 @@ module.exports = new Command({
     if (field1 !== null) {
       if (field1.slice(-4).toLowerCase() === "true") {
         inline = true;
-        splitField = field1.slice(0, -4).replaceAll("|", "\n").split("^");
+        splitField = field1
+          .slice(0, -4)
+          .replaceAll(("|", "\n"), ("`", "`"))
+          .split("^");
         embed.addField(splitField[0], splitField[1], inline);
       } else {
         inline = false;
-        splitField = field1.replaceAll("|", "\n").split("^");
+        splitField = field1.replaceAll(("|", "\n"), ("`", "`")).split("^");
         embed.addField(splitField[0], splitField[1], inline);
       }
     }
     if (field2 !== null) {
       if (field2.slice(-4).toLowerCase() === "true") {
         inline = true;
-        splitField = field2.slice(0, -4).replaceAll("|", "\n").split("^");
+        splitField = field2
+          .slice(0, -4)
+          .replaceAll(("|", "\n"), ("`", "`"))
+          .split("^");
         embed.addField(splitField[0], splitField[1], inline);
       } else {
         inline = false;
-        splitField = field2.replaceAll("|", "\n").split("^");
+        splitField = field2.replaceAll(("|", "\n"), ("`", "`")).split("^");
         embed.addField(splitField[0], splitField[1], inline);
       }
     }
     if (field3 !== null) {
       if (field3.slice(-4).toLowerCase() === "true") {
         inline = true;
-        splitField = field3.slice(0, -4).replaceAll("|", "\n").split("^");
+        splitField = field3
+          .slice(0, -4)
+          .replaceAll(("|", "\n"), ("`", "`"))
+          .split("^");
         embed.addField(splitField[0], splitField[1], inline);
       } else {
         inline = false;
-        splitField = field3.replaceAll("|", "\n").split("^");
+        splitField = field3.replaceAll(("|", "\n"), ("`", "`")).split("^");
         embed.addField(splitField[0], splitField[1], inline);
       }
     }
 
     interaction.followUp({ content: `Embed შეიქმნა და გაიგზავნა` });
-    channel.send({ content: content, embeds: [embed], files: [Logo] });
+    channel.send({
+      content: content.replaceAll(("|", "\n"), ("`", "`")),
+      embeds: [embed],
+      files: [Logo],
+    });
   },
 });

@@ -5,14 +5,14 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "resume",
-  description: "გააგრძელეთ მუსიკა",
+  description: "Resume Music",
   type: "SLASH",
 
   async run(interaction, args, client) {
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
-        content: "ამჟამად მუსიკა არაა ჩართული",
+        content: "Music Is Not Being Played",
       });
 
     const progress = queue.createProgressBar();

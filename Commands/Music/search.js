@@ -5,12 +5,12 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "search",
-  description: "მოძებნეთ და აირჩიეთ მუსიკა",
+  description: "Search And Choose Music",
   type: "SLASH",
   options: [
     {
       name: "title",
-      description: "მიუთითეთ მუსიკის სახელი",
+      description: "Music Name",
       type: "STRING",
       required: true,
     },
@@ -25,7 +25,7 @@ module.exports = new Command({
     });
 
     if (!searchResult || !searchResult.tracks.length) {
-      return interaction.followUp({ content: "მუსიკა ვერ მოიძებნა!" });
+      return interaction.followUp({ content: "Music Not Found!" });
     }
 
     const maxTracks = searchResult.tracks.slice(0, 10);
@@ -39,7 +39,7 @@ module.exports = new Command({
     embed
       .setTitle(`Results For \` ${songTitle} \``)
       .setDescription(
-        `${trackString} \`\`\`აირჩიეთ მუსიკა 1-დან ${maxTracks.length}-მდე ან დაწერეთ cancel რომ გააუქმოთ ძებნა!\`\`\``
+        `${trackString} \`\`\`Type A Number From 1 To ${maxTracks.length}, or Type cancel To Cancel The Search!\`\`\``
       )
       .setAuthor({
         name: interaction.user.username,
@@ -62,7 +62,7 @@ module.exports = new Command({
 
     collector.on("collect", async (query) => {
       if (query.content.toLowerCase() === "cancel") {
-        embed.setDescription(`${trackString} \`\`\`ძებნა გაუქმდა!\`\`\``);
+        embed.setDescription(`${trackString} \`\`\`Search Canceled!\`\`\``);
         return (
           interaction.editReply({
             embeds: [embed],
@@ -73,7 +73,7 @@ module.exports = new Command({
       if (!interaction.member.voice.channel)
         return (
           interaction.editReply({
-            content: `თქვენ უნდა იყოთ Voice Channel-ში`,
+            content: `You Must Be In A Voice Channel`,
             embeds: [],
           }) && collector.stop()
         );
@@ -148,7 +148,7 @@ module.exports = new Command({
 
     collector.on("end", (msg, reason) => {
       if (reason === "time") {
-        embed.setDescription(`${trackString} \`\`\`არჩევის დრო გავიდა!\`\`\``);
+        embed.setDescription(`${trackString} \`\`\`Time's Up!\`\`\``);
         return interaction.editReply({
           embeds: [embed],
         });

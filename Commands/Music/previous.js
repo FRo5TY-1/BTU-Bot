@@ -5,14 +5,14 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "previous",
-  description: "წინა მუსიკა",
+  description: "Play Previous Music",
   type: "SLASH",
 
   async run(interaction, args, client) {
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
-        content: "ამჟამად მუსიკა არაა ჩართული",
+        content: "Music Is Not Being Played",
       });
 
     const progress = queue.createProgressBar();
@@ -41,7 +41,10 @@ module.exports = new Command({
       .setTimestamp();
 
     queue.back().catch((err) => {
-      return interaction.followUp("მუსიკის წინ არ არსებობს მუსიკა");
+      return (
+        queue.seek(0) &&
+        interaction.followUp({ embeds: [embed], files: [Logo] })
+      );
     });
     return interaction.followUp({ embeds: [embed], files: [Logo] });
   },

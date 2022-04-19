@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "suggest",
-  description: "make a suggestion",
+  description: "Make A Suggestion",
   showHelp: false,
   type: "SLASH",
   ephemeral: true,
@@ -11,25 +11,24 @@ module.exports = new Command({
     {
       type: "STRING",
       name: "title",
-      description: "სახელი",
+      description: "Title",
       required: true,
     },
     {
       type: "STRING",
       name: "description",
-      description: "აღწერა",
+      description: "Description",
       required: true,
     },
     {
       type: "BOOLEAN",
       name: "anonymous",
-      description: "ანონიმურად დაიპოსტოს თუ არა",
+      description: "Should The Suggestion Be anonymous?",
       required: true,
     },
   ],
 
   async run(interaction, args, client) {
-
     const title = interaction.options.getString("title");
     const description = interaction.options.getString("description");
     const anonymous = interaction.options.getBoolean("anonymous");
@@ -62,8 +61,12 @@ module.exports = new Command({
       });
     }
 
-    interaction.followUp({ content: `Suggestion შეიქმნა და გაიგზავნა` });
+    interaction.followUp({
+      content: `Suggestion Created And Sent Successfully`,
+    });
     channel.send({ embeds: [embed], files: [Logo] });
-    logsChannel.send({ content: `<@!${interaction.user.id}> made a suggestion` })
+    logsChannel.send({
+      content: `<@!${interaction.user.id}> made a suggestion`,
+    });
   },
 });
