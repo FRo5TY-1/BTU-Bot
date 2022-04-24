@@ -1,40 +1,44 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType } = require("discord-player");
-const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
-  name: "skip",
-  description: "Skip Music",
+  name: "rewind",
+  description: "Rewind Music",
   type: "SLASH",
   options: [
     {
       name: "amount",
-      description: "Amount To Be Skipped",
+      description: "How Many Seconds To Rewind",
       type: "INTEGER",
-      required: false,
-      minValue: 1,
+      required: true,
+      minValue: 5,
     },
   ],
 
   async run(interaction, args, client) {
+    const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
         content: "Music Is Not Being Played",
       });
-    const amount = interaction.options.getInteger("amount") || 1;
+
+    const percBefore = queue.getPlayerTimestamp().current;
+    const time = interaction.options.getInteger("amount");
+    const timeStamp = queue.getPlayerTimestamp().current.split(":");
+    const seekTime = timeStamp[0] * 60000 + timeStamp[1] * 1000 - time * 1000;
+
+    if (seekTime < 0) queue.seek(0);
+    else queue.seek(seekTime);
 
     const progress = queue.createProgressBar();
-    const perc = queue.getPlayerTimestamp();
+    const perc = queue.getPlayerTimestamp().current;
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
-      .setTitle("Current Song Skipped")
-      .setDescription(
-        `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
-      )
+      .setTitle(`Rewinded \` ${time} \` Seconds `)
+      .setDescription(`From: \`${percBefore}\`, To: \`${perc}\``)
       .setAuthor({
         name: queue.current.requestedBy.username,
         iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
@@ -50,13 +54,6 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    if (amount > 1) {
-      queue.skipTo(amount);
-      embed.setTitle(`Skipped \`${amount}\` Songs`);
-      return interaction.followUp({ embeds: [embed], files: [Logo] });
-    } else {
-      queue.skip();
-      return interaction.followUp({ embeds: [embed], files: [Logo] });
-    }
+    return interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

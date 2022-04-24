@@ -1,5 +1,4 @@
 const Command = require("../../Structures/Command.js");
-const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -16,7 +15,8 @@ module.exports = new Command({
   ],
 
   async run(interaction, args, client) {
-    const page = interaction.options.getInteger("page") || 1;
+    const player = client.player;
+    const page = args[0] || 1;
     const end = page * 10;
     const start = end - 10;
     const queue = player.getQueue(interaction.guild);
@@ -32,7 +32,9 @@ module.exports = new Command({
       .concat(queue.tracks)
       .slice(0, queue.tracks.length);
     const tracks = fullQueue.map((m, i) => {
-      return `${i + 1}. [**${m.title}**](${m.url}) - <@!${m.requestedBy.id}>`;
+      return `${i + 1}. [**\`${m.title}\`**](${m.url}) - <@!${
+        m.requestedBy.id
+      }>`;
     });
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
@@ -46,7 +48,7 @@ module.exports = new Command({
       })
       .addFields({
         name: "Now Playing",
-        value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+        value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
       })
       .setFooter({
         text: `Page: ${page}, Total Of ${tracks.length} Songs`,
@@ -54,7 +56,8 @@ module.exports = new Command({
       })
       .setColor("PURPLE")
       .setTimestamp();
-
-    return interaction.followUp({ embeds: [embed], files: [Logo] });
+    setTimeout(() => {
+      return interaction.followUp({ embeds: [embed], files: [Logo] });
+    }, 500);
   },
 });

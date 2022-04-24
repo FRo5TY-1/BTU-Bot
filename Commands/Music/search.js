@@ -1,6 +1,5 @@
 const Command = require("../../Structures/Command.js");
 const { QueryType, QueueRepeatMode } = require("discord-player");
-const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -17,6 +16,7 @@ module.exports = new Command({
   ],
 
   async run(interaction, args, client) {
+    const player = client.player;
     const songTitle = interaction.options.getString("title");
 
     const searchResult = await player.search(songTitle, {
@@ -31,7 +31,7 @@ module.exports = new Command({
     const maxTracks = searchResult.tracks.slice(0, 10);
 
     const trackString = maxTracks
-      .map((track, i) => `**${i + 1}**. [**${track.title}**](${track.url})`)
+      .map((track, i) => `**${i + 1}**. [**\`${track.title}\`**](${track.url})`)
       .join("\n");
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
@@ -107,7 +107,7 @@ module.exports = new Command({
       embed
         .setTitle("Song Added")
         .setDescription(
-          `<a:CatJam:924585442450489404> | [**${track.title}**](${track.url}) - <@!${interaction.user.id}>`
+          `<a:CatJam:924585442450489404> | [**\`${track.title}\`**](${track.url}) - <@!${interaction.user.id}>`
         )
         .setAuthor({
           name: interaction.user.username,
@@ -131,7 +131,7 @@ module.exports = new Command({
           },
           {
             name: "Now Playing",
-            value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+            value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
           }
         )
         .setColor("PURPLE")

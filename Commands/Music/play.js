@@ -1,6 +1,5 @@
 const Command = require("../../Structures/Command.js");
 const { QueryType, QueueRepeatMode } = require("discord-player");
-const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -17,6 +16,7 @@ module.exports = new Command({
   ],
 
   async run(interaction, args, client) {
+    const player = client.player;
     const songTitle = interaction.options.getString("title");
 
     if (!interaction.member.voice.channel)
@@ -59,7 +59,7 @@ module.exports = new Command({
     embed
       .setTitle("Song Added")
       .setDescription(
-        `<a:CatJam:924585442450489404> | [**${searchResult.tracks[0].title}**](${searchResult.tracks[0].url}) - <@!${interaction.user.id}>`
+        `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].title}\`**](${searchResult.tracks[0].url}) - <@!${interaction.user.id}>`
       )
       .setAuthor({
         name: interaction.user.username,
@@ -85,7 +85,7 @@ module.exports = new Command({
         },
         {
           name: "Now Playing",
-          value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+          value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
         }
       )
       .setColor("PURPLE")

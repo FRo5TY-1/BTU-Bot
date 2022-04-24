@@ -1,6 +1,5 @@
 const Command = require("../../Structures/Command.js");
 const { QueryType } = require("discord-player");
-const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -19,6 +18,7 @@ module.exports = new Command({
   ],
 
   async run(interaction, args, client) {
+    const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
@@ -37,7 +37,7 @@ module.exports = new Command({
       })
       .addFields({
         name: "Now Playing",
-        value: `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+        value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
       })
       .setColor("PURPLE")
       .setFooter({

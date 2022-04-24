@@ -45,7 +45,9 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
     const message = interaction.message;
 
     const Member = interaction.member;
-    const BTUMemberRole = "925255802850258984";
+    const memberRole = interaction.guild.roles.cache.find(
+      (r) => r.name === "BTU Member"
+    );
 
     const nonchangable_roles = await rolesModel
       .find({
@@ -79,7 +81,7 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
           content: "**```You Agreed To Server Rules```**",
           ephemeral: true,
         });
-        return Member.roles.add(BTUMemberRole);
+        return Member.roles.add(memberRole);
       }
     }
 

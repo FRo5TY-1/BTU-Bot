@@ -1,7 +1,6 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType, QueueRepeatMode } = require("discord-player");
-const player = require("../../Structures/Player");
 const Discord = require("discord.js");
+const { QueueRepeatMode } = require("discord-player");
 
 module.exports = new Command({
   name: "pause",
@@ -9,6 +8,7 @@ module.exports = new Command({
   type: "SLASH",
 
   async run(interaction, args, client) {
+    const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
@@ -39,7 +39,7 @@ module.exports = new Command({
     embed
       .setTitle("Paused")
       .setDescription(
-        `<a:CatJam:924585442450489404> | [**${queue.current.title}**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
+        `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
       )
       .setAuthor({
         name: queue.current.requestedBy.username,

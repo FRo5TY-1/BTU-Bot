@@ -1,11 +1,20 @@
 const Command = require("../../Structures/Command.js");
+const { QueryType, QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
-const { QueueRepeatMode } = require("discord-player");
 
 module.exports = new Command({
-  name: "shuffle",
-  description: "Shuffle Queue",
+  name: "next",
+  description: "Next Song",
   type: "SLASH",
+  options: [
+    {
+      name: "amount",
+      description: "Amount To Be Skipped",
+      type: "INTEGER",
+      required: false,
+      minValue: 1,
+    },
+  ],
 
   async run(interaction, args, client) {
     const player = client.player;
@@ -14,8 +23,7 @@ module.exports = new Command({
       return interaction.followUp({
         content: "Music Is Not Being Played",
       });
-
-    queue.shuffle();
+    const amount = args[0] || 1;
 
     const loopMode =
       queue.repeatMode === QueueRepeatMode.TRACK
@@ -29,10 +37,13 @@ module.exports = new Command({
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
-      .setTitle("Queue Shuffled")
+      .setTitle("Current Song Skipped")
+      .setDescription(
+        `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
+      )
       .setAuthor({
-        name: interaction.user.username,
-        iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+        name: queue.current.requestedBy.username,
+        iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
       })
       .addFields(
         {
@@ -53,10 +64,6 @@ module.exports = new Command({
           name: "Volume",
           value: `\`\`\` ${queue.volume} \`\`\``,
           inline: true,
-        },
-        {
-          name: "Now Playing",
-          value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
         }
       )
       .setColor("PURPLE")
@@ -66,8 +73,13 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    setTimeout(() => {
+    if (amount > 1) {
+      queue.skipTo(amount);
+      embed.setTitle(`Skipped \`${amount}\` Songs`);
       return interaction.followUp({ embeds: [embed], files: [Logo] });
-    }, 500);
+    } else {
+      queue.skip();
+      return interaction.followUp({ embeds: [embed], files: [Logo] });
+    }
   },
 });

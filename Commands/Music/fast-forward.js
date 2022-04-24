@@ -1,31 +1,35 @@
 const Command = require("../../Structures/Command.js");
-const player = require("../../Structures/Player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
-  name: "forward",
-  description: "Seek To Given Time",
+  name: "fast-forward",
+  description: "Fast-Forward Music",
   type: "SLASH",
   options: [
     {
       name: "amount",
-      description: "Which Second To Seek",
+      description: "How Many Seconds To Forward",
       type: "INTEGER",
-      required: false,
+      required: true,
+      minValue: 5,
     },
   ],
 
   async run(interaction, args, client) {
+    const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.followUp({
         content: "Music Is Not Being Played",
       });
 
-    const time = interaction.options.getInteger("amount") * 1000;
-    percBefore = queue.getPlayerTimestamp().current;
+    const percBefore = queue.getPlayerTimestamp().current;
+    const time = interaction.options.getInteger("amount");
+    const timeStamp = queue.getPlayerTimestamp().current.split(":");
+    const seekTime = timeStamp[0] * 60000 + timeStamp[1] * 1000 + time * 1000;
 
-    queue.seek(time);
+    if (seekTime > queue.current.durationMS) queue.skip();
+    else queue.seek(seekTime);
 
     const progress = queue.createProgressBar();
     const perc = queue.getPlayerTimestamp().current;
@@ -33,7 +37,7 @@ module.exports = new Command({
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
-      .setTitle("Forwarded")
+      .setTitle(`Fast-Forwarded \` ${time} \` Seconds `)
       .setDescription(`From: \`${percBefore}\`, To: \`${perc}\``)
       .setAuthor({
         name: queue.current.requestedBy.username,

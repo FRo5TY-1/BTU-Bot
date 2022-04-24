@@ -1,7 +1,6 @@
 const Command = require("../../Structures/Command.js");
 const Discord = require("discord.js");
 const rolesModel = require("../../DBModels/buttonRolesSchema.js");
-const { find } = require("../../DBModels/buttonRolesSchema.js");
 
 module.exports = new Command({
   name: "button",
@@ -114,10 +113,10 @@ module.exports = new Command({
       });
 
       const row1 = new Discord.MessageActionRow().addComponents(
-        buttonsArray.slice(0, 5)
+        buttonsArray.slice(0, 4)
       );
       const row2 = new Discord.MessageActionRow().addComponents(
-        buttonsArray.slice(5, 10)
+        buttonsArray.slice(4, 9)
       );
       const row3 = new Discord.MessageActionRow().addComponents(
         buttonsArray.slice(10, 15)
