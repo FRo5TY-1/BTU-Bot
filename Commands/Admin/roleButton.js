@@ -112,10 +112,10 @@ module.exports = new Command({
       });
 
       const row1 = new Discord.MessageActionRow().addComponents(
-        buttonsArray.slice(0, 4)
+        buttonsArray.slice(0, 5)
       );
       const row2 = new Discord.MessageActionRow().addComponents(
-        buttonsArray.slice(4, 9)
+        buttonsArray.slice(5, 10)
       );
       const row3 = new Discord.MessageActionRow().addComponents(
         buttonsArray.slice(10, 15)
