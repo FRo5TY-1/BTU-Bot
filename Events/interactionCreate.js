@@ -1,4 +1,5 @@
 const Event = require("../Structures/Event.js");
+const messageCreate = require("./messageCreate.js");
 const rolesModel = require("../DBModels/buttonRolesSchema.js");
 
 module.exports = new Event("interactionCreate", async (client, interaction) => {
@@ -94,22 +95,19 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
         const button = nonchangable_roles[i];
         const role = interaction.guild.roles.cache.get(button.roleID);
         if (interaction.customId === button.buttonCustomID) {
-          for (i = 0; i < nonchangable_IDs.length; i++) {
-            const Role = interaction.guild.roles.cache.get(nonchangable_IDs[i]);
-            if (Member.roles.cache.has(nonchangable_IDs[i])) {
-              return interaction.followUp({
-                content: `**\`\`\`You Already Have ${Role.name} Role!\nThis Role Can't Be Changed\nContact A Mod If You Chose Wrong Role!\`\`\`**`,
-                ephemeral: true,
-              });
-            } else {
-              return (
-                Member.roles.add(Role.id) &&
-                interaction.followUp({
-                  content: `**\`\`\`${Role.name} Role Was Successfully Added!\`\`\`**`,
-                  ephemeral: true,
-                })
-              );
-            }
+          if (Member.roles.cache.some((r) => nonchangable_IDs.includes(r.id))) {
+            interaction.followUp({
+              content: `**\`\`\`You Already Have This Type Of Role!\nThis Role Can't Be Changed\nContact A Mod If You Chose Wrong Role!\`\`\`**`,
+              ephemeral: true,
+            });
+            break;
+          } else {
+            interaction.followUp({
+              content: `**\`\`\`${role.name} Role Was Successfully Added!\`\`\`**`,
+              ephemeral: true,
+            });
+            Member.roles.add(role.id);
+            break;
           }
         }
       }
