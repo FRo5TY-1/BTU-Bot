@@ -103,12 +103,11 @@ module.exports = new Command({
       const buttonsArray = [];
 
       buttonsData.forEach((obj) => {
-        const emoji = client.emojis.cache.get(obj.buttonEmojiID);
         const button = new Discord.MessageButton()
           .setCustomId(obj.buttonCustomID)
           .setLabel(obj.buttonLabel)
           .setStyle(obj.buttonStyle);
-        if (emoji) button.setEmoji(emoji);
+        if (obj.buttonEmojiID) button.setEmoji(obj.buttonEmojiID);
         buttonsArray.push(button);
       });
 

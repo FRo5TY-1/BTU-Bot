@@ -64,10 +64,14 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
       })
       .exec();
 
-    const BIDList =
-      nonchangable_roles.map((value) => value.customID) +
-      changable_roles.map((value) => value.customID) +
-      ["rulesagree"];
+    console.log(changable_roles);
+    const BIDList = nonchangable_roles
+      .map((v) => v.buttonCustomID)
+      .concat(
+        changable_roles.map((v) => v.buttonCustomID),
+        ["rulesagree"]
+      );
+    console.log(BIDList);
     if (!BIDList.includes(interaction.customId)) return;
 
     if (interaction.customId === "rulesagree") {
