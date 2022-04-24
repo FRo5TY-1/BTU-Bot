@@ -97,7 +97,7 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
         if (interaction.customId === button.buttonCustomID) {
           if (Member.roles.cache.some((r) => nonchangable_IDs.includes(r.id))) {
             interaction.followUp({
-              content: `**\`\`\`You Already Have ${role.name} Role!\nThis Role Can't Be Changed\nContact A Mod If You Chose Wrong Role!\`\`\`**`,
+              content: `**\`\`\`You Already Have ${r.name} Role!\nThis Role Can't Be Changed\nContact A Mod If You Chose Wrong Role!\`\`\`**`,
               ephemeral: true,
             });
             break;
