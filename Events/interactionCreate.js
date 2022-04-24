@@ -96,7 +96,7 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
         if (interaction.customId === button.buttonCustomID) {
           for (i = 0; i < nonchangable_IDs.length; i++) {
             const Role = interaction.guild.roles.cache.get(nonchangable_IDs[i]);
-            if (Member.roles.has(nonchangable_IDs[i])) {
+            if (Member.roles.cache.has(nonchangable_IDs[i])) {
               return interaction.followUp({
                 content: `**\`\`\`You Already Have ${Role.name} Role!\nThis Role Can't Be Changed\nContact A Mod If You Chose Wrong Role!\`\`\`**`,
                 ephemeral: true,
