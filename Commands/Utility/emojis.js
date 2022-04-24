@@ -65,9 +65,9 @@ module.exports = new Command({
       interaction.followUp({ embeds: [embed], files: [Logo] });
     } else {
       const emojis = interaction.guild.emojis.cache.map((e) => {
-        if (e.animated)
-          return `<a:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
-        return `<:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
+        if (!e.animated)
+          return `<:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
+        return `<a:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
       });
       const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
       const embed = new Discord.MessageEmbed();
@@ -78,7 +78,9 @@ module.exports = new Command({
           iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
         })
         .setDescription(
-          `**\`\`\`List Of Server Emojis\`\`\`\n${emojis.join(" `|` ")}**`
+          `**\`\`\`List Of Server Emojis\`\`\`\n${emojis
+            .slice(0, 20)
+            .join(" ")}**`
         )
         .setFooter({
           text: `BTU `,
