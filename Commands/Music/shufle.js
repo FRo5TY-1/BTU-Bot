@@ -1,0 +1,73 @@
+const Command = require("../../Structures/Command.js");
+const Discord = require("discord.js");
+const { QueueRepeatMode } = require("discord-player");
+
+module.exports = new Command({
+  name: "shuffle",
+  description: "Shuffle Queue",
+  type: "SLASH",
+
+  async run(interaction, args, client) {
+    const player = client.player;
+    const queue = player.getQueue(interaction.guild);
+    if (!queue?.playing)
+      return interaction.followUp({
+        content: "Music Is Not Being Played",
+      });
+
+    queue.shuffle();
+
+    const loopMode =
+      queue.repeatMode === QueueRepeatMode.TRACK
+        ? "Song"
+        : queue.repeatMode === QueueRepeatMode.QUEUE
+        ? "Queue"
+        : queue.repeatMode === QueueRepeatMode.AUTOPLAY
+        ? "Autoplay"
+        : "OFF";
+
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
+    const embed = new Discord.MessageEmbed();
+    embed
+      .setTitle("Queue Shuffled")
+      .setAuthor({
+        name: interaction.user.username,
+        iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+      })
+      .addFields(
+        {
+          name: "Filter",
+          value: `\`\`\` ${
+            !queue.getFiltersEnabled().length
+              ? "OFF"
+              : queue.getFiltersEnabled()
+          } \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Loop Mode",
+          value: `\`\`\` ${loopMode} \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Volume",
+          value: `\`\`\` ${queue.volume} \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Now Playing",
+          value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+        }
+      )
+      .setColor("PURPLE")
+      .setFooter({
+        text: `BTU `,
+        iconURL: "attachment://BTULogo.png",
+      })
+      .setTimestamp();
+
+    setTimeout(() => {
+      return interaction.followUp({ embeds: [embed], files: [Logo] });
+    }, 500);
+  },
+});
