@@ -94,22 +94,23 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
         const button = nonchangable_roles[i];
         const role = interaction.guild.roles.cache.get(button.roleID);
         if (interaction.customId === button.buttonCustomID) {
-          Member.roles.cache.some((r) => {
-            if (nonchangable_IDs.includes(r.id)) {
+          for (i = 0; i < nonchangable_IDs.length; i++) {
+            const Role = interaction.guild.roles.cache.get(nonchangable_IDs[i]);
+            if (Member.roles.has(nonchangable_IDs[i])) {
               return interaction.followUp({
-                content: `**\`\`\`You Already Have ${r.name} Role!\nThis Role Can't Be Changed\nContact A Mod If You Chose Wrong Role!\`\`\`**`,
+                content: `**\`\`\`You Already Have ${Role.name} Role!\nThis Role Can't Be Changed\nContact A Mod If You Chose Wrong Role!\`\`\`**`,
                 ephemeral: true,
               });
             } else {
               return (
-                Member.roles.add(role.id) &&
+                Member.roles.add(Role.id) &&
                 interaction.followUp({
-                  content: `**\`\`\`${role.name} Role Was Successfully Added!\`\`\`**`,
+                  content: `**\`\`\`${Role.name} Role Was Successfully Added!\`\`\`**`,
                   ephemeral: true,
                 })
               );
             }
-          });
+          }
         }
       }
       for (i = 0; i < changable_roles.length; i++) {
