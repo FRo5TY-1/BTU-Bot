@@ -1,6 +1,7 @@
 const Command = require("../../Structures/Command.js");
 const Discord = require("discord.js");
-const https = require("https");
+const got = require("got");
+const data = require("../../Data/config.json");
 
 module.exports = new Command({
   name: "meme",
@@ -8,6 +9,7 @@ module.exports = new Command({
   type: "SLASH",
 
   async run(interaction, args) {
+    const subreddits = data.subreddits;
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     const row = new Discord.MessageActionRow().addComponents(
@@ -29,31 +31,29 @@ module.exports = new Command({
       .setTimestamp();
 
     function getMeme() {
-      https
-        .get("https://api.popcat.xyz/meme", (res) => {
-          let data = "";
-          res.on("data", (chunk) => {
-            data += chunk;
-          });
-          res.on("end", () => {
-            data = JSON.parse(data);
-            embed
-              .setDescription(`[**${data.title}**](${data.url})`)
-              .setImage(data.image)
-              .setFooter({
-                text: `Upvotes - ${data.upvotes}`,
-                iconURL: "attachment://BTULogo.png",
-              });
-            return interaction.editReply({
-              embeds: [embed],
-              files: [Logo],
-              components: [row],
-            });
-          });
-        })
-        .on("error", (err) => {
-          return;
+      const subreddit =
+        subreddits[Math.floor(Math.random() * subreddits.length)];
+      got(`https://reddit.com/r/${subreddit}/random/.json`).then((res) => {
+        const content = JSON.parse(res.body)[0] || JSON.parse(res.body);
+        const permalink = content.data.children[0].data.permalink;
+        const memeUrl = `https://reddit.com${permalink}`;
+        const memeTitle = content.data.children[0].data.title;
+        const score = content.data.children[0].data.score;
+        const comments = content.data.children[0].data.num_comments;
+
+        embed.setDescription(
+          `**Random Meme From [\`${subreddit}\`](https://reddit.com/r/${subreddit}) Subreddit**\n[\`\`\`${memeTitle}\`\`\`](${memeUrl})`
+        );
+        embed.setImage(content.data.children[0].data.url).setFooter({
+          text: `👍 ${score} 💬 ${comments}`,
+          iconURL: "attachment://BTULogo.png",
         });
+        interaction.editReply({
+          embeds: [embed],
+          components: [row],
+          files: [Logo],
+        });
+      });
     }
 
     getMeme();

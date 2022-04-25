@@ -1,3 +1,11 @@
 {
-	"prefix": "BTU "
+  "prefix": "BTU ",
+  "subreddits": [
+    "memes",
+    "dankmemes",
+    "wholesomememes",
+    "me_irl",
+    "animememes",
+    "Animemes"
+  ]
 }
