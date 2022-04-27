@@ -1,5 +1,5 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType, QueueRepeatMode } = require("discord-player");
+const { QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -24,16 +24,18 @@ module.exports = new Command({
         ? "Autoplay"
         : "OFF";
 
+    const currentTrack = queue.current;
+
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Current Song Skipped")
       .setDescription(
-        `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
+        `<a:CatJam:924585442450489404> | [**\`${currentTrack.title}\`**](${currentTrack.url}) - <@!${currentTrack.requestedBy.id}>`
       )
       .setAuthor({
-        name: queue.current.requestedBy.username,
-        iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
+        name: currentTrack.requestedBy.username,
+        iconURL: currentTrack.requestedBy.displayAvatarURL({ dynamic: true }),
       })
       .addFields(
         {
@@ -63,9 +65,16 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    queue.back().catch((err) => {
-      queue.seek(0);
-    });
-    return interaction.followUp({ embeds: [embed], files: [Logo] });
+    if (queue.previousTracks.length < 1) queue.seek(0);
+    else {
+      queue.insert(queue.previousTracks.slice(-1)[0], 0);
+      queue.insert(currentTrack, 1);
+      queue.skip();
+      setTimeout(() => {
+        queue.previousTracks.pop();
+      }, 500);
+      if (interaction.isButton) return;
+      return interaction.followUp({ embeds: [embed], files: [Logo] });
+    }
   },
 });

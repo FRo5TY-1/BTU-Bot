@@ -3,9 +3,18 @@ const { QueryType, QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
-  name: "resume",
-  description: "Resume Music",
+  name: "skip",
+  description: "Skip A  Song",
   type: "SLASH",
+  options: [
+    {
+      name: "amount",
+      description: "Amount To Be Skipped",
+      type: "INTEGER",
+      required: false,
+      minValue: 1,
+    },
+  ],
 
   async run(interaction, args, client) {
     const player = client.player;
@@ -14,8 +23,7 @@ module.exports = new Command({
       return interaction.followUp({
         content: "Music Is Not Being Played",
       });
-
-    const progress = queue.createProgressBar();
+    let amount = args[0] || 1;
 
     const loopMode =
       queue.repeatMode === QueueRepeatMode.TRACK
@@ -26,18 +34,10 @@ module.exports = new Command({
         ? "Autoplay"
         : "OFF";
 
-    const previousTracks = queue.previousTracks.filter(function (v, i) {
-      return i % 2 == 0;
-    });
-
-    const fullQueue = previousTracks
-      .concat(queue.tracks)
-      .slice(0, queue.tracks.length);
-
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
-      .setTitle("Resumed")
+      .setTitle("Current Song Skipped")
       .setDescription(
         `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
       )
@@ -64,10 +64,6 @@ module.exports = new Command({
           name: "Volume",
           value: `\`\`\` ${queue.volume} \`\`\``,
           inline: true,
-        },
-        {
-          name: "⠀",
-          value: progress,
         }
       )
       .setColor("PURPLE")
@@ -77,7 +73,20 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    queue.setPaused(false);
-    return interaction.followUp({ embeds: [embed], files: [Logo] });
+    if (amount > 1) {
+      if (amount > queue.tracks.length) amount = queue.tracks.length;
+      const skippedTracks = queue.tracks.slice(0, amount);
+      queue.skipTo(amount);
+      setTimeout(() => {
+        for (i = 0; i < amount; i++) {
+          queue.previousTracks.splice(-1, 0, skippedTracks[i]);
+        }
+      }, 300);
+      embed.setTitle(`Skipped \`${amount}\` Songs`);
+      return interaction.followUp({ embeds: [embed], files: [Logo] });
+    } else {
+      queue.skip();
+      return interaction.followUp({ embeds: [embed], files: [Logo] });
+    }
   },
 });

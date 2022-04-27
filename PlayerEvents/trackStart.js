@@ -5,6 +5,7 @@ const ms = require("ms");
 
 module.exports = new PlayerEvent("trackStart", async (client, queue, TRACK) => {
   if (queue.repeatMode === QueueRepeatMode.TRACK) return;
+  queue.previousTracks.pop();
 
   const loopMode =
     queue.repeatMode === QueueRepeatMode.TRACK
@@ -27,7 +28,7 @@ module.exports = new PlayerEvent("trackStart", async (client, queue, TRACK) => {
       .setEmoji("⏮️")
       .setStyle("SUCCESS"),
     new Discord.MessageButton()
-      .setCustomId("pauseTrack")
+      .setCustomId("pauseResume")
       .setEmoji("⏸️")
       .setStyle("SUCCESS"),
     new Discord.MessageButton()
@@ -150,35 +151,35 @@ module.exports = new PlayerEvent("trackStart", async (client, queue, TRACK) => {
       });
       client.collectors.set(queue.guild.id, collector);
       collector.on("collect", async (i) => {
-        if (i.customId === "pauseTrack") {
-          queue.setPaused(true);
-          row1.spliceComponents(
-            2,
-            1,
-            new Discord.MessageButton()
-              .setCustomId("resumeTrack")
-              .setEmoji("▶️")
-              .setStyle("SUCCESS")
-          );
-          return message.edit({ components: [row1, row2] });
-        } else if (i.customId === "resumeTrack") {
-          queue.setPaused(false);
-          row1.spliceComponents(
-            2,
-            1,
-            new Discord.MessageButton()
-              .setCustomId("pauseTrack")
-              .setEmoji("⏸️")
-              .setStyle("SUCCESS")
-          );
+        if (i.customId === "pauseResume") {
+          if (queue.connection.paused) {
+            queue.setPaused(false);
+            row1.spliceComponents(
+              2,
+              1,
+              new Discord.MessageButton()
+                .setCustomId("pauseResume")
+                .setEmoji("⏸️")
+                .setStyle("SUCCESS")
+            );
+          } else {
+            queue.setPaused(true);
+            row1.spliceComponents(
+              2,
+              1,
+              new Discord.MessageButton()
+                .setCustomId("pauseResume")
+                .setEmoji("▶️")
+                .setStyle("SUCCESS")
+            );
+          }
           return message.edit({ components: [row1, row2] });
         } else if (i.customId === "songQueue") {
           const command = client.slashCommands.get("queue");
           return command.run(i, [], client);
         } else if (i.customId === "previousTrack") {
-          return queue.back().catch((err) => {
-            queue.seek(0);
-          });
+          const command = client.slashCommands.get("previous");
+          return command.run(i, [], client);
         } else if (i.customId === "nextTrack") {
           return queue.skip();
         } else if (i.customId === "stopPlayer") {
@@ -190,7 +191,7 @@ module.exports = new PlayerEvent("trackStart", async (client, queue, TRACK) => {
         } else if (i.customId === "streamTime") {
           setTimeout(() => {
             return i.followUp({
-              content: `Stream Time is ${ms(queue.streamTime)}`,
+              content: `Total Time: ${ms(queue.totalTime)}`,
             });
           }, 500);
         } else if (i.customId === "loopNone") {

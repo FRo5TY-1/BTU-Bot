@@ -3,16 +3,16 @@ const { QueryType, QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
-  name: "next",
-  description: "Next Song",
+  name: "skip-to",
+  description: "Skip To A Given Index",
   type: "SLASH",
   options: [
     {
-      name: "amount",
-      description: "Amount To Be Skipped",
+      name: "index",
+      description:
+        "Song Index In Queue (Use Negative(-) Number For Previous Song)",
       type: "INTEGER",
       required: false,
-      minValue: 1,
     },
   ],
 
@@ -23,7 +23,7 @@ module.exports = new Command({
       return interaction.followUp({
         content: "Music Is Not Being Played",
       });
-    const amount = args[0] || 1;
+    let index = interaction.options.getInteger("index") || 1;
 
     const loopMode =
       queue.repeatMode === QueueRepeatMode.TRACK
@@ -37,13 +37,14 @@ module.exports = new Command({
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
-      .setTitle("Current Song Skipped")
       .setDescription(
         `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
       )
       .setAuthor({
         name: queue.current.requestedBy.username,
-        iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
+        iconURL: queue.current.requestedBy.displayAvatarURL({
+          dynamic: true,
+        }),
       })
       .addFields(
         {
@@ -73,11 +74,33 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    if (amount > 1) {
-      queue.skipTo(amount);
-      embed.setTitle(`Skipped \`${amount}\` Songs`);
+    if (index - 1 > 0) {
+      if (index - 1 > queue.tracks.length) {
+        return interaction.followUp({
+          content: `There Is No Song With \`${index}\` Index`,
+        });
+      }
+
+      queue.jump(index - 1);
+
+      embed.setTitle(`Skipped To Song With Index Of \`${index}\``);
+      return interaction.followUp({ embeds: [embed], files: [Logo] });
+    } else if (index < 0) {
+      const posIndex = Math.abs(index);
+      if (posIndex > queue.previousTracks.length)
+        return interaction.followUp({
+          content: `There Is No Previous Song With \`${posIndex}\` Index`,
+        });
+      const track =
+        queue.previousTracks.slice(index, -1)[0] ||
+        queue.previousTracks.slice(index)[0];
+      queue.previousTracks.splice(index, 1);
+      queue.insert(track, 0);
+      queue.skip();
+      embed.setTitle(`Skipped To Previous Song With Index Of \`${posIndex}\``);
       return interaction.followUp({ embeds: [embed], files: [Logo] });
     } else {
+      embed.setTitle("Skipped `1` Song");
       queue.skip();
       return interaction.followUp({ embeds: [embed], files: [Logo] });
     }

@@ -48,6 +48,9 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
     const memberRole = interaction.guild.roles.cache.find(
       (r) => r.name === "BTU Member"
     );
+    const roleDeviderRole = interaction.guild.roles.cache.find(
+      (r) => r.name === "ㅤ⊱─── { Gaming Roles } ───⊰ㅤㅤ"
+    );
 
     const nonchangable_roles = await rolesModel
       .find({
@@ -125,7 +128,7 @@ module.exports = new Event("interactionCreate", async (client, interaction) => {
               content: `**\`\`\`${role.name} Role Was Successfully Added!\`\`\`**`,
               ephemeral: true,
             });
-            Member.roles.add(button.roleID);
+            Member.roles.add([button.roleID, roleDeviderRole.id]);
             break;
           }
         }

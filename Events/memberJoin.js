@@ -2,11 +2,6 @@ const Event = require("../Structures/Event.js");
 const Discord = require("discord.js");
 
 module.exports = new Event("guildMemberAdd", (client, member) => {
-  const roleDeviderRole = member.guild.roles.cache.find(
-    (r) => r.name === "ㅤ⊱─── { Gaming Roles } ───⊰ㅤㅤ"
-  ).id;
-  member.roles.add(roleDeviderRole);
-
   const channel = member.guild.channels.cache.find(
     (c) => c.name == "🖐welcome"
   );
