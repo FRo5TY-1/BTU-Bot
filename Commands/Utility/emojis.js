@@ -94,7 +94,7 @@ module.exports = new Command({
           `**\`\`\`Server Emojis -> | ${static.size} Static | ${
             animated.size
           } Animated | Total ${emojis.length} | \`\`\`\n${emojis
-            .slice(0, 30)
+            .slice(0, 25)
             .join(" ")}**`
         )
         .setFooter({
@@ -105,8 +105,8 @@ module.exports = new Command({
 
       const embeds = [embed];
 
-      const chunkSize = 30;
-      for (let i = 30; i < emojis.length; i += chunkSize) {
+      const chunkSize = 25;
+      for (let i = 25; i < emojis.length; i += chunkSize) {
         const chunk = emojis.slice(i, i + chunkSize);
         embeds.push(
           new Discord.MessageEmbed()

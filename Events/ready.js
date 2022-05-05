@@ -12,7 +12,5 @@ module.exports = new Event("ready", async (client) => {
     status: "online",
   });
 
-  const guild = client.guilds.cache.get("913318880561205268");
-  guild?.commands.set([]);
   client.application.commands.set(client.slashCommands);
 });
