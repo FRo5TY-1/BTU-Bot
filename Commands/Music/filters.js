@@ -51,7 +51,7 @@ module.exports = new Command({
       });
 
     if (
-      interaction.user.id !== queue.current.requestedBy.id ||
+      interaction.user.id !== queue.current.requestedBy.id &&
       !interaction.member.roles.cache.some((r) => r.name === "DJ")
     ) {
       return interaction.reply({

@@ -8,6 +8,8 @@ module.exports = new PlayerEvent(
    * @param {Queue} queue
    * @param {Track} track
    */ async (client, queue, track) => {
+    if (queue.current === track) return;
+    if (queue.previousTracks.includes(track)) return;
     const loopMode =
       queue.repeatMode === QueueRepeatMode.TRACK
         ? "Song"

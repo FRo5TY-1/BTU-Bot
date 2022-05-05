@@ -63,22 +63,16 @@ module.exports = new Command({
 
       return interaction.reply({ embeds: [embed], files: [Logo] });
     } else {
-      // const emojis = interaction.guild.emojis.cache.map((e) => {
-      //   if (!e.animated)
-      //     return `<:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
-      //   return `<a:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
-      // });
-
       const static = interaction.guild.emojis.cache.filter((e) => !e.animated);
       const animated = interaction.guild.emojis.cache.filter((e) => e.animated);
 
       const emojis = static
         .map((e) => {
-          return `<:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
+          return `<:${e.name}:${e.id}>`;
         })
         .concat(
           animated.map((e) => {
-            return `<a:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
+            return `<a:${e.name}:${e.id}>`;
           })
         );
 
@@ -94,7 +88,7 @@ module.exports = new Command({
           `**\`\`\`Server Emojis -> | ${static.size} Static | ${
             animated.size
           } Animated | Total ${emojis.length} | \`\`\`\n${emojis
-            .slice(0, 20)
+            .slice(0, 50)
             .join(" ")}**`
         )
         .setFooter({
@@ -105,8 +99,8 @@ module.exports = new Command({
 
       const embeds = [embed];
 
-      const chunkSize = 20;
-      for (let i = 20; i < emojis.length; i += chunkSize) {
+      const chunkSize = 50;
+      for (let i = 50; i < emojis.length; i += chunkSize) {
         const chunk = emojis.slice(i, i + chunkSize);
         embeds.push(
           new Discord.MessageEmbed()

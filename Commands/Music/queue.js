@@ -66,9 +66,7 @@ module.exports = new Command({
     if (interaction.isCommand())
       return interaction.reply({ embeds: [embed], files: [Logo] });
     else if (interaction.isButton()) {
-      setTimeout(() => {
-        return interaction.followUp({ embeds: [embed], files: [Logo] });
-      }, 500);
+      return interaction.followUp({ embeds: [embed], files: [Logo] });
     }
   },
 });

@@ -3,8 +3,8 @@ const { QueryType, QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
-  name: "skip-to",
-  description: "Skip To A Given Index",
+  name: "jump-to",
+  description: "Jump To A Given Index (Won't Skip Every Song In It's Path)",
   type: "SLASH",
   options: [
     {
@@ -25,7 +25,7 @@ module.exports = new Command({
       });
 
     if (
-      interaction.user.id !== queue.current.requestedBy.id ||
+      interaction.user.id !== queue.current.requestedBy.id &&
       !interaction.member.roles.cache.some((r) => r.name === "DJ")
     ) {
       return interaction.reply({
@@ -49,9 +49,6 @@ module.exports = new Command({
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
-      .setDescription(
-        `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
-      )
       .setAuthor({
         name: queue.current.requestedBy.username,
         iconURL: queue.current.requestedBy.displayAvatarURL({
@@ -60,10 +57,10 @@ module.exports = new Command({
       })
       .addFields(
         {
-          name: "Filter",
+          name: "Filters",
           value: `\`\`\` ${
             !queue.getFiltersEnabled().length
-              ? "OFF"
+              ? "None"
               : queue.getFiltersEnabled()
           } \`\`\``,
           inline: true,
@@ -77,6 +74,10 @@ module.exports = new Command({
           name: "Volume",
           value: `\`\`\` ${queue.volume} \`\`\``,
           inline: true,
+        },
+        {
+          name: "Skipped Track",
+          value: `[**\`${queue.current.title}\`**](${queue.current.url})`,
         }
       )
       .setColor("PURPLE")
@@ -86,34 +87,30 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    if (index - 1 > 0) {
-      if (index - 1 > queue.tracks.length) {
-        return interaction.reply({
-          content: `There Is No Song With \`${index}\` Index`,
-        });
-      }
-
-      queue.jump(index - 1);
-
-      embed.setTitle(`Skipped To Song With Index Of \`${index}\``);
+    if (index > 0) {
+      if (index > queue.tracks.length) index = queue.tracks.length - 1;
+      else index -= 1;
+      queue.jump(index);
+      embed.setTitle(`Jumped To Song With Index Of \`${index + 1}\``);
       return interaction.reply({ embeds: [embed], files: [Logo] });
     } else if (index < 0) {
-      const posIndex = Math.abs(index);
-      if (posIndex > queue.previousTracks.length)
-        return interaction.reply({
-          content: `There Is No Previous Song With \`${posIndex}\` Index`,
-        });
+      if (queue.previousTracks.length < 1)
+        return interaction.reply({ content: "No Previous Tracks" });
+      let posIndex = Math.abs(index) - 1;
+      if (posIndex > queue.previousTracks.length - 1)
+        posIndex = queue.previousTracks.length - 1;
       const track =
-        queue.previousTracks.slice(index, -1)[0] ||
-        queue.previousTracks.slice(index)[0];
-      queue.previousTracks.splice(index, 1);
-      queue.insert(track, 0);
+        queue.previousTracks.slice(posIndex, posIndex + 1) ||
+        queue.previousTracks.slice(-2, -1);
+      queue.insert(track[0], 0);
       queue.skip();
-      embed.setTitle(`Skipped To Previous Song With Index Of \`${posIndex}\``);
+      embed.setTitle(
+        `Jumped To Previous Song With Index Of \`${posIndex + 1}\``
+      );
       return interaction.reply({ embeds: [embed], files: [Logo] });
     } else {
-      embed.setTitle("Skipped `1` Song");
-      queue.skip();
+      embed.setTitle(`Jumped To Song With Index Of \`${index + 1}\``);
+      queue.jump(index);
       return interaction.reply({ embeds: [embed], files: [Logo] });
     }
   },

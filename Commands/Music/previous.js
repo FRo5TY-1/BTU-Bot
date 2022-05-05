@@ -16,7 +16,7 @@ module.exports = new Command({
       });
 
     if (
-      interaction.user.id !== queue.current.requestedBy.id ||
+      interaction.user.id !== queue.current.requestedBy.id &&
       !interaction.member.roles.cache.some((r) => r.name === "DJ")
     ) {
       return interaction.reply({
@@ -50,10 +50,10 @@ module.exports = new Command({
       })
       .addFields(
         {
-          name: "Filter",
+          name: "Filters",
           value: `\`\`\` ${
             !queue.getFiltersEnabled().length
-              ? "OFF"
+              ? "None"
               : queue.getFiltersEnabled()
           } \`\`\``,
           inline: true,
@@ -84,8 +84,8 @@ module.exports = new Command({
       setTimeout(() => {
         queue.previousTracks.pop();
       }, 500);
-      if (interaction.isButton) return;
-      return interaction.reply({ embeds: [embed], files: [Logo] });
     }
+    if (interaction.isButton()) return;
+    return interaction.reply({ embeds: [embed], files: [Logo] });
   },
 });

@@ -20,6 +20,14 @@ module.exports = new PlayerEvent(
         : queue.repeatMode === QueueRepeatMode.AUTOPLAY
         ? "Autoplay"
         : "OFF";
+    const loopEmoji =
+      queue.repeatMode === QueueRepeatMode.TRACK
+        ? "🔁"
+        : queue.repeatMode === QueueRepeatMode.QUEUE
+        ? "🔂"
+        : queue.repeatMode === QueueRepeatMode.AUTOPLAY
+        ? "♾️"
+        : "967714667462025246";
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
@@ -48,7 +56,7 @@ module.exports = new PlayerEvent(
     const row2 = new Discord.MessageActionRow().addComponents(
       new Discord.MessageButton()
         .setCustomId("loopMode")
-        .setEmoji("967714667462025246")
+        .setEmoji(loopEmoji)
         .setStyle("SUCCESS"),
       new Discord.MessageButton()
         .setCustomId("rewindTrack")
@@ -94,10 +102,10 @@ module.exports = new PlayerEvent(
       })
       .addFields(
         {
-          name: "Filter",
+          name: "Filters",
           value: `\`\`\` ${
             !queue.getFiltersEnabled().length
-              ? "OFF"
+              ? "None"
               : queue.getFiltersEnabled()
           } \`\`\``,
           inline: true,
@@ -123,7 +131,7 @@ module.exports = new PlayerEvent(
 
     const filter = (i) => {
       if (
-        // i.user.id === queue.current.requestedBy.id ||
+        i.user.id === queue.current.requestedBy.id ||
         i.member.roles.cache.some((r) => r.name === "DJ")
       )
         return true;
@@ -145,53 +153,76 @@ module.exports = new PlayerEvent(
           filter: filter,
         });
         client.collectors.set(queue.guild.id, collector);
-        collector.on("collect", async (i) => {
-          await i.deferUpdate();
-          if (i.customId === "pauseResume") {
-            if (queue.connection.paused) {
+        collector.on(
+          "collect",
+          /**
+           * @param {Discord.ButtonInteraction} i
+           */ async (i) => {
+            await i.deferUpdate();
+            if (i.customId === "pauseResume") {
+              if (queue.connection.paused) {
+                queue.setPaused(false);
+                row1.components[2].setEmoji("⏸️");
+              } else {
+                queue.setPaused(true);
+                row1.components[2].setEmoji("▶️");
+              }
+              return message.edit({ components: [row1, row2] });
+            } else if (i.customId === "songQueue") {
+              const command = client.slashCommands.get("queue");
+              return command.run(i, [], client);
+            } else if (i.customId === "previousTrack") {
+              const command = client.slashCommands.get("previous");
+              return command.run(i, [], client);
+            } else if (i.customId === "nextTrack") {
+              return queue.skip();
+            } else if (i.customId === "stopPlayer") {
+              queue.setRepeatMode(QueueRepeatMode.OFF);
               queue.setPaused(false);
-              row1.components[2].setEmoji("⏸️");
-            } else {
-              queue.setPaused(true);
-              row1.components[2].setEmoji("▶️");
+              if (queue.tracks.length > 0) {
+                collector.stop();
+                const Logo = new Discord.MessageAttachment(
+                  "./Pictures/BTULogo.png"
+                );
+                const embed = new Discord.MessageEmbed();
+                embed
+                  .setDescription(
+                    "✅ | `Finished Playing And Left The Channel`"
+                  )
+                  .setColor("PURPLE")
+                  .setFooter({
+                    text: `BTU `,
+                    iconURL: "attachment://BTULogo.png",
+                  })
+                  .setTimestamp();
+                i.channel.send({ embeds: [embed], files: [Logo] });
+              }
+              return queue.destroy();
+            } else if (i.customId === "shuffleQueue") {
+              const command = client.slashCommands.get("shuffle");
+              return command.run(i, [], client);
+            } else if (i.customId === "streamTime") {
+              setTimeout(() => {
+                return i.followUp({
+                  content: `Total Time: ${ms(queue.totalTime)}`,
+                });
+              }, 500);
+            } else if (i.customId === "loopMode") {
+              updateLoopMode();
+              return message.edit({ components: [row1, row2] });
+            } else if (i.customId === "forwardTrack") {
+              const timeStamp = queue.getPlayerTimestamp().current.split(":");
+              const time = timeStamp[0] * 60000 + timeStamp[1] * 1000 + 15000;
+              if (time > queue.current.durationMS) return queue.skip();
+              return queue.seek(time);
+            } else if (i.customId === "rewindTrack") {
+              const timeStamp = queue.getPlayerTimestamp().current.split(":");
+              const time = timeStamp[0] * 60000 + timeStamp[1] * 1000 - 15000;
+              if (time < 0) return queue.seek(0);
+              return queue.seek(time);
             }
-            return message.edit({ components: [row1, row2] });
-          } else if (i.customId === "songQueue") {
-            const command = client.slashCommands.get("queue");
-            return command.run(i, [], client);
-          } else if (i.customId === "previousTrack") {
-            const command = client.slashCommands.get("previous");
-            return command.run(i, [], client);
-          } else if (i.customId === "nextTrack") {
-            return queue.skip();
-          } else if (i.customId === "stopPlayer") {
-            collector.stop();
-            queue.setRepeatMode(QueueRepeatMode.OFF);
-            return queue.destroy();
-          } else if (i.customId === "shuffleQueue") {
-            const command = client.slashCommands.get("shuffle");
-            return command.run(i, [], client);
-          } else if (i.customId === "streamTime") {
-            setTimeout(() => {
-              return i.followUp({
-                content: `Total Time: ${ms(queue.totalTime)}`,
-              });
-            }, 500);
-          } else if (i.customId === "loopMode") {
-            updateLoopMode();
-            return message.edit({ components: [row1, row2] });
-          } else if (i.customId === "forwardTrack") {
-            const timeStamp = queue.getPlayerTimestamp().current.split(":");
-            const time = timeStamp[0] * 60000 + timeStamp[1] * 1000 + 15000;
-            if (time > queue.current.durationMS) return queue.skip();
-            return queue.seek(time);
-          } else if (i.customId === "rewindTrack") {
-            const timeStamp = queue.getPlayerTimestamp().current.split(":");
-            const time = timeStamp[0] * 60000 + timeStamp[1] * 1000 - 15000;
-            if (time < 0) return queue.seek(0);
-            return queue.seek(time);
           }
-        });
+        );
 
         collector.on("end", async (reason) => {
           message.edit({ components: [] });

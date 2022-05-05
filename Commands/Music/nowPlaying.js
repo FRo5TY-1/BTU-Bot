@@ -47,10 +47,10 @@ module.exports = new Command({
       })
       .addFields(
         {
-          name: "Filter",
+          name: "Filters",
           value: `\`\`\` ${
             !queue.getFiltersEnabled().length
-              ? "OFF"
+              ? "None"
               : queue.getFiltersEnabled()
           } \`\`\``,
           inline: true,
