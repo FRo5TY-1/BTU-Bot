@@ -1,10 +1,8 @@
 const Event = require("../Structures/Event.js");
 const messageCreate = require("./messageCreate.js");
 const rolesModel = require("../DBModels/buttonRolesSchema.js");
+const Discord = require("discord.js");
 
-/**
- * @param {Discord.Interaction} interaction
- */
 module.exports = new Event(
   "interactionCreate",
   /**
@@ -13,13 +11,10 @@ module.exports = new Event(
     if (interaction.isCommand()) {
       const cmd = client.slashCommands.get(interaction.commandName);
       if (!cmd)
-        return interaction.followUp({
+        return interaction.reply({
           content: "error",
           ephemeral: true,
         });
-      await interaction
-        .deferReply({ ephemeral: cmd.ephemeral ? cmd.ephemeral : false })
-        .catch(() => {});
       const args = [];
       for (let option of interaction.options.data) {
         if (option.type === "SUB_COMMAND") {
@@ -37,7 +32,7 @@ module.exports = new Event(
           .permissionsIn(interaction.channel.id)
           .has(cmd.permissions || [])
       )
-        return interaction.followUp({
+        return interaction.reply({
           content: `You Don't Have Permission To Use This Command`,
           ephemeral: false,
         });
@@ -50,8 +45,6 @@ module.exports = new Event(
     }
 
     if (interaction.isButton()) {
-      await interaction.deferUpdate();
-
       if (interaction.message.partial) await interaction.message.fetch();
       const message = interaction.message;
 
@@ -85,6 +78,8 @@ module.exports = new Event(
           ["rulesagree"]
         );
       if (!BIDList.includes(interaction.customId)) return;
+
+      await interaction.deferUpdate();
 
       if (interaction.customId === "rulesagree") {
         if (Member.roles.cache.some((role) => role.name === "BTU Member")) {

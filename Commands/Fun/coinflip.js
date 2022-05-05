@@ -25,6 +25,6 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed], files: [Logo] });
+    interaction.reply({ embeds: [embed], files: [Logo] });
   },
 });

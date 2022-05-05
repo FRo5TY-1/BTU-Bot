@@ -19,13 +19,18 @@ module.exports = new Command({
     const player = client.player;
     const songTitle = interaction.options.getString("title");
 
+    if (!interaction.member.voice.channel)
+      return interaction.reply({
+        content: `You Must Be In A Voice Channel`,
+      });
+
     const searchResult = await player.search(songTitle, {
       requestedBy: interaction.user,
       searchEngine: QueryType.AUTO,
     });
 
     if (!searchResult || !searchResult.tracks.length) {
-      return interaction.followUp({ content: "Music Not Found!" });
+      return interaction.reply({ content: "Music Not Found!" });
     }
 
     const maxTracks = searchResult.tracks.slice(0, 10);
@@ -52,7 +57,7 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed], files: [Logo] });
+    interaction.reply({ embeds: [embed], files: [Logo] });
 
     const collector = interaction.channel.createMessageCollector({
       time: 20000,
@@ -70,14 +75,6 @@ module.exports = new Command({
         );
       }
 
-      if (!interaction.member.voice.channel)
-        return (
-          interaction.editReply({
-            content: `You Must Be In A Voice Channel`,
-            embeds: [],
-          }) && collector.stop()
-        );
-
       const queue = player.createQueue(interaction.guild, {
         metadata: interaction.channel,
       });
@@ -94,54 +91,6 @@ module.exports = new Command({
       const track = searchResult.tracks[Number(query.content) - 1];
 
       queue.addTrack(track);
-
-      const loopMode =
-        queue.repeatMode === QueueRepeatMode.TRACK
-          ? "Song"
-          : queue.repeatMode === QueueRepeatMode.QUEUE
-          ? "Queue"
-          : queue.repeatMode === QueueRepeatMode.AUTOPLAY
-          ? "Autoplay"
-          : "OFF";
-
-      embed
-        .setTitle("Song Added")
-        .setDescription(
-          `<a:CatJam:924585442450489404> | [**\`${track.title}\`**](${track.url}) - <@!${interaction.user.id}>`
-        )
-        .setAuthor({
-          name: interaction.user.username,
-          iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
-        })
-        .addFields(
-          {
-            name: "Possition",
-            value: `\`\`\` ${queue.getTrackPosition(track) + 1} \`\`\``,
-            inline: true,
-          },
-          {
-            name: "Loop Mode",
-            value: `\`\`\` ${loopMode} \`\`\``,
-            inline: true,
-          },
-          {
-            name: "Volume",
-            value: `\`\`\` ${queue.volume} \`\`\``,
-            inline: true,
-          },
-          {
-            name: "Now Playing",
-            value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
-          }
-        )
-        .setColor("PURPLE")
-        .setFooter({
-          text: `BTU `,
-          iconURL: "attachment://BTULogo.png",
-        })
-        .setTimestamp();
-
-      interaction.editReply({ embeds: [embed] });
 
       if (!queue.playing) await queue.play();
     });

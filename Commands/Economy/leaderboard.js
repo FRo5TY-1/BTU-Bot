@@ -45,14 +45,16 @@ module.exports = new Command({
     );
 
     Data = profileModel
-      .find({})
+      .find({
+        guildId: interaction.guild.id,
+      })
       .sort([["BTUcoins", -1]])
       .exec((err, res) => {
         if (err) console.log(err);
 
         if (res.length <= start) {
           embed.setDescription("```This Page Is Empty```");
-          return interaction.followUp({ embeds: [embed] });
+          return interaction.reply({ embeds: [embed] });
         }
 
         const usersArray = [];
@@ -68,7 +70,7 @@ module.exports = new Command({
 
         embed.setDescription(usersArray.join("\n"));
 
-        interaction.followUp({
+        interaction.reply({
           embeds: [embed],
           components: [row],
           files: [Logo],
@@ -82,6 +84,7 @@ module.exports = new Command({
         });
 
         collector.on("collect", async (i) => {
+          await i.deferUpdate();
           if (i.customId === "prevpage") {
             if (page <= 1) return;
             page--;

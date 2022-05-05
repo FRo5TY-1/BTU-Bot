@@ -7,5 +7,63 @@
     "me_irl",
     "animememes",
     "Animemes"
+  ],
+  "filters": [
+    {
+      "name": "NightCore",
+      "value": "nightcore"
+    },
+    {
+      "name": "8D",
+      "value": "8D"
+    },
+    {
+      "name": "Normilizer",
+      "value": "normalizer"
+    },
+    {
+      "name": "BassBoost Low",
+      "value": "bassboost_low"
+    },
+    {
+      "name": "BassBoost Medium",
+      "value": "bassboost"
+    },
+    {
+      "name": "BassBoost High",
+      "value": "bassboost_high"
+    },
+    {
+      "name": "Chorus",
+      "value": "chorus"
+    },
+    {
+      "name": "Chorus2D",
+      "value": "chorus2d"
+    },
+    {
+      "name": "Chorus3D",
+      "value": "chorus3d"
+    },
+    {
+      "name": "Surrounding",
+      "value": "surrounding"
+    },
+    {
+      "name": "FadeIn",
+      "value": "fadein"
+    },
+    {
+      "name": "Karaoke",
+      "value": "karaoke"
+    },
+    {
+      "name": "Dim",
+      "value": "dim"
+    },
+    {
+      "name": "Mono",
+      "value": "mono"
+    }
   ]
 }

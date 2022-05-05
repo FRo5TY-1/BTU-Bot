@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const rolesModel = require("../../DBModels/buttonRolesSchema.js");
 
 module.exports = new Command({
-  name: "button",
+  name: "button-role",
   showHelp: false,
   permissions: ["ADMINISTRATOR"],
   description: "Add Or Remove A Button Role",
@@ -153,12 +153,19 @@ module.exports = new Command({
       const emojiID = interaction.options.getString("emoji-id") || null;
       const role = interaction.guild.roles.cache.get(roleID);
 
-      if (!role) return interaction.followUp({ content: "Role Doesnt Exist" });
+      if (!role)
+        return interaction.reply({
+          content: "Role Doesnt Exist",
+          ephemeral: true,
+        });
 
       const message = await channel.messages?.fetch(messageID);
 
       if (!message)
-        return interaction.followUp({ content: "Message Doesnt Exist" });
+        return interaction.reply({
+          content: "Message Doesnt Exist",
+          ephemeral: true,
+        });
 
       await rolesModel.create({
         guildID: interaction.guild.id,
@@ -192,9 +199,12 @@ module.exports = new Command({
         })
         .setTimestamp();
 
-      interaction.followUp({ embeds: [embed], files: [Logo] });
-    }
-    if (interaction.options.getSubcommand() === "remove") {
+      return interaction.reply({
+        embeds: [embed],
+        files: [Logo],
+        ephemeral: true,
+      });
+    } else if (interaction.options.getSubcommand() === "remove") {
       const channel = interaction.options.getChannel("channel");
       const customID = interaction.options.getString("custom-id");
 
@@ -205,14 +215,20 @@ module.exports = new Command({
         })) || null;
 
       if (findButton === null)
-        return interaction.followUp({ content: "Object Doesn't Exist" });
+        return interaction.reply({
+          content: "Object Doesn't Exist",
+          ephemeral: true,
+        });
 
       const messageID = findButton.messageID;
 
       const message = await channel.messages?.fetch(messageID);
 
       if (!message)
-        return interaction.followUp({ content: "Message Doesnt Exist" });
+        return interaction.reply({
+          content: "Message Doesnt Exist",
+          ephemeral: true,
+        });
 
       await rolesModel.deleteOne({
         guildID: interaction.guild.id,
@@ -240,7 +256,11 @@ module.exports = new Command({
         })
         .setTimestamp();
 
-      interaction.followUp({ embeds: [embed], files: [Logo] });
+      return interaction.reply({
+        embeds: [embed],
+        files: [Logo],
+        ephemeral: true,
+      });
     }
   },
 });

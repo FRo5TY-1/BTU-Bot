@@ -17,7 +17,7 @@ module.exports = new Command({
 
   async run(interaction, args, client) {
     if (interaction.options.getMember("user")?.roles.botRole)
-      return interaction.followUp({
+      return interaction.reply({
         content:
           "Bots Don't Use Our Services <:FeelsBadMan:924601273028857866>",
       });
@@ -26,12 +26,15 @@ module.exports = new Command({
       interaction.user;
 
     let profileData =
-      (await profileModel.findOne({ userID: target.id })) || null;
+      (await profileModel.findOne({
+        guildId: interaction.guild.id,
+        userID: target.id,
+      })) || null;
 
     if (profileData === null) {
       profileData = await profileModel.create({
+        guildId: interaction.guild.id,
         userID: target.id,
-        BTUcoins: 500,
       });
       profileData.save();
     }
@@ -53,6 +56,6 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed], files: [Logo] });
+    interaction.reply({ embeds: [embed], files: [Logo] });
   },
 });

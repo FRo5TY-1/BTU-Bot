@@ -119,7 +119,10 @@ module.exports = new Command({
         .setStyle("DANGER")
     );
 
-    interaction.followUp({ content: `Poll შეიქმნა და გაიგზავნა` });
+    interaction.reply({
+      content: `Poll შეიქმნა და გაიგზავნა`,
+      ephemeral: true,
+    });
     channel
       .send({
         content: content.replaceAll(("|", "\n"), ("`", "`")),
@@ -133,6 +136,7 @@ module.exports = new Command({
         });
 
         collector.on("collect", async (i) => {
+          await i.deferUpdate();
           if (i.customId === "voteyes") {
             if (yesMemberArray.includes(i.user.id)) return;
             else if (noMemberArray.includes(i.user.id)) {

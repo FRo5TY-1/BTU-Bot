@@ -86,7 +86,7 @@ module.exports = new PlayerEvent(
     embed
       .setTitle("Started Playing")
       .setDescription(
-        ` <a:CatJam:967471460237062164> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
+        ` <a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
       )
       .setAuthor({
         name: queue.current.requestedBy.username,
@@ -120,6 +120,20 @@ module.exports = new PlayerEvent(
       })
       .setImage(queue.current.thumbnail)
       .setTimestamp();
+
+    const filter = (i) => {
+      if (
+        // i.user.id === queue.current.requestedBy.id ||
+        i.member.roles.cache.some((r) => r.name === "DJ")
+      )
+        return true;
+      return i.reply({
+        content:
+          "Current Song Must Be Requested By You Or You Must Have DJ Role To Use This Command",
+        ephemeral: true,
+      });
+    };
+
     queue.metadata
       .send({
         embeds: [embed],
@@ -128,10 +142,11 @@ module.exports = new PlayerEvent(
       })
       .then((message) => {
         const collector = message.createMessageComponentCollector({
-          filter: (i) => i.user.id === queue.current.requestedBy.id,
+          filter: filter,
         });
         client.collectors.set(queue.guild.id, collector);
         collector.on("collect", async (i) => {
+          await i.deferUpdate();
           if (i.customId === "pauseResume") {
             if (queue.connection.paused) {
               queue.setPaused(false);

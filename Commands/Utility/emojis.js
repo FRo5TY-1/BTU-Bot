@@ -25,8 +25,7 @@ module.exports = new Command({
         (e) => e.name.toLowerCase() === emojiName.toLowerCase()
       );
 
-      if (!cachedEmoji)
-        return interaction.followUp({ content: "No Emoji Found" });
+      if (!cachedEmoji) return interaction.reply({ content: "No Emoji Found" });
       const emoji =
         cachedEmoji.animated === false
           ? ` <:${cachedEmoji.name}:${cachedEmoji.id}> `
@@ -62,13 +61,27 @@ module.exports = new Command({
         })
         .setTimestamp();
 
-      interaction.followUp({ embeds: [embed], files: [Logo] });
+      return interaction.reply({ embeds: [embed], files: [Logo] });
     } else {
-      const emojis = interaction.guild.emojis.cache.map((e) => {
-        if (!e.animated)
+      // const emojis = interaction.guild.emojis.cache.map((e) => {
+      //   if (!e.animated)
+      //     return `<:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
+      //   return `<a:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
+      // });
+
+      const static = interaction.guild.emojis.cache.filter((e) => !e.animated);
+      const animated = interaction.guild.emojis.cache.filter((e) => e.animated);
+
+      const emojis = static
+        .map((e) => {
           return `<:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
-        return `<a:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
-      });
+        })
+        .concat(
+          animated.map((e) => {
+            return `<a:${e.name}:${e.id}> [\`URL\`](${e.url} "${e.name} Emoji URL")`;
+          })
+        );
+
       const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
       const embed = new Discord.MessageEmbed();
       embed
@@ -78,8 +91,10 @@ module.exports = new Command({
           iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
         })
         .setDescription(
-          `**\`\`\`List Of Server Emojis\`\`\`\n${emojis
-            .slice(0, 20)
+          `**\`\`\`Server Emojis -> | ${static.size} Static | ${
+            animated.size
+          } Animated | Total ${emojis.length} | \`\`\`\n${emojis
+            .slice(0, 30)
             .join(" ")}**`
         )
         .setFooter({
@@ -88,7 +103,19 @@ module.exports = new Command({
         })
         .setTimestamp();
 
-      interaction.followUp({ embeds: [embed], files: [Logo] });
+      const embeds = [embed];
+
+      const chunkSize = 30;
+      for (let i = 30; i < emojis.length; i += chunkSize) {
+        const chunk = emojis.slice(i, i + chunkSize);
+        embeds.push(
+          new Discord.MessageEmbed()
+            .setDescription(`**${chunk.join(" ")}**`)
+            .setColor("PURPLE")
+        );
+      }
+
+      return interaction.reply({ embeds: embeds, files: [Logo] });
     }
   },
 });

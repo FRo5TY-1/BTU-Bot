@@ -21,9 +21,21 @@ module.exports = new Command({
     const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
-      return interaction.followUp({
+      return interaction.reply({
         content: "ამჟამად მუსიკა არაა ჩართული",
       });
+
+    if (
+      interaction.user.id !== queue.current.requestedBy.id ||
+      !interaction.member.roles.cache.some((r) => r.name === "DJ")
+    ) {
+      return interaction.reply({
+        content:
+          "Current Song Must Be Requested By You Or You Must Have DJ Role To Use This Command",
+        ephemeral: true,
+      });
+    }
+
     const amount = interaction.options.getInteger("amount");
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
@@ -48,6 +60,6 @@ module.exports = new Command({
 
     queue.setVolume(amount);
 
-    return interaction.followUp({ embeds: [embed], files: [Logo] });
+    return interaction.reply({ embeds: [embed], files: [Logo] });
   },
 });

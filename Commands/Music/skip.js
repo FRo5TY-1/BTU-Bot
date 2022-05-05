@@ -20,9 +20,21 @@ module.exports = new Command({
     const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
-      return interaction.followUp({
+      return interaction.reply({
         content: "Music Is Not Being Played",
       });
+
+    if (
+      interaction.user.id !== queue.current.requestedBy.id ||
+      !interaction.member.roles.cache.some((r) => r.name === "DJ")
+    ) {
+      return interaction.reply({
+        content:
+          "Current Song Must Be Requested By You Or You Must Have DJ Role To Use This Command",
+        ephemeral: true,
+      });
+    }
+
     let amount = args[0] || 1;
 
     const loopMode =
@@ -83,10 +95,10 @@ module.exports = new Command({
         }
       }, 300);
       embed.setTitle(`Skipped \`${amount}\` Songs`);
-      return interaction.followUp({ embeds: [embed], files: [Logo] });
+      return interaction.reply({ embeds: [embed], files: [Logo] });
     } else {
       queue.skip();
-      return interaction.followUp({ embeds: [embed], files: [Logo] });
+      return interaction.reply({ embeds: [embed], files: [Logo] });
     }
   },
 });

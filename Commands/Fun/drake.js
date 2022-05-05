@@ -26,6 +26,6 @@ module.exports = new Command({
       text1
     )}&text2=${encodeURIComponent(text2)}`;
 
-    interaction.followUp(Image);
+    interaction.reply(Image);
   },
 });

@@ -14,10 +14,6 @@ class Client extends Discord.Client {
     /**
      * @type {Discord.Collection<string, Command>}
      */
-    this.commands = new Discord.Collection();
-    /**
-     * @type {Discord.Collection<string, Command>}
-     */
     this.slashCommands = new Discord.Collection();
     /**
      * @type {Discord.Collection<string, Discord.Collector>}
@@ -46,16 +42,10 @@ class Client extends Discord.Client {
         /**
          * @type {Command}
          */
-        const command = require(`../Commands/${dir}/${file}`);
-        if (["BOTH", "TEXT"].includes(command.type)) {
-          this.commands.set(command.name, command);
-          console.log(`Text Command ${command.name} loaded`);
-        }
-        if (["BOTH", "SLASH"].includes(command.type)) {
-          console.log(`Slash Command ${command.name} loaded`);
-          if (command.permissions) command.defaultPermission = false;
-          this.slashCommands.set(command.name, command);
-        }
+        const slashCommand = require(`../Commands/${dir}/${file}`);
+        console.log(`Slash Command ${slashCommand.name} loaded`);
+        if (slashCommand.permissions) slashCommand.defaultPermission = false;
+        this.slashCommands.set(slashCommand.name, slashCommand);
       }
     });
 

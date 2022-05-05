@@ -134,7 +134,10 @@ module.exports = new Command({
       }
     }
 
-    interaction.followUp({ content: `Embed შეიქმნა და გაიგზავნა` });
+    interaction.reply({
+      content: `Embed შეიქმნა და გაიგზავნა`,
+      ephemeral: true,
+    });
     channel.send({
       content: content.replaceAll("|", "\n"),
       embeds: [embed],

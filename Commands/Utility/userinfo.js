@@ -17,7 +17,7 @@ module.exports = new Command({
 
   async run(interaction, args, client) {
     if (interaction.options.getMember("user").roles.botRole)
-      return interaction.followUp({
+      return interaction.reply({
         content:
           "Bot-ები არ მოიხმარენ ჩვენ სერვისს <:FeelsBadMan:924601273028857866>",
       });
@@ -58,7 +58,7 @@ module.exports = new Command({
         },
         {
           name: `Up To 10 Roles`,
-          value: `**\`\`\`${roles}\`\`\`**`,
+          value: `**\`\`\`${roles || "None"}\`\`\`**`,
         },
         {
           name: `Account Created`,
@@ -79,6 +79,6 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed], files: [Logo] });
+    interaction.reply({ embeds: [embed], files: [Logo] });
   },
 });

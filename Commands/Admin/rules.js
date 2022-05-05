@@ -31,12 +31,11 @@ module.exports = new Command({
         .setLabel("ვეთანხმები")
         .setStyle("SUCCESS")
     );
-    const message = interaction.channel.messages
-      .fetch("927907530926096465")
-      .then((message) =>
-        message.edit({ embeds: [embed], components: [row], files: [Logo] })
-      );
-    return interaction.deleteReply()
-    ;
+    // const message = interaction.channel.messages
+    //   .fetch("927907530926096465")
+    //   .then((message) =>
+    //     message.edit({ embeds: [embed], components: [row], files: [Logo] })
+    //   );
+    return interaction.deleteReply();
   },
 });

@@ -18,6 +18,6 @@ module.exports = new Command({
     const Image = `https://api.popcatdev.repl.co/biden?text=${encodeURIComponent(
       text
     )}`;
-    interaction.followUp(Image);
+    interaction.reply(Image);
   },
 });

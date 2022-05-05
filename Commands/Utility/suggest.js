@@ -61,12 +61,12 @@ module.exports = new Command({
       });
     }
 
-    interaction.followUp({
+    interaction.reply({
       content: `Suggestion Created And Sent Successfully`,
     });
     channel.send({ embeds: [embed], files: [Logo] });
     logsChannel.send({
-      content: `<@!${interaction.user.id}> made a suggestion`,
+      content: `<@!${interaction.user.id}> made a suggestion ${title}`,
     });
   },
 });

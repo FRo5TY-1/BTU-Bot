@@ -21,10 +21,11 @@ module.exports = new Command({
     let amount = interaction.options.getInteger("amount") || 10;
 
     interaction.channel.bulkDelete(amount).catch((err) => {
-      interaction.followUp({
+      interaction.reply({
         content: "Messages Older Which Are Older Than 14 Days Can't Be Deleted",
         ephemeral: true,
       });
     });
+    interaction.deleteReply();
   },
 });

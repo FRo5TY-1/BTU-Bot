@@ -23,18 +23,19 @@ module.exports = new Command({
 
   async run(interaction, args) {
     let profileData = await profileModel.findOne({
+      guildId: interaction.guild.id,
       userID: interaction.user.id,
     });
 
     if (!profileData) {
       profileData = await profileModel.create({
+        guildId: interaction.guild.id,
         userID: interaction.user.id,
-        BTUcoins: 500,
       });
       profileData.save();
     }
     if (interaction.options.getMember("user")?.roles.botRole)
-      return interaction.followUp({
+      return interaction.reply({
         content:
           "Bots Don't Use Our Services <:FeelsBadMan:924601273028857866>",
       });
@@ -42,35 +43,39 @@ module.exports = new Command({
       interaction.options.getMember("user")?.id
     );
     if (!target)
-      return interaction.followUp({
+      return interaction.reply({
         content: "User Doesn't Exist!",
         ephemeral: true,
       });
     if (target.id === interaction.user.id)
-      return interaction.followUp({
+      return interaction.reply({
         content: "Can't Pay Yourself!",
         ephemeral: true,
       });
     const amount = interaction.options.getInteger("amount");
     if (amount > profileData.BTUcoins)
-      return interaction.followUp({
+      return interaction.reply({
         content: `Insufficent Funds!\nYour Balance: ${profileData.BTUcoinss}`,
         ephemeral: true,
       });
     const cutAmount = amount - amount * 0.02;
 
     try {
-      let targetData = await profileModel.findOne({ userID: target.id });
+      let targetData = await profileModel.findOne({
+        guildId: interaction.guild.id,
+        userID: target.id,
+      });
       if (!targetData) {
         targetData = await profileModel.create({
+          guildId: interaction.guild.id,
           userID: target.id,
-          BTUcoins: 500,
         });
         targetData.save();
       }
 
       await profileModel.findOneAndUpdate(
         {
+          guildId: interaction.guild.id,
           userID: interaction.user.id,
         },
         {
@@ -82,6 +87,7 @@ module.exports = new Command({
 
       await profileModel.findOneAndUpdate(
         {
+          guildId: interaction.guild.id,
           userID: target.id,
         },
         {
@@ -91,7 +97,7 @@ module.exports = new Command({
         }
       );
 
-      return interaction.followUp({
+      return interaction.reply({
         content: `Transaction Ended Successfully, **${amount}** BTU Coins Were Taken From Your Account\n${target.username} Received **${cutAmount}** BTU Coins`,
       });
     } catch (err) {

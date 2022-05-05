@@ -13,5 +13,6 @@ module.exports = new Event("ready", async (client) => {
   });
 
   const guild = client.guilds.cache.get("913318880561205268");
-  guild.commands.set(client.slashCommands);
+  guild?.commands.set([]);
+  client.application.commands.set(client.slashCommands);
 });

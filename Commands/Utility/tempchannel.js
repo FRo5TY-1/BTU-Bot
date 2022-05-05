@@ -121,6 +121,7 @@ module.exports = new Command({
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const subCommand = interaction.options.getSubcommand();
     let tempChannelData = await tempChannelModel.findOne({
+      guildId: interaction.guild.id,
       userID: interaction.user.id,
       channelType: channelType,
     });
@@ -144,7 +145,7 @@ module.exports = new Command({
     ];
 
     if (!tempChannelData && subCommand != "create")
-      return interaction.followUp({
+      return interaction.reply({
         content: "You Don't Have A Temporary Channel Created",
       });
 
@@ -167,7 +168,7 @@ module.exports = new Command({
         const channelExpiry = tempChannelData.expiry;
         const channelID = tempChannelData.channelID;
         if (channelExpiry > new Date().getTime()) {
-          return interaction.followUp(
+          return interaction.reply(
             `You Already Have An Active Temporary Channel -> <#${channelID}>\nWhich Will Be deleted -> **<t:${Math.floor(
               channelExpiry / 1000
             )}:R>**`
@@ -219,8 +220,9 @@ module.exports = new Command({
             .setColor("PURPLE")
             .setTimestamp();
 
-          interaction.followUp({ embeds: [embed], files: [Logo] });
+          interaction.reply({ embeds: [embed], files: [Logo] });
           tempChannelData = await tempChannelModel.create({
+            guildId: interaction.guild.id,
             userID: interaction.user.id,
             channelID: channel.id,
             expiry: new Date().getTime() + time,
@@ -268,7 +270,7 @@ module.exports = new Command({
         .setColor("PURPLE")
         .setTimestamp();
 
-      interaction.followUp({ embeds: [embed], files: [Logo] });
+      return interaction.reply({ embeds: [embed], files: [Logo] });
     }
 
     // add subcommand starts here
@@ -310,7 +312,7 @@ module.exports = new Command({
         })
         .setColor("PURPLE");
 
-      interaction.followUp({ embeds: [embed], files: [Logo] });
+      interaction.reply({ embeds: [embed], files: [Logo] });
 
       const collector = interaction.channel.createMessageCollector({
         time: 30000,
@@ -417,7 +419,7 @@ module.exports = new Command({
         })
         .setColor("PURPLE");
 
-      interaction.followUp({ embeds: [embed], files: [Logo] });
+      interaction.reply({ embeds: [embed], files: [Logo] });
 
       const collector = interaction.channel.createMessageCollector({
         time: 30000,

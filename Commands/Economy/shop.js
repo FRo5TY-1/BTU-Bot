@@ -1,6 +1,7 @@
 const Command = require("../../Structures/Command.js");
 const profileModel = require("../../DBModels/profileSchema.js");
-const itemModel = require("../../DBModels/itemSchema.js");
+const itemModel = require("../../DBModels/shopItemsSchema.js");
+const inventoryModel = require("../../DBModels/inventorySchema.js");
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -12,6 +13,16 @@ module.exports = new Command({
       name: "see",
       description: "See The Shop",
       type: "SUB_COMMAND",
+      options: [
+        {
+          name: "page",
+          type: "INTEGER",
+          description: "Choose Page",
+          min_value: 1,
+          max_value: 2,
+          required: true,
+        },
+      ],
     },
     {
       name: "buy",
@@ -29,100 +40,153 @@ module.exports = new Command({
   ],
 
   async run(interaction, args, client) {
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
+
+    const items = await itemModel
+      .find({
+        guildId: interaction.guild.id,
+      })
+      .sort({ tier: 1, price: -1 });
+
+    const sliceItems = items.map((i, index) => {
+      return `${index + 1}. ${i.name} | ${i.price} BTU Coins`;
+    });
+
+    function filterItems(tier) {
+      const tierEmoji =
+        tier == 1
+          ? "🟠"
+          : tier == 2
+          ? "🔴"
+          : tier == 3
+          ? "🔵"
+          : tier == 4
+          ? "🟢"
+          : "⚫";
+      return (
+        items
+          .filter((i) => i.tier === tier)
+          .map((i) => {
+            return `${tierEmoji} ${items.indexOf(i) + 1}. ${i.name} | ${
+              i.price
+            } BTU Coins`;
+          })
+          .join("\n") || "No Items"
+      );
+    }
+
     if (interaction.options.getSubcommand() === "see") {
-      const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
-      const shopEmbed = new Discord.MessageEmbed();
-      shopEmbed
-        .setTitle("⠀⠀▬▬▬▬▬▬▬▬▬ BTU Shop ▬▬▬▬▬▬▬▬▬⠀⠀")
+      const page = interaction.options.getInteger("page");
+      const embed = new Discord.MessageEmbed();
+      embed
         .setDescription(
-          "```ყველა ნივთი რომლის ყიდვაც BTU Coin-ებით შეგიძლიათ```"
-        )
-        .addFields(
-          {
-            name: "⠀⠀ 👑 ▬▬▬▬▬▬▬▬ Legendary Tier ▬▬▬▬▬▬▬▬ 👑⠀⠀",
-            value: "```🟠 1. ბეთეუს N1 ლობიანი  |  2000 Coins\n```",
-          },
-          {
-            name: "⠀⠀⠀⠀⠀⠀ ▬▬▬▬▬▬▬▬ Epic Tier ▬▬▬▬▬▬▬▬ ⠀⠀⠀⠀",
-            value: "```🔴 2. ბეთეუს 2 ბირთვიანი AIO  |  1000 Coins\n```",
-          },
-          {
-            name: "⠀⠀⠀⠀⠀⠀ ▬▬▬▬▬▬▬▬ Rare Tier ▬▬▬▬▬▬▬▬ ⠀⠀⠀⠀",
-            value: "```🔵 3. ბეთეუს Parking Spot  | 500 Coins\n```",
-          }
+          "```  Use /shop buy [Item Index] To Purchase Item You Want  ```"
         )
         .setColor("PURPLE")
         .setFooter({
-          text: "Use Command /shop buy To Purchase An Item",
+          text: `Page ${page}`,
           iconURL: "attachment://BTULogo.png",
         })
         .setTimestamp();
 
-      return interaction.followUp({ embeds: [shopEmbed], files: [Logo] });
+      if (page == 1) {
+        embed.addFields(
+          {
+            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<a:ExpensiveAF:971780086334365777>⠀Legendary⠀<a:ExpensiveAF:971780086334365777> ",
+            value: `\`\`\`${filterItems(1)}\`\`\``,
+          },
+          {
+            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<a:LuffyEpicDodge:971776827850907679>⠀Epic⠀<a:LuffyEpicDodge:971776827850907679> ",
+            value: `\`\`\`${filterItems(2)}\`\`\``,
+          }
+        );
+      } else {
+        embed.addFields(
+          {
+            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<:RareCandy:971773899580780624>⠀Rare⠀<:RareCandy:971773899580780624> ",
+            value: `\`\`\`${filterItems(3)}\`\`\``,
+          },
+          {
+            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<:Brokege:971780085189328896>⠀Uncommon⠀<:Brokege:971780085189328896> ",
+            value: `\`\`\`${filterItems(4)}\`\`\``,
+          },
+          {
+            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<:WojakDone:971780085206106172>⠀Common⠀<:WojakDone:971780085206106172> ",
+            value: `\`\`\`${filterItems(5)}\`\`\``,
+          }
+        );
+      }
+
+      return interaction.reply({ embeds: [embed], files: [Logo] });
     } else {
       //buy sub command starts here
 
       const itemIndex = interaction.options.getInteger("item") - 1;
 
-      const itemList = [
-        { name: "🟠 ბეთეუს N1 ლობიანი", price: 2000, tier: 1 },
-        { name: "🔴 ბეთეუს 2 ბირთვიანი AIO", price: 1000, tier: 2 },
-        { name: "🔵 ბეთეუს Parking Spot", price: 500, tier: 3 },
-      ];
+      if (!items[itemIndex])
+        return interaction.reply({
+          content: "Item With That Index Does Not Exist!",
+          ephemeral: true,
+        });
 
       let profileData =
-        (await profileModel.findOne({ userID: interaction.user.id })) || null;
+        (await profileModel.findOne({
+          guildId: interaction.guild.id,
+          userID: interaction.user.id,
+        })) || null;
 
       if (profileData === null) {
         profileData = await profileModel.create({
+          guildId: interaction.guild.id,
           userID: interaction.user.id,
-          BTUcoins: 500,
         });
         profileData.save();
       }
 
       const moneyBefore = profileData.BTUcoins;
 
-      if (profileData.BTUcoins < itemList[itemIndex].price) {
-        return interaction.followUp({
-          content: "თანხა არ გყოფნით",
+      if (profileData.BTUcoins < items[itemIndex].price) {
+        return interaction.reply({
+          content: "Not Enough Funds",
         });
       } else {
         let itemData =
-          (await itemModel.findOne({
+          (await inventoryModel.findOne({
+            guildId: interaction.guild.id,
             userID: interaction.user.id,
-            itemName: itemList[itemIndex].name,
+            item: items[itemIndex],
           })) || null;
 
         await profileModel.findOneAndUpdate(
           {
+            guildId: interaction.guild.id,
             userID: interaction.user.id,
           },
           {
             $inc: {
-              BTUcoins: -itemList[itemIndex].price,
+              BTUcoins: -items[itemIndex].price,
             },
           }
         );
 
         if (itemData !== null) {
-          await itemModel.findOneAndUpdate(
+          await inventoryModel.findOneAndUpdate(
             {
+              guildId: interaction.guild.id,
               userID: interaction.user.id,
-              itemName: itemList[itemIndex].name,
+              item: items[itemIndex],
             },
             {
               $inc: {
-                itemAmount: +1,
+                amount: +1,
               },
             }
           );
         } else {
-          itemData = await itemModel.create({
+          itemData = await inventoryModel.create({
+            guildId: interaction.guild.id,
             userID: interaction.user.id,
-            itemName: itemList[itemIndex].name,
-            itemAmount: 1,
-            itemTier: itemList[itemIndex].tier,
+            item: items[itemIndex],
           });
           itemData.save();
         }
@@ -131,9 +195,9 @@ module.exports = new Command({
         embed
           .setTitle("Success")
           .setDescription(
-            `წარმატებით შეიძინეთ \`${itemList[itemIndex].name}\`
+            `წარმატებით შეიძინეთ \`${items[itemIndex].name}\`
             \nძველი ბალანსი: \`${moneyBefore}\`, ახალი: \`${
-              moneyBefore - itemList[itemIndex].price
+              moneyBefore - items[itemIndex].price
             }\``
           )
           .setAuthor({
@@ -146,7 +210,7 @@ module.exports = new Command({
             iconURL: "attachment://BTULogo.png",
           })
           .setTimestamp();
-        interaction.followUp({ embeds: [embed], files: [Logo] });
+        return interaction.reply({ embeds: [embed], files: [Logo] });
       }
     }
   },

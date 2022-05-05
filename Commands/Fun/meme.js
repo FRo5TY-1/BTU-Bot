@@ -30,6 +30,8 @@ module.exports = new Command({
       })
       .setTimestamp();
 
+    await interaction.deferReply();
+
     function getMeme() {
       const subreddit =
         subreddits[Math.floor(Math.random() * subreddits.length)];
@@ -65,6 +67,7 @@ module.exports = new Command({
     });
 
     collector.on("collect", async (i) => {
+      await i.deferUpdate();
       if (i.customId === "nextmeme") {
         getMeme();
       } else if (i.customId === "finishmeme") {

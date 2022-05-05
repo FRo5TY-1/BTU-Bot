@@ -20,9 +20,21 @@ module.exports = new Command({
     const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
-      return interaction.followUp({
+      return interaction.reply({
         content: "Music Is Not Being Played",
       });
+
+    if (
+      interaction.user.id !== queue.current.requestedBy.id ||
+      !interaction.member.roles.cache.some((r) => r.name === "DJ")
+    ) {
+      return interaction.reply({
+        content:
+          "Current Song Must Be Requested By You Or You Must Have DJ Role To Use This Command",
+        ephemeral: true,
+      });
+    }
+
     let index = interaction.options.getInteger("index") || 1;
 
     const loopMode =
@@ -76,7 +88,7 @@ module.exports = new Command({
 
     if (index - 1 > 0) {
       if (index - 1 > queue.tracks.length) {
-        return interaction.followUp({
+        return interaction.reply({
           content: `There Is No Song With \`${index}\` Index`,
         });
       }
@@ -84,11 +96,11 @@ module.exports = new Command({
       queue.jump(index - 1);
 
       embed.setTitle(`Skipped To Song With Index Of \`${index}\``);
-      return interaction.followUp({ embeds: [embed], files: [Logo] });
+      return interaction.reply({ embeds: [embed], files: [Logo] });
     } else if (index < 0) {
       const posIndex = Math.abs(index);
       if (posIndex > queue.previousTracks.length)
-        return interaction.followUp({
+        return interaction.reply({
           content: `There Is No Previous Song With \`${posIndex}\` Index`,
         });
       const track =
@@ -98,11 +110,11 @@ module.exports = new Command({
       queue.insert(track, 0);
       queue.skip();
       embed.setTitle(`Skipped To Previous Song With Index Of \`${posIndex}\``);
-      return interaction.followUp({ embeds: [embed], files: [Logo] });
+      return interaction.reply({ embeds: [embed], files: [Logo] });
     } else {
       embed.setTitle("Skipped `1` Song");
       queue.skip();
-      return interaction.followUp({ embeds: [embed], files: [Logo] });
+      return interaction.reply({ embeds: [embed], files: [Logo] });
     }
   },
 });

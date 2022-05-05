@@ -10,17 +10,19 @@ module.exports = new Command({
 
   async run(interaction) {
     let profileData = await profileModel.findOne({
+      guildId: interaction.guild.id,
       userID: interaction.user.id,
     });
 
     let cooldownData = await cooldownModel.findOne({
+      guildId: interaction.guild.id,
       userID: interaction.user.id,
       command: "daily",
     });
     if (cooldownData) {
       let cooldownExpiry = cooldownData.expiry;
       if (cooldownExpiry > new Date().getTime()) {
-        return interaction.followUp({
+        return interaction.reply({
           content: `You Already Used This Command, Time Left: **${ms(
             cooldownExpiry - new Date().getTime()
           )}**`,
@@ -35,14 +37,15 @@ module.exports = new Command({
     try {
       if (!profileData) {
         profileData = await profileModel.create({
+          guildId: interaction.guild.id,
           userID: interaction.user.id,
-          BTUcoins: 500,
         });
         profileData.save();
       }
 
       const response = await profileModel.findOneAndUpdate(
         {
+          guildId: interaction.guild.id,
           userID: interaction.user.id,
         },
         {
@@ -51,9 +54,10 @@ module.exports = new Command({
           },
         }
       );
-      interaction.followUp(`You Received Daily **${randomNumber}** BTU Coins`);
+      interaction.reply(`You Received Daily **${randomNumber}** BTU Coins`);
 
       cooldownData = await cooldownModel.create({
+        guildId: interaction.guild.id,
         userID: interaction.user.id,
         command: "daily",
         expiry: new Date().getTime() + 3600000 * 24,

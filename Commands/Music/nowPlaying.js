@@ -11,7 +11,7 @@ module.exports = new Command({
     const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
-      return interaction.followUp({
+      return interaction.reply({
         content: "Music Is Not Being Played",
       });
 
@@ -77,6 +77,6 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    return interaction.followUp({ embeds: [embed], files: [Logo] });
+    return interaction.reply({ embeds: [embed], files: [Logo] });
   },
 });

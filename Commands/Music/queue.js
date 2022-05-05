@@ -21,7 +21,7 @@ module.exports = new Command({
     const start = end - 5;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
-      return interaction.followUp({
+      return interaction.reply({
         content: "Music Is Not Being Played",
       });
 
@@ -63,8 +63,12 @@ module.exports = new Command({
       })
       .setColor("PURPLE")
       .setTimestamp();
-    setTimeout(() => {
-      return interaction.followUp({ embeds: [embed], files: [Logo] });
-    }, 500);
+    if (interaction.isCommand())
+      return interaction.reply({ embeds: [embed], files: [Logo] });
+    else if (interaction.isButton()) {
+      setTimeout(() => {
+        return interaction.followUp({ embeds: [embed], files: [Logo] });
+      }, 500);
+    }
   },
 });

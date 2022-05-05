@@ -1,5 +1,5 @@
 const Command = require("../../Structures/Command.js");
-const itemModel = require("../../DBModels/itemSchema.js");
+const inventoryModel = require("../../DBModels/inventorySchema.js");
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -17,7 +17,7 @@ module.exports = new Command({
 
   async run(interaction, args, client) {
     if (interaction.options.getMember("user")?.roles.botRole)
-      return interaction.followUp({
+      return interaction.reply({
         content:
           "Bots Don't Use Our Services <:FeelsBadMan:924601273028857866>",
       });
@@ -40,25 +40,36 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    const itemData = await itemModel
+    inventoryModel
       .find({
+        guildId: interaction.guild.id,
         userID: target.id,
       })
-      .sort([["itemTier", -1]])
+      .sort({ "item.tier": 1 })
       .exec((err, res) => {
         if (res.length < 1) {
           embed.setDescription("```Inventory Is Empty```");
-          return interaction.followUp({ embeds: [embed], files: [Logo] });
+          return interaction.reply({ embeds: [embed], files: [Logo] });
         }
 
         const itemArray = [];
 
         for (i = 0; i < 15; i++) {
           if (!res[i]) continue;
-          itemArray.push(`\`${res[i].itemName}\` x **${res[i].itemAmount}**`);
+          const tierEmoji =
+            res[i].item.tier == 1
+              ? "🟠"
+              : res[i].item.tier == 2
+              ? "🔴"
+              : res[i].item.tier == 3
+              ? "🔵"
+              : res[i].item.tier == 4
+              ? "🟢"
+              : "⚫";
+          itemArray.push(`${tierEmoji} ${res[i].item.name} x ${res[i].amount}`);
         }
-        embed.setDescription(itemArray.join("\n"));
-        return interaction.followUp({ embeds: [embed], files: [Logo] });
+        embed.setDescription(`**\`\`\`${itemArray.join("\n")}\`\`\`**`);
+        return interaction.reply({ embeds: [embed], files: [Logo] });
       });
   },
 });
