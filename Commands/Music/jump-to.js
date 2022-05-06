@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "jump-to",
-  description: "Jump To A Given Index (Won't Skip Every Song In It's Path)",
+  description: "🎵 Jump To A Given Index (Won't Skip Every Song In It's Path)",
   type: "SLASH",
   options: [
     {

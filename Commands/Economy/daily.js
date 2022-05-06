@@ -5,7 +5,7 @@ const ms = require("ms");
 
 module.exports = new Command({
   name: "daily",
-  description: "daily reward",
+  description: "💳 daily reward",
   type: "SLASH",
 
   async run(interaction) {

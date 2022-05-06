@@ -4,7 +4,7 @@ const { QueueRepeatMode } = require("discord-player");
 
 module.exports = new Command({
   name: "now-playing",
-  description: "Check Current Song",
+  description: "🎵 Check Current Song",
   type: "SLASH",
 
   async run(interaction, args, client) {

@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "loop",
-  description: "Loop The Playlist",
+  description: "🎵 Loop The Playlist",
   type: "SLASH",
   options: [
     {

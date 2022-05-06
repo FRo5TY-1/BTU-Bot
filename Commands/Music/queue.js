@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "queue",
-  description: "See Queue",
+  description: "🎵 See Queue",
   type: "SLASH",
   options: [
     {

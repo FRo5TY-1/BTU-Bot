@@ -6,12 +6,12 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "shop",
-  description: "Shop Commands",
+  description: "💳 Shop Commands",
   type: "SLASH",
   options: [
     {
       name: "see",
-      description: "See The Shop",
+      description: "💳 See The Shop",
       type: "SUB_COMMAND",
       options: [
         {
@@ -26,7 +26,7 @@ module.exports = new Command({
     },
     {
       name: "buy",
-      description: "Buy An Item From The Shop",
+      description: "💳 Buy An Item From The Shop",
       type: "SUB_COMMAND",
       options: [
         {

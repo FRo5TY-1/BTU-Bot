@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "previous",
-  description: "Previous Song",
+  description: "🎵 Previous Song",
   type: "SLASH",
 
   async run(interaction, args, client) {

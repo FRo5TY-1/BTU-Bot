@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "fast-forward",
-  description: "Fast-Forward Music",
+  description: "🎵 Fast-Forward Music",
   type: "SLASH",
   options: [
     {

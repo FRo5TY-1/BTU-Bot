@@ -4,7 +4,7 @@ const filters = require("../../Data/config.json").filters;
 
 module.exports = new Command({
   name: "filters",
-  description: "Apply Filters",
+  description: "🎵 Apply Filters",
   type: "SLASH",
   options: [
     {

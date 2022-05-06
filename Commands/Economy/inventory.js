@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "inventory",
-  description: "ნახეთ თქვენი ან სხვისი inventory",
+  description: "💳 ნახეთ თქვენი ან სხვისი inventory",
   type: "SLASH",
   options: [
     {

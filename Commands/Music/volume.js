@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "volume",
-  description: "Change Volume",
+  description: "🎵 Change Volume",
   type: "SLASH",
   options: [
     {

@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "rewind",
-  description: "Rewind Music",
+  description: "🎵 Rewind Music",
   type: "SLASH",
   options: [
     {

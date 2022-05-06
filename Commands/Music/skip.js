@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "skip",
-  description: "Skip A  Song",
+  description: "🎵 Skip A  Song",
   type: "SLASH",
   options: [
     {

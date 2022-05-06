@@ -3,7 +3,7 @@ const profileModel = require("../../DBModels/profileSchema.js");
 
 module.exports = new Command({
   name: "pay",
-  description: "მოახდინეთ BTU Coin-ების გადარიცხვა",
+  description: "💳 მოახდინეთ BTU Coin-ების გადარიცხვა",
   type: "SLASH",
   options: [
     {

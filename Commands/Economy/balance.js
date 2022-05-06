@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "balance",
-  description: "shows user's balance",
+  description: "💳 shows user's balance",
   type: "SLASH",
   options: [
     {

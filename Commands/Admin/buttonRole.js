@@ -112,25 +112,25 @@ module.exports = new Command({
       });
 
       const row1 = new Discord.MessageActionRow().addComponents(
-        buttonsArray.slice(0, 5)
+        buttonsArray.slice(0, 6)
       );
       const row2 = new Discord.MessageActionRow().addComponents(
-        buttonsArray.slice(5, 10)
+        buttonsArray.slice(5, 11)
       );
       const row3 = new Discord.MessageActionRow().addComponents(
-        buttonsArray.slice(10, 15)
+        buttonsArray.slice(10, 16)
       );
       const row4 = new Discord.MessageActionRow().addComponents(
-        buttonsArray.slice(15, 20)
+        buttonsArray.slice(15, 21)
       );
       const row5 = new Discord.MessageActionRow().addComponents(
-        buttonsArray.slice(20, 25)
+        buttonsArray.slice(20, 26)
       );
 
       const components =
         buttonsArray.length == 0
           ? []
-          : buttonsArray.length <= 4
+          : buttonsArray.length <= 5
           ? [row1]
           : buttonsArray.length <= 10
           ? [row1, row2]

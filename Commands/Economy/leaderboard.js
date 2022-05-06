@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 
 module.exports = new Command({
   name: "leaderboard",
-  description: "shows leaderboard",
+  description: "💳 shows leaderboard",
   type: "SLASH",
   options: [
     {

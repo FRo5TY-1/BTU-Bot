@@ -4,7 +4,7 @@ const { QueueRepeatMode } = require("discord-player");
 
 module.exports = new Command({
   name: "shuffle",
-  description: "Shuffle Queue",
+  description: "🎵 Shuffle Queue",
   type: "SLASH",
 
   async run(interaction, args, client) {
