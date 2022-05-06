@@ -75,8 +75,9 @@ module.exports = new Command({
         );
       }
 
-      const queue = player.createQueue(interaction.guild, {
+      const queue = await player.createQueue(interaction.guild, {
         metadata: interaction.channel,
+        leaveOnEmptyCooldown: 500000,
       });
 
       const value = parseInt(query.content);
@@ -91,6 +92,54 @@ module.exports = new Command({
       const track = searchResult.tracks[Number(query.content) - 1];
 
       queue.addTrack(track);
+
+      const loopMode =
+        queue.repeatMode === QueueRepeatMode.TRACK
+          ? "Song"
+          : queue.repeatMode === QueueRepeatMode.QUEUE
+          ? "Queue"
+          : queue.repeatMode === QueueRepeatMode.AUTOPLAY
+          ? "Autoplay"
+          : "OFF";
+
+      embed
+        .setTitle("Song Added")
+        .setDescription(
+          `<a:CatJam:924585442450489404> | [**\`${track.title}\`**](${track.url}) - <@!${interaction.user.id}>`
+        )
+        .setAuthor({
+          name: interaction.user.username,
+          iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+        })
+        .addFields(
+          {
+            name: "Possition",
+            value: `\`\`\` ${queue.getTrackPosition(track) + 1} \`\`\``,
+            inline: true,
+          },
+          {
+            name: "Loop Mode",
+            value: `\`\`\` ${loopMode} \`\`\``,
+            inline: true,
+          },
+          {
+            name: "Volume",
+            value: `\`\`\` ${queue.volume} \`\`\``,
+            inline: true,
+          },
+          {
+            name: "Now Playing",
+            value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+          }
+        )
+        .setColor("PURPLE")
+        .setFooter({
+          text: `BTU `,
+          iconURL: "attachment://BTULogo.png",
+        })
+        .setTimestamp();
+
+      interaction.editReply({ embeds: [embed] });
 
       if (!queue.playing) await queue.play();
     });

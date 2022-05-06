@@ -25,8 +25,6 @@ module.exports = new Command({
         ephemeral: true,
       });
 
-    await interaction.deferReply();
-
     const searchResult = await player.search(songTitle, {
       requestedBy: interaction.user,
       searchEngine: QueryType.AUTO,
@@ -38,6 +36,7 @@ module.exports = new Command({
 
     const queue = await player.createQueue(interaction.guild, {
       metadata: interaction.channel,
+      leaveOnEmptyCooldown: 500000,
     });
 
     if (!queue.connection)
@@ -47,7 +46,68 @@ module.exports = new Command({
       ? queue.addTracks(searchResult.tracks)
       : queue.addTrack(searchResult.tracks[0]);
 
-    await interaction.deleteReply();
+    const loopMode =
+      queue.repeatMode === QueueRepeatMode.TRACK
+        ? "Song"
+        : queue.repeatMode === QueueRepeatMode.QUEUE
+        ? "Queue"
+        : queue.repeatMode === QueueRepeatMode.AUTOPLAY
+        ? "Autoplay"
+        : "OFF";
+
+    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
+    const embed = new Discord.MessageEmbed();
+
+    if (!searchResult.playlist) {
+      embed
+        .setTitle("Track Added")
+        .setDescription(
+          `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].title}\`**](${searchResult.tracks[0].url}) - <@!${searchResult.tracks[0].requestedBy.id}>`
+        );
+    } else {
+      embed
+        .setTitle("Playlist Added")
+        .setDescription(
+          `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].playlist.title}\`**](${tracks[0].playlist.url}) - [**\`${tracks[0].playlist.author.name}\`**](${tracks[0].playlist.author.url})`
+        );
+    }
+
+    embed
+      .setAuthor({
+        name: interaction.user.username,
+        iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+      })
+      .addFields(
+        {
+          name: "Possition",
+          value: `\`\`\` ${
+            queue.getTrackPosition(searchResult.tracks[0]) + 1
+          } \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Loop Mode",
+          value: `\`\`\` ${loopMode} \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Volume",
+          value: `\`\`\` ${queue.volume} \`\`\``,
+          inline: true,
+        },
+        {
+          name: "Now Playing",
+          value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+        }
+      )
+      .setColor("PURPLE")
+      .setFooter({
+        text: `BTU `,
+        iconURL: "attachment://BTULogo.png",
+      })
+      .setTimestamp();
+
+    interaction.reply({ embeds: [embed], files: [Logo] });
 
     if (!queue.playing) await queue.play();
   },

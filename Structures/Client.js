@@ -29,8 +29,6 @@ class Client extends Discord.Client {
         highWaterMark: 1 << 25,
       },
     });
-
-    this.prefix = config.prefix;
   }
 
   start(token) {

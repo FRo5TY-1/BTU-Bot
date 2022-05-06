@@ -172,31 +172,27 @@ module.exports = new PlayerEvent(
               const command = client.slashCommands.get("queue");
               return command.run(i, [], client);
             } else if (i.customId === "previousTrack") {
+              queue.setPaused(false);
               const command = client.slashCommands.get("previous");
               return command.run(i, [], client);
             } else if (i.customId === "nextTrack") {
+              queue.setPaused(false);
               return queue.skip();
             } else if (i.customId === "stopPlayer") {
-              queue.setRepeatMode(QueueRepeatMode.OFF);
-              queue.setPaused(false);
-              if (queue.tracks.length > 0) {
-                collector.stop();
-                const Logo = new Discord.MessageAttachment(
-                  "./Pictures/BTULogo.png"
-                );
-                const embed = new Discord.MessageEmbed();
-                embed
-                  .setDescription(
-                    "✅ | `Finished Playing And Left The Channel`"
-                  )
-                  .setColor("PURPLE")
-                  .setFooter({
-                    text: `BTU `,
-                    iconURL: "attachment://BTULogo.png",
-                  })
-                  .setTimestamp();
-                i.channel.send({ embeds: [embed], files: [Logo] });
-              }
+              collector.stop();
+              const Logo = new Discord.MessageAttachment(
+                "./Pictures/BTULogo.png"
+              );
+              const embed = new Discord.MessageEmbed();
+              embed
+                .setDescription("✅ | `Finished Playing And Left The Channel`")
+                .setColor("PURPLE")
+                .setFooter({
+                  text: `BTU `,
+                  iconURL: "attachment://BTULogo.png",
+                })
+                .setTimestamp();
+              i.channel.send({ embeds: [embed], files: [Logo] });
               return queue.destroy();
             } else if (i.customId === "shuffleQueue") {
               const command = client.slashCommands.get("shuffle");
