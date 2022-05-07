@@ -35,6 +35,8 @@ module.exports = new Command({
         ? "Autoplay"
         : "OFF";
 
+    if (loopMode === "Song") return queue.seek(0);
+
     const currentTrack = queue.current;
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");

@@ -87,6 +87,11 @@ module.exports = new Command({
 
     if (amount > 1) {
       if (amount > queue.tracks.length) amount = queue.tracks.length - 1;
+      if (amount <= 0) {
+        embed.setTitle(`Skipped \`1\` Songs`);
+        queue.skip();
+        return interaction.reply({ embeds: [embed], files: [Logo] });
+      }
       const skippedTracks = queue.tracks.slice(0, amount);
       queue.skipTo(amount);
       setTimeout(() => {

@@ -172,11 +172,11 @@ module.exports = new PlayerEvent(
               const command = client.slashCommands.get("queue");
               return command.run(i, [], client);
             } else if (i.customId === "previousTrack") {
-              queue.setPaused(false);
+              if (queue.connection.paused) queue.setPaused(false);
               const command = client.slashCommands.get("previous");
               return command.run(i, [], client);
             } else if (i.customId === "nextTrack") {
-              queue.setPaused(false);
+              if (queue.connection.paused) queue.setPaused(false);
               return queue.skip();
             } else if (i.customId === "stopPlayer") {
               collector.stop();

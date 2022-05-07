@@ -62,7 +62,7 @@ module.exports = new Command({
       embed
         .setTitle("Playlist Added")
         .setDescription(
-          `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].playlist.title}\`**](${searchResult.tracks[0].playlist.url}) - ${searchResult.tracks[0].requestedBy.id}`
+          `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].playlist.title}\`**](${searchResult.tracks[0].playlist.url}) - <@!${searchResult.tracks[0].requestedBy.id}>`
         );
     } else {
       embed
