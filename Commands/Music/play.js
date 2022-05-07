@@ -36,7 +36,7 @@ module.exports = new Command({
 
     const queue = await player.createQueue(interaction.guild, {
       metadata: interaction.channel,
-      leaveOnEmptyCooldown: 500000,
+      leaveOnEmptyCooldown: 240000,
     });
 
     if (!queue.connection)
@@ -58,17 +58,17 @@ module.exports = new Command({
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
 
-    if (!searchResult.playlist) {
+    if (searchResult.playlist) {
+      embed
+        .setTitle("Playlist Added")
+        .setDescription(
+          `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].playlist.title}\`**](${searchResult.tracks[0].playlist.url}) - ${searchResult.tracks[0].requestedBy.id}`
+        );
+    } else {
       embed
         .setTitle("Track Added")
         .setDescription(
           `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].title}\`**](${searchResult.tracks[0].url}) - <@!${searchResult.tracks[0].requestedBy.id}>`
-        );
-    } else {
-      embed
-        .setTitle("Playlist Added")
-        .setDescription(
-          `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].playlist.title}\`**](${tracks[0].playlist.url}) - [**\`${tracks[0].playlist.author.name}\`**](${tracks[0].playlist.author.url})`
         );
     }
 

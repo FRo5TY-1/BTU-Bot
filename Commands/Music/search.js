@@ -77,7 +77,7 @@ module.exports = new Command({
 
       const queue = await player.createQueue(interaction.guild, {
         metadata: interaction.channel,
-        leaveOnEmptyCooldown: 500000,
+        leaveOnEmptyCooldown: 240000,
       });
 
       const value = parseInt(query.content);
