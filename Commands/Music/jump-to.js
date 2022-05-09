@@ -12,7 +12,7 @@ module.exports = new Command({
       description:
         "Song Index In Queue (Use Negative(-) Number For Previous Song)",
       type: "INTEGER",
-      required: false,
+      required: true,
     },
   ],
 
@@ -96,17 +96,14 @@ module.exports = new Command({
     } else if (index < 0) {
       if (queue.previousTracks.length < 1)
         return interaction.reply({ content: "No Previous Tracks" });
-      let posIndex = Math.abs(index) - 1;
-      if (posIndex > queue.previousTracks.length - 1)
-        posIndex = queue.previousTracks.length - 1;
-      const track =
-        queue.previousTracks.slice(posIndex, posIndex + 1) ||
-        queue.previousTracks.slice(-2, -1);
+      const posIndex =
+        Math.abs(index) > queue.previousTracks.length
+          ? queue.previousTracks.length
+          : Math.abs(index);
+      const track = queue.previousTracks.splice(-posIndex, 1);
       queue.insert(track[0], 0);
       queue.skip();
-      embed.setTitle(
-        `Jumped To Previous Song With Index Of \`${posIndex + 1}\``
-      );
+      embed.setTitle(`Jumped To Previous Song With Index Of \`${posIndex}\``);
       return interaction.reply({ embeds: [embed], files: [Logo] });
     } else {
       embed.setTitle(`Jumped To Song With Index Of \`${index + 1}\``);

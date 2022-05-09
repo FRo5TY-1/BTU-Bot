@@ -1,15 +1,28 @@
 const Event = require("../Structures/Event.js");
+const Discord = require("discord.js");
+const Client = require("../Structures/Client.js");
+const channelModel = require("../DBModels/upvoteChannelsSchema.js");
 
 module.exports = new Event(
   "messageReactionAdd",
+  /**
+   *
+   * @param {Discord.MessageReaction} reaction
+   * @param {Discord.User} User
+   * @returns
+   */
   async (client, reaction, User) => {
     if (reaction.message.partial) await reaction.message.fetch();
     if (reaction.partial) await reaction.fetch();
     if (User.bot) return;
 
-    upvotable_channel_list = ["940551819128614934"];
+    const channelIdArray = (
+      await channelModel.find({
+        guildid: reaction.message.guildId,
+      })
+    ).map((i) => i.channelId);
 
-    if (upvotable_channel_list.includes(reaction.message.channel.id)) {
+    if (channelIdArray.includes(reaction.message.channel.id)) {
       const message = reaction.message;
 
       if (reaction.emoji.id === "940214247835721739") {
