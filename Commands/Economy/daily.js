@@ -23,9 +23,9 @@ module.exports = new Command({
       let cooldownExpiry = cooldownData.expiry;
       if (cooldownExpiry > new Date().getTime()) {
         return interaction.reply({
-          content: `You Already Used This Command, Time Left: **${ms(
-            cooldownExpiry - new Date().getTime()
-          )}**`,
+          content: `You Already Used This Command, You Can Use It Again **<t:${Math.floor(
+            cooldownExpiry / 1000
+          )}:R>**`,
         });
       } else {
         cooldownData.remove({ userID: interaction.user.id, command: "daily" });

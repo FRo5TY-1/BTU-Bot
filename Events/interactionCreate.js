@@ -8,6 +8,8 @@ module.exports = new Event(
   /**
    * @param {Discord.Interaction} interaction
    */ async (client, interaction) => {
+    if (!interaction.guild)
+      return interaction.reply({ content: "Don't DM Me!", ephemeral: true });
     if (interaction.isCommand()) {
       const cmd = client.slashCommands.get(interaction.commandName);
       if (!cmd)
@@ -37,11 +39,6 @@ module.exports = new Event(
           ephemeral: false,
         });
       cmd.run(interaction, args, client);
-    }
-
-    if (interaction.isContextMenu()) {
-      const command = client.slashCommands.get(interaction.commandName);
-      if (command) command.run(interaction, args, client);
     }
 
     if (interaction.isButton()) {

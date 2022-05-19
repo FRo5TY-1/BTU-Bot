@@ -8,7 +8,7 @@ module.exports = new Event(
    * @param {Discord.Message} message
    */
   async (client, message) => {
-    if (message.author.bot || message.channel.type == "dm") return;
+    if (message.channel.type == "dm") return;
 
     const channelIdArray = (
       await channelModel.find({
