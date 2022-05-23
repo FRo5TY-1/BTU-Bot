@@ -1,4 +1,3 @@
-
 <div id="top"></div>
 
 [![Contributors][contributors-shield]][contributors-url]
@@ -18,7 +17,6 @@
 ## About The Project
 
 A bot configured for use in a single guild, it has everything from simple to advanced commands, as mentioned bot is configured for use in a specific guild, if you wish to use the given code, please be sure to change some lines of code so it can be functional.
-
 
 ### Built With
 
@@ -45,7 +43,7 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ## Contact
 
-Discord Username - FRo5TY#7344
+Discord - [FRo5TY](https://discord.com/users/420910957376569345)
 
 Project Link: [https://github.com/Nikoloz-Grigalashvili/BTU-Bot](https://github.com/Nikoloz-Grigalashvili/BTU-Bot)
 
