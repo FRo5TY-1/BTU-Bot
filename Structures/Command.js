@@ -21,7 +21,7 @@ class Command {
     this.aliases = Options.aliases;
     this.type = ["USER", "SLASH", "TEXT"].includes(Options.type)
       ? Options.type
-      : "TEXT";
+      : "SLASH";
     this.ephemeral = Options.ephemeral;
     this.options = Options.options || [];
     this.run = Options.run;

@@ -9,7 +9,7 @@ module.exports = new Command({
   options: [
     {
       name: "add",
-      description: "Add A Filter",
+      description: "🎵 Add A Filter",
       type: "SUB_COMMAND",
       options: [
         {
@@ -23,7 +23,7 @@ module.exports = new Command({
     },
     {
       name: "remove",
-      description: "Remove A Filter",
+      description: "🎵 Remove A Filter",
       type: "SUB_COMMAND",
       options: [
         {
@@ -37,7 +37,7 @@ module.exports = new Command({
     },
     {
       name: "clear",
-      description: "Clear Enabled Filters",
+      description: "🎵 Clear Enabled Filters",
       type: "SUB_COMMAND",
     },
   ],
