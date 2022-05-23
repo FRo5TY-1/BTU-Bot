@@ -2,6 +2,7 @@ const PlayerEvent = require("../Structures/PlayerEvent.js");
 const Discord = require("discord.js");
 const { QueueRepeatMode, Queue, Track } = require("discord-player");
 const ms = require("ms");
+const voiceStateModel = require("../DBModels/voiceStateSchema.js");
 
 module.exports = new PlayerEvent(
   "trackStart",
@@ -198,11 +199,15 @@ module.exports = new PlayerEvent(
               const command = client.slashCommands.get("shuffle");
               return command.run(i, [], client);
             } else if (i.customId === "streamTime") {
-              setTimeout(() => {
-                return i.followUp({
-                  content: `Total Time: ${ms(queue.totalTime)}`,
-                });
-              }, 500);
+              const timestamp = await voiceStateModel.findOne({
+                id: client.application.id,
+                channelid: queue.connection.channel.id,
+              });
+              return i.followUp({
+                content: `Current Stream Time: ${ms(
+                  new Date().getTime() - timestamp.timestamp
+                )}`,
+              });
             } else if (i.customId === "loopMode") {
               updateLoopMode();
               return message.edit({ components: [row1, row2] });

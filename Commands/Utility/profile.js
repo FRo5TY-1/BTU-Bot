@@ -1,37 +1,41 @@
 const Command = require("../../Structures/Command.js");
 const Discord = require("discord.js");
+const ms = require("ms");
+const userStatsModel = require("../../DBModels/userStatsSchema.js");
+
 const ignoredRoles = ["@everyone", "ㅤ⊱─── { Gaming Roles } ───⊰ㅤㅤ"];
 
 module.exports = new Command({
-  name: "userinfo",
-  description: "ნახეთ ინფორმაცია მომხმარებელზე",
+  name: "profile",
+  description: "Check Your Or Someone Else's Profile",
   type: "SLASH",
   options: [
     {
       type: "USER",
       name: "user",
-      description: "მომხმარებელი ვისი ბალანსიც გაინტერესებთ",
-      required: true,
+      description: "Check An User's Profile",
     },
   ],
 
   async run(interaction, args, client) {
-    if (interaction.options.getMember("user").roles.botRole)
+    if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.reply({
         content:
-          "Bot-ები არ მოიხმარენ ჩვენ სერვისს <:FeelsBadMan:924601273028857866>",
+          "Bot's Don't Use Our Services <:FeelsBadMan:924601273028857866>",
       });
-    const target = client.users.cache.get(
-      interaction.options.getMember("user").id
-    );
+    const member = interaction.options.getMember("user") || interaction.member;
+    const user = member.user;
 
-    const created = `<t:${Math.floor(target.createdTimestamp / 1000)}:R>`;
-    const joined = `<t:${Math.floor(
-      interaction.options.getMember("user").joinedAt / 1000
-    )}:R>`;
+    const voiceState = await userStatsModel.findOne({
+      id: user.id,
+      guildid: interaction.guild.id,
+    });
 
-    const member = await interaction.guild.members.fetch(target.id);
-    const roles = member.roles.cache
+    const created = `<t:${Math.floor(user.createdTimestamp / 1000)}:R>`;
+    const joined = `<t:${Math.floor(member.joinedAt / 1000)}:R>`;
+
+    const fetchMember = await interaction.guild.members.fetch(user.id);
+    const roles = fetchMember.roles.cache
       .map((r) => {
         if (ignoredRoles.includes(r.name)) return null;
         return `${r.name}`;
@@ -44,16 +48,16 @@ module.exports = new Command({
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed()
-      .setDescription(`**Information About** <@!${target.id}>`)
+      .setDescription(`<@!${user.id}>'s Profile`)
       .addFields(
         {
           name: `Username`,
-          value: `**\`\`\` ${target.tag} \`\`\`**`,
+          value: `**\`\`\` ${user.tag} \`\`\`**`,
           inline: true,
         },
         {
           name: `UserID`,
-          value: `**\`\`\` ${target.id} \`\`\`**`,
+          value: `**\`\`\` ${user.id} \`\`\`**`,
           inline: true,
         },
         {
@@ -69,9 +73,14 @@ module.exports = new Command({
           name: `Joined The Server`,
           value: `**${joined}**`,
           inline: true,
+        },
+        {
+          name: `Music Stream Time`,
+          value: `\`\ ${ms(voiceState?.seconds * 1000 || 0, { long: true, })}\ \``,
+          inline: true,
         }
       )
-      .setThumbnail(target.displayAvatarURL({ dynamic: true }))
+      .setThumbnail(user.displayAvatarURL({ dynamic: true }))
       .setColor("PURPLE")
       .setFooter({
         text: `BTU `,

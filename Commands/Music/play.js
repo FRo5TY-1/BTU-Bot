@@ -25,6 +25,8 @@ module.exports = new Command({
         ephemeral: true,
       });
 
+    await interaction.deferReply();
+
     const searchResult = await player.search(songTitle, {
       requestedBy: interaction.user,
       searchEngine: QueryType.AUTO,
@@ -107,7 +109,7 @@ module.exports = new Command({
       })
       .setTimestamp();
 
-    interaction.reply({ embeds: [embed], files: [Logo] });
+    interaction.followUp({ embeds: [embed], files: [Logo] });
 
     if (!queue.playing) await queue.play();
   },
