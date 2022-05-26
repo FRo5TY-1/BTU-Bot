@@ -14,8 +14,6 @@ module.exports = new Event(
       (c) => /roles/i.test(c.name) && c.isText()
     )?.id;
 
-    if (!channel) return;
-
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const Banner = new Discord.MessageAttachment(
       "./Pictures/WelcomeBanner.png"

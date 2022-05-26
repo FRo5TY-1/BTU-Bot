@@ -30,9 +30,10 @@ module.exports = new Event(
               id: m.id,
               channelid: oldState.channelId,
             });
+            const seconds = (dateNow - voiceState.timestamp) / 1000;
             await userStatsModel.findOneAndUpdate(
               { id: m.id, guildid: oldState.guild.id },
-              { seconds: +(dateNow - voiceState.timestamp) / 1000 },
+              { $inc: { seconds: +seconds } },
               { upsert: true }
             );
           });
@@ -65,10 +66,10 @@ module.exports = new Event(
             id: oldState.id,
             channelid: oldState.channelId,
           });
-          const dateNow = new Date().getTime();
+          const seconds = (new Date().getTime() - voiceState.timestamp) / 1000;
           await userStatsModel.findOneAndUpdate(
             { id: oldState.id, guildid: oldState.guild.id },
-            { seconds: +(dateNow - voiceState.timestamp) / 1000 },
+            { $inc: { seconds: +seconds } },
             { upsert: true }
           );
         }
