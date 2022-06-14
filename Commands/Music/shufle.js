@@ -1,6 +1,7 @@
 const Command = require("../../Structures/Command.js");
 const Discord = require("discord.js");
 const { QueueRepeatMode } = require("discord-player");
+const { CatJam } = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "shuffle",
@@ -47,15 +48,6 @@ module.exports = new Command({
       })
       .addFields(
         {
-          name: "Filters",
-          value: `\`\`\` ${
-            !queue.getFiltersEnabled().length
-              ? "None"
-              : queue.getFiltersEnabled()
-          } \`\`\``,
-          inline: true,
-        },
-        {
           name: "Loop Mode",
           value: `\`\`\` ${loopMode} \`\`\``,
           inline: true,
@@ -67,7 +59,7 @@ module.exports = new Command({
         },
         {
           name: "Now Playing",
-          value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+          value: `${CatJam.emoji} | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
         }
       )
       .setColor("PURPLE")

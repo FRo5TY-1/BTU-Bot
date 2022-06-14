@@ -1,7 +1,7 @@
 const Event = require("../Structures/Event.js");
 const Discord = require("discord.js");
-const Client = require("../Structures/Client.js");
 const channelModel = require("../DBModels/upvoteChannelsSchema.js");
+const {UpVote, DownVote} = require("../Data/emojis.json")
 
 module.exports = new Event(
   "messageReactionAdd",
@@ -25,11 +25,11 @@ module.exports = new Event(
     if (channelIdArray.includes(reaction.message.channel.id)) {
       const message = reaction.message;
 
-      if (reaction.emoji.id === "940214247835721739") {
-        message.reactions.resolve("940214273425170472").users.remove(User.id);
+      if (reaction.emoji.id === UpVote.id) {
+        message.reactions.resolve(DownVote.id).users.remove(User.id);
       }
-      if (reaction.emoji.id === "940214273425170472") {
-        message.reactions.resolve("940214247835721739").users.remove(User.id);
+      if (reaction.emoji.id === DownVote.id) {
+        message.reactions.resolve(UpVote.id).users.remove(User.id);
       }
     }
   }

@@ -3,6 +3,13 @@ const profileModel = require("../../DBModels/profileSchema.js");
 const itemModel = require("../../DBModels/shopItemsSchema.js");
 const inventoryModel = require("../../DBModels/inventorySchema.js");
 const Discord = require("discord.js");
+const {
+  Expensive,
+  LuffyDodge,
+  RareCandy,
+  Brokege,
+  WojakDone,
+} = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "shop",
@@ -92,26 +99,26 @@ module.exports = new Command({
       if (page == 1) {
         embed.addFields(
           {
-            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<a:ExpensiveAF:971780086334365777>⠀Legendary⠀<a:ExpensiveAF:971780086334365777> ",
+            name: `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀${Expensive.emoji}⠀Legendary⠀${Expensive.emoji} `,
             value: `\`\`\`${filterItems(1)}\`\`\``,
           },
           {
-            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<a:LuffyEpicDodge:971776827850907679>⠀Epic⠀<a:LuffyEpicDodge:971776827850907679> ",
+            name: `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀${LuffyDodge.emoji}⠀Epic⠀${LuffyDodge.emoji} `,
             value: `\`\`\`${filterItems(2)}\`\`\``,
           }
         );
       } else {
         embed.addFields(
           {
-            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<:RareCandy:971773899580780624>⠀Rare⠀<:RareCandy:971773899580780624> ",
+            name: `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀${RareCandy.emoji}⠀Rare⠀${RareCandy.emoji} `,
             value: `\`\`\`${filterItems(3)}\`\`\``,
           },
           {
-            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<:Brokege:971780085189328896>⠀Uncommon⠀<:Brokege:971780085189328896> ",
+            name: `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀${Brokege.emoji}⠀Uncommon⠀${Brokege.emoji} `,
             value: `\`\`\`${filterItems(4)}\`\`\``,
           },
           {
-            name: "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<:WojakDone:971780085206106172>⠀Common⠀<:WojakDone:971780085206106172> ",
+            name: `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀${WojakDone.emoji}⠀Common⠀${WojakDone.emoji} `,
             value: `\`\`\`${filterItems(5)}\`\`\``,
           }
         );

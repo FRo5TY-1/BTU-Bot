@@ -11,6 +11,7 @@ module.exports = new Command({
     const embed = new Discord.MessageEmbed();
     const coins = ["Heads", "Tails"];
     const coin = coins[Math.floor(Math.random() * 2)];
+    const coinPng = new Discord.MessageAttachment(`./Pictures/Coins/${coin}.png`);
     embed
       .setTitle("Flipped coin is...")
       .setDescription(`**${coin}**`)
@@ -19,12 +20,13 @@ module.exports = new Command({
         name: interaction.user.username,
         iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
       })
+      .setImage(`attachment://${coin}.png`)
       .setFooter({
         text: "BTU ",
         iconURL: "attachment://BTULogo.png",
       })
       .setTimestamp();
 
-    interaction.reply({ embeds: [embed], files: [Logo] });
+    interaction.reply({ embeds: [embed], files: [Logo, coinPng] });
   },
 });

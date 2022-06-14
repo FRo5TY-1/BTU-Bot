@@ -1,5 +1,6 @@
 const Command = require("../../Structures/Command.js");
 const profileModel = require("../../DBModels/profileSchema.js");
+const { FeelsBadMan } = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "pay",
@@ -36,8 +37,7 @@ module.exports = new Command({
     }
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.reply({
-        content:
-          "Bots Don't Use Our Services <:FeelsBadMan:924601273028857866>",
+        content: `Bots Don't Use Our Services ${FeelsBadMan.emoji}`,
       });
     const target = client.users.cache.get(
       interaction.options.getMember("user")?.id

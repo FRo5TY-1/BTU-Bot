@@ -1,6 +1,7 @@
 const Command = require("../../Structures/Command.js");
 const { QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
+const { CatJam } = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "previous",
@@ -44,7 +45,7 @@ module.exports = new Command({
     embed
       .setTitle("Current Song Skipped")
       .setDescription(
-        `<a:CatJam:924585442450489404> | [**\`${currentTrack.title}\`**](${currentTrack.url}) - <@!${currentTrack.requestedBy.id}>`
+        `${CatJam.emoji} | [**\`${currentTrack.title}\`**](${currentTrack.url}) - <@!${currentTrack.requestedBy.id}>`
       )
       .setAuthor({
         name: currentTrack.requestedBy.username,

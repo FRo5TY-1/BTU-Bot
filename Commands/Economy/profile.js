@@ -1,16 +1,18 @@
 const Command = require("../../Structures/Command.js");
 const profileModel = require("../../DBModels/profileSchema.js");
 const Discord = require("discord.js");
+const ms = require("ms");
+const { FeelsBadMan } = require("../../Data/emojis.json");
 
 module.exports = new Command({
-  name: "balance",
-  description: "💳 shows user's balance",
+  name: "profile",
+  description: "💳 Shows User's Profile",
   type: "SLASH",
   options: [
     {
       type: "USER",
       name: "user",
-      description: "User",
+      description: "User To Be Shown",
       required: false,
     },
   ],
@@ -18,8 +20,7 @@ module.exports = new Command({
   async run(interaction, args, client) {
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.reply({
-        content:
-          "Bots Don't Use Our Services <:FeelsBadMan:924601273028857866>",
+        content: `Bots Don't Use Our Services ${FeelsBadMan.emoji}`,
       });
     const target =
       client.users.cache.get(interaction.options.getMember("user")?.id) ||
@@ -41,10 +42,13 @@ module.exports = new Command({
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
+    const streamTime = ms(profileData.streamTime * 1000, { long: true });
 
     embed
-      .setTitle(`${interaction.user.username}'s Balance`)
-      .setDescription(`BTU Coins: **${profileData.BTUcoins}**`)
+      .setTitle(`${interaction.user.username}'s Profile`)
+      .setDescription(
+        `BTU Coins: **${profileData.BTUcoins}**\nMusic Stream Time: **${streamTime}**`
+      )
       .setAuthor({
         name: target.username,
         iconURL: target.displayAvatarURL({ dynamic: true }),

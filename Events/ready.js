@@ -9,7 +9,7 @@ module.exports = new Event("ready", async (client) => {
         type: "WATCHING",
       },
     ],
-    status: "online",
+    status: "dnd",
   });
 
   client.application.commands.set(client.slashCommands);

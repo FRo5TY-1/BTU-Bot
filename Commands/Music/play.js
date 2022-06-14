@@ -1,6 +1,7 @@
 const Command = require("../../Structures/Command.js");
 const { QueryType, QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
+const { CatJam } = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "play",
@@ -64,13 +65,13 @@ module.exports = new Command({
       embed
         .setTitle("Playlist Added")
         .setDescription(
-          `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].playlist.title}\`**](${searchResult.tracks[0].playlist.url}) - <@!${searchResult.tracks[0].requestedBy.id}>`
+          `${CatJam.emoji} | [**\`${searchResult.tracks[0].playlist.title}\`**](${searchResult.tracks[0].playlist.url}) - <@!${searchResult.tracks[0].requestedBy.id}>`
         );
     } else {
       embed
         .setTitle("Track Added")
         .setDescription(
-          `<a:CatJam:924585442450489404> | [**\`${searchResult.tracks[0].title}\`**](${searchResult.tracks[0].url}) - <@!${searchResult.tracks[0].requestedBy.id}>`
+          `${CatJam.emoji} | [**\`${searchResult.tracks[0].title}\`**](${searchResult.tracks[0].url}) - <@!${searchResult.tracks[0].requestedBy.id}>`
         );
     }
 
@@ -99,7 +100,7 @@ module.exports = new Command({
         },
         {
           name: "Now Playing",
-          value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+          value: `${CatJam.emoji} | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
         }
       )
       .setColor("PURPLE")

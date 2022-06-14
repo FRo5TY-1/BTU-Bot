@@ -1,6 +1,7 @@
 const Command = require("../../Structures/Command.js");
 const { QueryType } = require("discord-player");
 const Discord = require("discord.js");
+const { CatJam } = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "volume",
@@ -49,7 +50,7 @@ module.exports = new Command({
       })
       .addFields({
         name: "Now Playing",
-        value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+        value: `${CatJam.emoji} | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
       })
       .setColor("PURPLE")
       .setFooter({

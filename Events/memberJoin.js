@@ -1,5 +1,6 @@
 const Event = require("../Structures/Event.js");
 const Discord = require("discord.js");
+const { PotFriend } = require("../Data/emojis.json");
 
 module.exports = new Event(
   "guildMemberAdd",
@@ -21,7 +22,9 @@ module.exports = new Event(
     const embed = new Discord.MessageEmbed();
 
     embed
-      .setTitle(`\`\`\`Welcome To BTU ${member.user.username} ! \`\`\``)
+      .setTitle(
+        `\`\`\`${PotFriend.emoji} Welcome To BTU ${member.user.username} ! ${PotFriend.emoji}\`\`\``
+      )
       .setDescription(
         `გაეცანი სერვერის წესებს  👉 <#${rulesChannel}>!\nაგრეთვე აირჩიე როლები 👉 <#${rolesChannel}>!`
       )

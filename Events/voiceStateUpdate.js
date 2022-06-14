@@ -1,7 +1,7 @@
 const Event = require("../Structures/Event.js");
 const Discord = require("discord.js");
 const voiceStateModel = require("../DBModels/voiceStateSchema.js");
-const userStatsModel = require("../DBModels/userStatsSchema.js");
+const profileModel = require("../DBModels/profileSchema.js");
 
 module.exports = new Event(
   "voiceStateUpdate",
@@ -31,9 +31,9 @@ module.exports = new Event(
               channelid: oldState.channelId,
             });
             const seconds = (dateNow - voiceState.timestamp) / 1000;
-            await userStatsModel.findOneAndUpdate(
-              { id: m.id, guildid: oldState.guild.id },
-              { $inc: { seconds: +seconds } },
+            await profileModel.findOneAndUpdate(
+              { guildId: oldState.guild.id, userID: m.id },
+              { $inc: { streamTime: +seconds } },
               { upsert: true }
             );
           });
@@ -67,9 +67,9 @@ module.exports = new Event(
             channelid: oldState.channelId,
           });
           const seconds = (new Date().getTime() - voiceState.timestamp) / 1000;
-          await userStatsModel.findOneAndUpdate(
-            { id: oldState.id, guildid: oldState.guild.id },
-            { $inc: { seconds: +seconds } },
+          await profileModel.findOneAndUpdate(
+            { guildId: oldState.guild.id, userID: oldState.id },
+            { $inc: { streamTime: +seconds } },
             { upsert: true }
           );
         }

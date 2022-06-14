@@ -1,19 +1,17 @@
 const Command = require("../../Structures/Command.js");
 const Discord = require("discord.js");
-const ms = require("ms");
-const userStatsModel = require("../../DBModels/userStatsSchema.js");
-
+const emojis = require("../../Data/emojis.json")
 const ignoredRoles = ["@everyone", "ㅤ⊱─── { Gaming Roles } ───⊰ㅤㅤ"];
 
 module.exports = new Command({
-  name: "profile",
-  description: "Check Your Or Someone Else's Profile",
+  name: "user-info",
+  description: "Get Information On User",
   type: "SLASH",
   options: [
     {
       type: "USER",
       name: "user",
-      description: "Check An User's Profile",
+      description: "User To Check",
     },
   ],
 
@@ -21,15 +19,10 @@ module.exports = new Command({
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.reply({
         content:
-          "Bot's Don't Use Our Services <:FeelsBadMan:924601273028857866>",
+          `Bot's Don't Use Our Services ${emojis.FeelsBadMan}`,
       });
     const member = interaction.options.getMember("user") || interaction.member;
     const user = member.user;
-
-    const voiceState = await userStatsModel.findOne({
-      id: user.id,
-      guildid: interaction.guild.id,
-    });
 
     const created = `<t:${Math.floor(user.createdTimestamp / 1000)}:R>`;
     const joined = `<t:${Math.floor(member.joinedAt / 1000)}:R>`;
@@ -74,11 +67,6 @@ module.exports = new Command({
           value: `**${joined}**`,
           inline: true,
         },
-        {
-          name: `Music Stream Time`,
-          value: `\`\ ${ms(voiceState?.seconds * 1000 || 0, { long: true, })}\ \``,
-          inline: true,
-        }
       )
       .setThumbnail(user.displayAvatarURL({ dynamic: true }))
       .setColor("PURPLE")

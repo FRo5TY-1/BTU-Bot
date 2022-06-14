@@ -1,5 +1,5 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType, QueueRepeatMode } = require("discord-player");
+const { QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -57,15 +57,6 @@ module.exports = new Command({
       })
       .addFields(
         {
-          name: "Filters",
-          value: `\`\`\` ${
-            !queue.getFiltersEnabled().length
-              ? "None"
-              : queue.getFiltersEnabled()
-          } \`\`\``,
-          inline: true,
-        },
-        {
           name: "Loop Mode",
           value: `\`\`\` ${loopMode} \`\`\``,
           inline: true,
@@ -74,10 +65,6 @@ module.exports = new Command({
           name: "Volume",
           value: `\`\`\` ${queue.volume} \`\`\``,
           inline: true,
-        },
-        {
-          name: "Skipped Track",
-          value: `[**\`${queue.current.title}\`**](${queue.current.url})`,
         }
       )
       .setColor("PURPLE")

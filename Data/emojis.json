@@ -1,0 +1,62 @@
+{
+  "FeelsBadMan": {
+    "emoji": "<:FeelsBadMan:924601273028857866>",
+    "name": "FeelsBadMan",
+    "id": "924601273028857866"
+  },
+  "CatJam": {
+    "emoji": "<a:CatJam:924585442450489404>",
+    "name": "CatJam",
+    "id": "924585442450489404"
+  },
+  "UpVote": {
+    "emoji": "<:upvote:940214247835721739>",
+    "name": "upvote",
+    "id": "940214247835721739"
+  },
+  "DownVote": {
+    "emoji": "<:downvote:940214273425170472>",
+    "name": "downvote",
+    "id": "940214273425170472"
+  },
+  "PotFriend": {
+    "emoji": "<:PotFriend:973274488928075837>",
+    "name": "PotFriend",
+    "id": "973274488928075837"
+  },
+  "Expensive": {
+    "emoji": "<a:ExpensiveAF:971780086334365777>",
+    "name": "ExpensiveAF",
+    "id": "971780086334365777"
+  },
+  "LuffyDodge": {
+    "emoji": "<a:LuffyEpicDodge:971776827850907679>",
+    "name": "LuffyEpicDodge",
+    "id": "971776827850907679"
+  },
+  "RareCandy": {
+    "emoji": "<:RareCandy:971773899580780624>",
+    "name": "RareCandy",
+    "id": "971773899580780624"
+  },
+  "Brokege": {
+    "emoji": "<:Brokege:971780085189328896>",
+    "name": "Brokege",
+    "id": "971780085189328896"
+  },
+  "WojakDone": {
+    "emoji": "<:WojakDone:971780085206106172>",
+    "name": "WojakDone",
+    "id": "971780085206106172"
+  },
+  "LoopNone": {
+    "emoji": "<:LoopNone:967714667462025246>",
+    "name": "LoopNone",
+    "id": "967714667462025246"
+  },
+  "Schema": {
+    "emoji": "",
+    "name": "",
+    "id": ""
+  }
+}

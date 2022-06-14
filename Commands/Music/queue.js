@@ -1,5 +1,6 @@
 const Command = require("../../Structures/Command.js");
 const Discord = require("discord.js");
+const { CatJam } = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "queue",
@@ -54,7 +55,7 @@ module.exports = new Command({
         },
         {
           name: "Now Playing",
-          value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+          value: `${CatJam.emoji} | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
         }
       )
       .setFooter({

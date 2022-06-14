@@ -1,6 +1,7 @@
 const Event = require("../Structures/Event.js");
 const Discord = require("discord.js");
 const channelModel = require("../DBModels/upvoteChannelsSchema.js");
+const {UpVote, DownVote} = require("../Data/emojis.json")
 
 module.exports = new Event(
   "messageCreate",
@@ -17,8 +18,8 @@ module.exports = new Event(
     ).map((i) => i.channelId);
 
     if (channelIdArray.includes(message.channel.id)) {
-      message.react("<:upvote:940214247835721739>");
-      message.react("<:downvote:940214273425170472>");
+      message.react(UpVote.emoji);
+      message.react(DownVote.emoji);
     }
   }
 );

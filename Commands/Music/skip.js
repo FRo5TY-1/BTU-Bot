@@ -1,5 +1,5 @@
 const Command = require("../../Structures/Command.js");
-const { QueryType, QueueRepeatMode } = require("discord-player");
+const { QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -50,23 +50,11 @@ module.exports = new Command({
     const embed = new Discord.MessageEmbed();
     embed
       .setTitle("Current Song Skipped")
-      .setDescription(
-        `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
-      )
       .setAuthor({
         name: queue.current.requestedBy.username,
         iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
       })
       .addFields(
-        {
-          name: "Filters",
-          value: `\`\`\` ${
-            !queue.getFiltersEnabled().length
-              ? "None"
-              : queue.getFiltersEnabled()
-          } \`\`\``,
-          inline: true,
-        },
         {
           name: "Loop Mode",
           value: `\`\`\` ${loopMode} \`\`\``,

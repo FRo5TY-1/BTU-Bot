@@ -1,6 +1,7 @@
 const Command = require("../../Structures/Command.js");
 const inventoryModel = require("../../DBModels/inventorySchema.js");
 const Discord = require("discord.js");
+const { FeelsBadMan } = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "inventory",
@@ -18,8 +19,7 @@ module.exports = new Command({
   async run(interaction, args, client) {
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.reply({
-        content:
-          "Bots Don't Use Our Services <:FeelsBadMan:924601273028857866>",
+        content: `Bots Don't Use Our Services ${FeelsBadMan.emoji}`,
       });
     const target =
       client.users.cache.get(interaction.options.getMember("user")?.id) ||

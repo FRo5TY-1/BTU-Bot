@@ -1,6 +1,7 @@
 const Command = require("../../Structures/Command.js");
 const Discord = require("discord.js");
 const { QueueRepeatMode } = require("discord-player");
+const { CatJam } = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "now-playing",
@@ -39,7 +40,7 @@ module.exports = new Command({
     embed
       .setTitle("Now Playing")
       .setDescription(
-        `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
+        `${CatJam.emoji} | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
       )
       .setAuthor({
         name: queue.current.requestedBy.username,
@@ -47,13 +48,13 @@ module.exports = new Command({
       })
       .addFields(
         {
-          name: "Filters",
+          name: " Filters Enabled ",
           value: `\`\`\` ${
             !queue.getFiltersEnabled().length
               ? "None"
               : queue.getFiltersEnabled()
           } \`\`\``,
-          inline: true,
+          inline: false,
         },
         {
           name: "Loop Mode",

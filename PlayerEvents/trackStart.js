@@ -3,6 +3,7 @@ const Discord = require("discord.js");
 const { QueueRepeatMode, Queue, Track } = require("discord-player");
 const ms = require("ms");
 const voiceStateModel = require("../DBModels/voiceStateSchema.js");
+const { CatJam, LoopNone } = require("../Data/emojis.json");
 
 module.exports = new PlayerEvent(
   "trackStart",
@@ -28,7 +29,7 @@ module.exports = new PlayerEvent(
         ? "🔂"
         : queue.repeatMode === QueueRepeatMode.AUTOPLAY
         ? "♾️"
-        : "967714667462025246";
+        : LoopNone.id;
 
     const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
     const embed = new Discord.MessageEmbed();
@@ -87,7 +88,7 @@ module.exports = new PlayerEvent(
         row2.components[0].setEmoji("♾️");
         queue.setRepeatMode(QueueRepeatMode.AUTOPLAY);
       } else if (queue.repeatMode === QueueRepeatMode.AUTOPLAY) {
-        row2.components[0].setEmoji("967714667462025246");
+        row2.components[0].setEmoji(LoopNone.id);
         queue.setRepeatMode(QueueRepeatMode.OFF);
       }
     }
@@ -95,22 +96,13 @@ module.exports = new PlayerEvent(
     embed
       .setTitle("Started Playing")
       .setDescription(
-        ` <a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
+        ` ${CatJam.emoji} | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
       )
       .setAuthor({
         name: queue.current.requestedBy.username,
         iconURL: queue.current.requestedBy.displayAvatarURL({ dynamic: true }),
       })
       .addFields(
-        {
-          name: "Filters",
-          value: `\`\`\` ${
-            !queue.getFiltersEnabled().length
-              ? "None"
-              : queue.getFiltersEnabled()
-          } \`\`\``,
-          inline: true,
-        },
         {
           name: "Loop Mode",
           value: `\`\`\` ${loopMode} \`\`\``,

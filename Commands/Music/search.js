@@ -1,6 +1,7 @@
 const Command = require("../../Structures/Command.js");
 const { QueryType, QueueRepeatMode } = require("discord-player");
 const Discord = require("discord.js");
+const { CatJam } = require("../../Data/emojis.json");
 
 module.exports = new Command({
   name: "search",
@@ -105,7 +106,7 @@ module.exports = new Command({
       embed
         .setTitle("Song Added")
         .setDescription(
-          `<a:CatJam:924585442450489404> | [**\`${track.title}\`**](${track.url}) - <@!${interaction.user.id}>`
+          `${CatJam.emoji} | [**\`${track.title}\`**](${track.url}) - <@!${interaction.user.id}>`
         )
         .setAuthor({
           name: interaction.user.username,
@@ -129,7 +130,7 @@ module.exports = new Command({
           },
           {
             name: "Now Playing",
-            value: `<a:CatJam:924585442450489404> | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
+            value: `${CatJam.emoji} | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
           }
         )
         .setColor("PURPLE")
