@@ -9,8 +9,9 @@ module.exports = new Event("ready", async (client) => {
         type: "WATCHING",
       },
     ],
-    status: "dnd",
+    status: "online",
   });
 
-  client.application.commands.set(client.slashCommands);
+  const commands = client.slashCommands.concat(client.contextMenus);
+  client.application.commands.set(commands);
 });

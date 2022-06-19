@@ -4,6 +4,7 @@ const profileSchema = new mongoose.Schema(
   {
     guildId: { type: String, require: true },
     userID: { type: String, require: true },
+    email: { type: String, default: null },
     BTUcoins: { type: Number, default: 500 },
     streamTime: { type: Number, default: 0 },
   },

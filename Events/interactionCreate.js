@@ -1,7 +1,8 @@
 const Event = require("../Structures/Event.js");
-const messageCreate = require("./messageCreate.js");
 const rolesModel = require("../DBModels/buttonRolesSchema.js");
+const cooldownModel = require("../DBModels/cooldownsSchema.js");
 const Discord = require("discord.js");
+const ms = require("ms");
 
 module.exports = new Event(
   "interactionCreate",
@@ -10,6 +11,9 @@ module.exports = new Event(
    */ async (client, interaction) => {
     if (!interaction.guild)
       return interaction.reply({ content: "Don't DM Me!", ephemeral: true });
+
+    // slash command interaction starts here
+
     if (interaction.isCommand()) {
       const cmd = client.slashCommands.get(interaction.commandName);
       if (!cmd)
@@ -38,8 +42,54 @@ module.exports = new Event(
           content: `You Don't Have Permission To Use This Command`,
           ephemeral: false,
         });
-      cmd.run(interaction, args, client);
+
+      if (cmd.cooldown) {
+        let cooldownData = await cooldownModel.findOne({
+          guildId: interaction.guildId,
+          userID: interaction.user.id,
+          command: cmd.name,
+        });
+
+        if (cooldownData && cooldownData.expiry > new Date().getTime()) {
+          return interaction.reply({
+            content: `This Command Is On Cooldown, You Can Use It Again **<t:${Math.floor(
+              cooldownData.expiry / 1000
+            )}:R>**`,
+            ephemeral: true,
+          });
+        } else {
+          const response = await cmd.run(interaction, args, client);
+          if (response === true) {
+            await cooldownModel.findOneAndUpdate(
+              {
+                guildId: interaction.guild.id,
+                userID: interaction.user.id,
+                command: cmd.name,
+              },
+              { $set: { expiry: new Date().getTime() + cmd.cooldown * 1000 } },
+              { upsert: true }
+            );
+          }
+          return;
+        }
+      }
+      return cmd.run(interaction, args, client);
     }
+
+    // context menu interaction starts here
+
+    if (interaction.isContextMenu()) {
+      const cmd = client.contextMenus.get(interaction.commandName);
+      if (!cmd)
+        return interaction.reply({
+          content: "error",
+          ephemeral: true,
+        });
+
+      return cmd.run(interaction, client);
+    }
+
+    // button interaction starts here
 
     if (interaction.isButton()) {
       if (interaction.message.partial) await interaction.message.fetch();
