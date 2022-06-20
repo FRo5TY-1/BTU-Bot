@@ -7,7 +7,7 @@ module.exports = new PlayerEvent(
   /**
    * @param {Queue} queue
    */ async (client, queue) => {
-    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
+    const Logo = new Discord.MessageAttachment("./Assets/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     embed
       .setDescription("✅ | `Finished Playing And Left The Channel`")

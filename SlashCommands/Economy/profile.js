@@ -39,7 +39,7 @@ module.exports = new SlashCommand({
     embed
       .setTitle(`${interaction.user.username}'s Profile`)
       .setDescription(
-        `**\`\`\`Email: ${profileData.email}\nBTU Coins: ${profileData.BTUcoins}**\nMusic Stream Time: ${streamTime}\`\`\`**`
+        `**\`\`\`Email: ${profileData.email}\nBTU Coins: ${profileData.BTUcoins}\nMusic Stream Time: ${streamTime}\`\`\`**`
       )
       .setAuthor({
         name: target.username,

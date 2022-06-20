@@ -31,7 +31,7 @@ module.exports = new PlayerEvent(
         ? "♾️"
         : LoopNone.id;
 
-    const Logo = new Discord.MessageAttachment("./Pictures/BTULogo.png");
+    const Logo = new Discord.MessageAttachment("./Assets/BTULogo.png");
     const embed = new Discord.MessageEmbed();
     const row1 = new Discord.MessageActionRow().addComponents(
       new Discord.MessageButton()
@@ -173,9 +173,6 @@ module.exports = new PlayerEvent(
               return queue.skip();
             } else if (i.customId === "stopPlayer") {
               collector.stop();
-              const Logo = new Discord.MessageAttachment(
-                "./Pictures/BTULogo.png"
-              );
               const embed = new Discord.MessageEmbed();
               embed
                 .setDescription("✅ | `Finished Playing And Left The Channel`")

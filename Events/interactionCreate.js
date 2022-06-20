@@ -96,9 +96,6 @@ module.exports = new Event(
       const message = interaction.message;
 
       const Member = interaction.member;
-      const memberRole = interaction.guild.roles.cache.find(
-        (r) => r.name === "BTU Member"
-      );
       const roleDeviderRole = interaction.guild.roles.cache.find(
         (r) => r.name === "ㅤ⊱─── { Gaming Roles } ───⊰ㅤㅤ"
       );
@@ -120,28 +117,10 @@ module.exports = new Event(
 
       const BIDList = nonchangable_roles
         .map((v) => v.buttonCustomID)
-        .concat(
-          changable_roles.map((v) => v.buttonCustomID),
-          ["rulesagree"]
-        );
+        .concat(changable_roles.map((v) => v.buttonCustomID));
       if (!BIDList.includes(interaction.customId)) return;
 
       await interaction.deferUpdate();
-
-      if (interaction.customId === "rulesagree") {
-        if (Member.roles.cache.some((role) => role.name === "BTU Member")) {
-          return interaction.followUp({
-            content: "**```You Already Agreed To Server Rules```**",
-            ephemeral: true,
-          });
-        } else {
-          interaction.followUp({
-            content: "**```You Agreed To Server Rules```**",
-            ephemeral: true,
-          });
-          return Member.roles.add(memberRole);
-        }
-      }
 
       if (Member.roles.cache.some((role) => role.name === "BTU Member")) {
         const nonchangable_IDs = nonchangable_roles.map((v) => v.roleID);
@@ -188,11 +167,6 @@ module.exports = new Event(
             }
           }
         }
-      } else {
-        return interaction.followUp({
-          content: "**```You Must Agree To Server Rules To Get This Role```**",
-          ephemeral: true,
-        });
       }
     }
   }
