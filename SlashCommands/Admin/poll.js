@@ -17,7 +17,7 @@ module.exports = new SlashCommand({
     {
       type: "CHANNEL",
       name: "channel",
-      description: "Chich Channel To Be Sent In",
+      description: "Chanel Where Poll Will Be Held",
       required: true,
     },
     {
@@ -163,67 +163,66 @@ module.exports = new SlashCommand({
       content: `Poll შეიქმნა და გაიგზავნა`,
       ephemeral: true,
     });
-    channel
-      .send({
-        content: content.replaceAll(("|", "\n")),
+
+    const message = await channel.send({
+      content: content.replaceAll(("|", "\n")),
+      embeds: [embed],
+      components: [row],
+      files: [Logo],
+    });
+
+    const collector = message.createMessageComponentCollector({
+      time: time,
+    });
+
+    collector.on("collect", async (i) => {
+      await i.deferUpdate();
+      if (i.customId === "voteyes") {
+        if (option1MemberArray.includes(i.user.id)) return;
+        else if (option2MemberArray.includes(i.user.id)) {
+          const index = option2MemberArray.indexOf(i.user.id);
+          option2MemberArray.splice(index, 1);
+          text2Count -= 1;
+          embed.fields[1].value = `**\` ${text2Count} \`**`;
+        }
+        option1MemberArray.push(i.user.id);
+        text1Count += 1;
+        embed.fields[0].value = `**\` ${text1Count} \`**`;
+        message?.edit({ embeds: [embed] });
+      } else if (i.customId === "voteno") {
+        if (option2MemberArray.includes(i.user.id)) return;
+        else if (option1MemberArray.includes(i.user.id)) {
+          const index = option1MemberArray.indexOf(i.user.id);
+          option1MemberArray.splice(index, 1);
+          text1Count -= 1;
+          embed.fields[0].value = `**\` ${text1Count} \`**`;
+        }
+        option2MemberArray.push(i.user.id);
+        text2Count += 1;
+        embed.fields[1].value = `**\` ${text2Count} \`**`;
+        message?.edit({ embeds: [embed] });
+      }
+    });
+
+    collector.on("end", (reason) => {
+      embed.fields[2].value = `Voting Ended ${date}`;
+      message?.edit({
         embeds: [embed],
-        components: [row],
-        files: [Logo],
-      })
-      .then((message) => {
-        const collector = message.createMessageComponentCollector({
-          time: time,
-        });
-
-        collector.on("collect", async (i) => {
-          await i.deferUpdate();
-          if (i.customId === "voteyes") {
-            if (option1MemberArray.includes(i.user.id)) return;
-            else if (option2MemberArray.includes(i.user.id)) {
-              const index = option2MemberArray.indexOf(i.user.id);
-              option2MemberArray.splice(index, 1);
-              text2Count -= 1;
-              embed.fields[1].value = `**\` ${text2Count} \`**`;
-            }
-            option1MemberArray.push(i.user.id);
-            text1Count += 1;
-            embed.fields[0].value = `**\` ${text1Count} \`**`;
-            message.edit({ embeds: [embed] });
-          } else if (i.customId === "voteno") {
-            if (option2MemberArray.includes(i.user.id)) return;
-            else if (option1MemberArray.includes(i.user.id)) {
-              const index = option1MemberArray.indexOf(i.user.id);
-              option1MemberArray.splice(index, 1);
-              text1Count -= 1;
-              embed.fields[0].value = `**\` ${text1Count} \`**`;
-            }
-            option2MemberArray.push(i.user.id);
-            text2Count += 1;
-            embed.fields[1].value = `**\` ${text2Count} \`**`;
-            message.edit({ embeds: [embed] });
-          }
-        });
-
-        collector.on("end", (reason) => {
-          embed.fields[2].value = `Voting Ended ${date}`;
-          message.edit({
-            embeds: [embed],
-            components: [],
-          });
-          logsChannel?.send({ content: `Poll Named \`${title}\` Ended` });
-          logsChannel?.send({
-            content: `People Who Voted ${text1} ${emoji1} : ${option1MemberArray.map(
-              (i) => `<@!${i}>`
-            )}`,
-            allowMentions: false,
-          });
-          logsChannel?.send({
-            content: `People Who Voted ${text2} ${emoji2} : ${option2MemberArray.map(
-              (i) => `<@!${i}>`
-            )}`,
-            allowMentions: false,
-          });
-        });
+        components: [],
       });
+      logsChannel?.send({ content: `Poll Named \`${title}\` Ended` });
+      logsChannel?.send({
+        content: `People Who Voted ${text1} ${emoji1} : ${option1MemberArray.map(
+          (i) => `<@!${i}>`
+        )}`,
+        allowMentions: false,
+      });
+      logsChannel?.send({
+        content: `People Who Voted ${text2} ${emoji2} : ${option2MemberArray.map(
+          (i) => `<@!${i}>`
+        )}`,
+        allowMentions: false,
+      });
+    });
   },
 });

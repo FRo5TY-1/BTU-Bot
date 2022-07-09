@@ -1,8 +1,8 @@
 const Event = require("../Structures/Event.js");
 const rolesModel = require("../DBModels/buttonRolesSchema.js");
+const premiumServersModel = require("../DBModels/premiumServersSchema.js");
 const cooldownModel = require("../DBModels/cooldownsSchema.js");
 const Discord = require("discord.js");
-const ms = require("ms");
 
 module.exports = new Event(
   "interactionCreate",
@@ -43,6 +43,16 @@ module.exports = new Event(
           ephemeral: false,
         });
 
+      const premiumServers = await premiumServersModel.find({});
+
+      const premiumServerIds = premiumServers.map((v) => v.guildId);
+
+      if (cmd.premium && !premiumServerIds.includes(interaction.guildId))
+        return interaction.reply({
+          content: `This Is A Premium Feature, Contact <@!420910957376569345> For More Information`,
+          ephemeral: true,
+        });
+
       if (cmd.cooldown) {
         let cooldownData = await cooldownModel.findOne({
           guildId: interaction.guildId,
@@ -66,7 +76,9 @@ module.exports = new Event(
                 userID: interaction.user.id,
                 command: cmd.name,
               },
-              { $set: { expiry: new Date().getTime() + cmd.cooldown * 1000 } },
+              {
+                $set: { expiry: new Date().getTime() + cmd.cooldown * 1000 },
+              },
               { upsert: true }
             );
           }

@@ -19,11 +19,15 @@ module.exports = new SlashCommand({
     let amount = interaction.options.getInteger("amount") || 10;
 
     interaction.channel.bulkDelete(amount).catch((err) => {
-      interaction.reply({
+      return interaction.reply({
         content: "Messages Older Which Are Older Than 14 Days Can't Be Deleted",
         ephemeral: true,
       });
     });
-    interaction.deleteReply();
+
+    return interaction.reply({
+      content: `Successfully Deleted ${amount} Messages`,
+      ephemeral: true,
+    });
   },
 });

@@ -109,8 +109,8 @@ module.exports = new SlashCommand({
       })
       .setTimestamp();
 
-    interaction.followUp({ embeds: [embed], files: [Logo] });
-
     if (!queue.playing) await queue.play();
+
+    return interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

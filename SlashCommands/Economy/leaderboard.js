@@ -7,6 +7,15 @@ module.exports = new SlashCommand({
   description: "💳 shows leaderboard",
   options: [
     {
+      type: "STRING",
+      name: "option",
+      description: "Choose Which Type Of Leaderboard You Want To See",
+      choices: [
+        { name: "Local", value: "local" },
+        { name: "Global", value: "global" },
+      ],
+    },
+    {
       name: "page",
       description: "გვერდი",
       type: "INTEGER",
@@ -16,15 +25,42 @@ module.exports = new SlashCommand({
   ],
 
   async run(interaction, args, client) {
-    let page = interaction.options.getInteger("page") || 1;
+    await interaction.deferReply();
 
-    const end = page * 10;
-    const start = page * 10 - 10;
+    let page = interaction.options.getInteger("page") || 1;
+    let end = page * 10;
+
+    const option = interaction.options.getString("option") || "local";
+
+    let userArray = [];
+
+    if (option == "local") {
+      const data = await profileModel
+        .find({
+          guildId: interaction.guild.id,
+        })
+        .sort([["BTUcoins", -1]]);
+
+      userArray = data.map((u, i) => {
+        return `**${i + 1}.** <@!${u.userID}> \` | \` **${u.BTUcoins}** Coins`;
+      });
+    } else {
+      const data = await profileModel.find({}).sort([["BTUcoins", -1]]);
+
+      userArray = data.map((u, i) => {
+        return `**${i + 1}.** <@!${u.userID}> \` | \` **${
+          u.BTUcoins
+        }** Coins **${u.guildId}**`;
+      });
+    }
 
     const Logo = new Discord.MessageAttachment("./Assets/BTULogo.png");
-    embed = new Discord.MessageEmbed();
+    const embed = new Discord.MessageEmbed();
     embed
       .setTitle("BTU Coins Leaderboard")
+      .setDescription(
+        `${userArray.slice(end - 10, end).join("\n") || "This Page Is Empty"}`
+      )
       .setColor("PURPLE")
       .setFooter({
         text: `Page ${page}`,
@@ -35,121 +71,53 @@ module.exports = new SlashCommand({
     const row = new Discord.MessageActionRow().addComponents(
       new Discord.MessageButton()
         .setCustomId("prevpage")
+        .setLabel("Previous Page")
         .setEmoji("◀️")
         .setStyle("PRIMARY"),
       new Discord.MessageButton()
         .setCustomId("nextpage")
+        .setLabel("Next Page")
         .setEmoji("▶️")
         .setStyle("PRIMARY")
     );
 
-    Data = profileModel
-      .find({
-        guildId: interaction.guild.id,
-      })
-      .sort([["BTUcoins", -1]])
-      .exec((err, res) => {
-        if (err) console.log(err);
+    const message = await interaction.followUp({
+      embeds: [embed],
+      components: [row],
+      files: [Logo],
+    });
 
-        if (res.length <= start) {
-          embed.setDescription("```This Page Is Empty```");
-          return interaction.reply({ embeds: [embed] });
+    const collector = message.createMessageComponentCollector({
+      time: 30000,
+      errors: ["time"],
+      filter: (i) => i.user.id === interaction.user.id,
+    });
+
+    collector.on("collect", async (i) => {
+      await i.deferUpdate();
+      if (i.customId === "prevpage") {
+        if (page > 1) {
+          page -= 1;
+          end = page * 5;
+          embed.description = `${
+            userArray.slice(end - 10, end).join("\n") || "This Page Is Empty"
+          }`;
+          embed.footer.text = `Page ${page}`;
+          return message?.edit({ embeds: [embed] });
         }
+      } else if (i.customId === "nextpage") {
+        page += 1;
+        end = page * 10;
+        embed.description = `${
+          userArray.slice(end - 10, end).join("\n") || "This Page Is Empty"
+        }`;
+        embed.footer.text = `Page ${page}`;
+        return message?.edit({ embeds: [embed] });
+      }
+    });
 
-        const usersArray = [];
-
-        for (i = start; i < end; i++) {
-          if (!res[i]) continue;
-          usersArray.push(
-            `${i + 1}. <@!${res[i].userID}> \` | \` **${
-              res[i].BTUcoins
-            }** Coins`
-          );
-        }
-
-        embed.setDescription(usersArray.join("\n"));
-
-        interaction.reply({
-          embeds: [embed],
-          components: [row],
-          files: [Logo],
-        });
-
-        const userChannel = interaction.channel;
-        const collector = userChannel.createMessageComponentCollector({
-          time: 15000,
-          errors: ["time"],
-          filter: (i) => i.user.id === interaction.user.id,
-        });
-
-        collector.on("collect", async (i) => {
-          await i.deferUpdate();
-          if (i.customId === "prevpage") {
-            if (page <= 1) return;
-            page--;
-            const end = page * 10;
-            const start = page * 10 - 10;
-
-            embed
-              .setTitle("BTU Coins Leaderboard")
-              .setColor("PURPLE")
-              .setFooter({
-                text: `Page ${page}`,
-                iconURL: "attachment://BTULogo.png",
-              })
-              .setTimestamp();
-
-            if (res.length <= start) {
-              embed.setDescription("```This Page Is Empty```");
-              return i.message.edit({ embeds: [embed] });
-            }
-            const buttonUsersArray = [];
-            for (k = start; k < end; k++) {
-              if (!res[k]) continue;
-              buttonUsersArray.push(
-                `${k + 1}. <@!${res[k].userID}> \` | \` **${
-                  res[k].BTUcoins
-                }** Coins`
-              );
-            }
-            embed.setDescription(buttonUsersArray.join("\n"));
-            i.message.edit({ embeds: [embed] });
-          } else if (i.customId === "nextpage") {
-            page = page + 1;
-            const end = page * 10;
-            const start = page * 10 - 10;
-
-            embed
-              .setTitle("BTU Coins Leaderboard")
-              .setColor("PURPLE")
-              .setFooter({
-                text: `Page ${page}`,
-                iconURL: "attachment://BTULogo.png",
-              })
-              .setTimestamp();
-
-            if (res.length <= start) {
-              embed.setDescription("```This Page Is Empty```");
-              return i.message.edit({ embeds: [embed] });
-            }
-
-            const buttonUsersArray = [];
-            for (k = start; k < end; k++) {
-              if (!res[k]) continue;
-              buttonUsersArray.push(
-                `${k + 1}. <@!${res[k].userID}> \` | \` **${
-                  res[k].BTUcoins
-                }** Coins`
-              );
-            }
-            embed.setDescription(buttonUsersArray.join("\n"));
-            return i.message.edit({ embeds: [embed] });
-          }
-        });
-
-        collector.on("end", (reason) => {
-          interaction.editReply({ components: [] });
-        });
-      });
+    collector.on("end", (reason) => {
+      message?.edit({ components: [] });
+    });
   },
 });

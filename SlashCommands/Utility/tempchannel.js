@@ -6,6 +6,7 @@ const ms = require("ms");
 module.exports = new SlashCommand({
   name: "tempchannel",
   description: "Temporary Channel Commands",
+  premium: true,
   options: [
     {
       type: "SUB_COMMAND",
@@ -366,13 +367,13 @@ module.exports = new SlashCommand({
             })
             .setColor("PURPLE");
 
-          message.reply({ embeds: [successEmbed], files: [Logo] });
+          message?.reply({ embeds: [successEmbed], files: [Logo] });
         }, 1500);
       });
 
       collector.on("end", (msg, reason) => {
         if (reason === "time")
-          return interaction.editReply({
+          return interaction?.editReply({
             content: `Time's Up`,
             embeds: [],
             files: [],
@@ -478,13 +479,13 @@ module.exports = new SlashCommand({
             })
             .setColor("PURPLE");
 
-          message.reply({ embeds: [successEmbed], files: [Logo] });
+          message?.reply({ embeds: [successEmbed], files: [Logo] });
         }, 1500);
       });
 
       collector.on("end", (msg, reason) => {
         if (reason === "time")
-          return interaction.editReply({
+          return interaction?.editReply({
             content: `Time's Up`,
             embeds: [],
             files: [],

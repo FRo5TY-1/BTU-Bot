@@ -5,20 +5,12 @@ const { CatJam } = require("../../Data/emojis.json");
 module.exports = new SlashCommand({
   name: "queue",
   description: "🎵 See Queue",
-  options: [
-    {
-      name: "page",
-      description: "Page Number",
-      type: "INTEGER",
-      required: false,
-    },
-  ],
 
   async run(interaction, args, client) {
     const player = client.player;
-    const page = args[0] || 1;
-    const end = page * 5;
-    const start = end - 5;
+    let page = 1;
+    let end = page * 5;
+    let start = end - 5;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
       return interaction.reply({
@@ -32,6 +24,8 @@ module.exports = new SlashCommand({
       return `**${i + 1}.** [**\`${m.title}\`**](${m.url})`;
     });
     queue.previousTracks.reverse();
+
+    if (interaction.isCommand()) await interaction.deferReply();
 
     const Logo = new Discord.MessageAttachment("./Assets/BTULogo.png");
     const embed = new Discord.MessageEmbed();
@@ -63,10 +57,65 @@ module.exports = new SlashCommand({
       })
       .setColor("PURPLE")
       .setTimestamp();
-    if (interaction.isCommand())
-      return interaction.reply({ embeds: [embed], files: [Logo] });
-    else if (interaction.isButton()) {
-      return interaction.followUp({ embeds: [embed], files: [Logo] });
-    }
+
+    const row = new Discord.MessageActionRow().addComponents(
+      new Discord.MessageButton()
+        .setCustomId("prevpage")
+        .setLabel("Previous Page")
+        .setEmoji("◀️")
+        .setStyle("PRIMARY"),
+      new Discord.MessageButton()
+        .setCustomId("nextpage")
+        .setLabel("Next Page")
+        .setEmoji("▶️")
+        .setStyle("PRIMARY")
+    );
+
+    const message = await interaction.followUp({
+      embeds: [embed],
+      components: [row],
+      files: [Logo],
+    });
+
+    const collector = message.createMessageComponentCollector({
+      time: 30000,
+      errors: ["time"],
+      filter: (i) => i.user.id === interaction.user.id,
+    });
+
+    collector.on("collect", async (i) => {
+      await i.deferUpdate();
+      if (i.customId === "prevpage") {
+        if (page > 1) {
+          page -= 1;
+          end = page * 5;
+          start = end - 5;
+          embed.fields[0].value = `${
+            tracks.slice(start, end).join("\n") || "No Tracks"
+          }`;
+          embed.fields[1].value = `${
+            prevTracks.slice(start, end).join("\n") || "No Tracks"
+          }`;
+          embed.footer.text = `Page ${page}`;
+          return message.edit({ embeds: [embed] });
+        }
+      } else if (i.customId === "nextpage") {
+        page += 1;
+        end = page * 5;
+        start = end - 5;
+        embed.fields[0].value = `${
+          tracks.slice(start, end).join("\n") || "No Tracks"
+        }`;
+        embed.fields[1].value = `${
+          prevTracks.slice(start, end).join("\n") || "No Tracks"
+        }`;
+        embed.footer.text = `Page ${page}`;
+        return message.edit({ embeds: [embed] });
+      }
+    });
+
+    collector.on("end", (reason) => {
+      message?.edit({ components: [] });
+    });
   },
 });

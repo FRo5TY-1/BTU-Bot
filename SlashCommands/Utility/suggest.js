@@ -4,6 +4,7 @@ const Discord = require("discord.js");
 module.exports = new SlashCommand({
   name: "suggest",
   description: "Make A Suggestion",
+  premium: true,
   options: [
     {
       type: "STRING",
@@ -61,8 +62,8 @@ module.exports = new SlashCommand({
     interaction.reply({
       content: `Suggestion Created And Sent Successfully`,
     });
-    channel.send({ embeds: [embed], files: [Logo] });
-    logsChannel.send({
+    channel?.send({ embeds: [embed], files: [Logo] });
+    logsChannel?.send({
       content: `<@!${interaction.user.id}> made a suggestion ${title}`,
     });
   },

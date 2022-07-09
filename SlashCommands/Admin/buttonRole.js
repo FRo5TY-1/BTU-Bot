@@ -9,6 +9,7 @@ module.exports = new SlashCommand({
   name: "button-role",
   permissions: ["ADMINISTRATOR"],
   description: "Add Or Remove A Button Role",
+  premium: true,
   options: [
     {
       type: "SUB_COMMAND",

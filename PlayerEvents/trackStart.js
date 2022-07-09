@@ -160,7 +160,7 @@ module.exports = new PlayerEvent(
                 queue.setPaused(true);
                 row1.components[2].setEmoji("▶️");
               }
-              return message.edit({ components: [row1, row2] });
+              return message?.edit({ components: [row1, row2] });
             } else if (i.customId === "songQueue") {
               const command = client.slashCommands.get("queue");
               return command.run(i, [], client);
@@ -199,7 +199,7 @@ module.exports = new PlayerEvent(
               });
             } else if (i.customId === "loopMode") {
               updateLoopMode();
-              return message.edit({ components: [row1, row2] });
+              return message?.edit({ components: [row1, row2] });
             } else if (i.customId === "forwardTrack") {
               const timeStamp = queue.getPlayerTimestamp().current.split(":");
               const time = timeStamp[0] * 60000 + timeStamp[1] * 1000 + 15000;
@@ -215,7 +215,7 @@ module.exports = new PlayerEvent(
         );
 
         collector.on("end", async (reason) => {
-          message.edit({ components: [] });
+          message?.edit({ components: [] });
         });
       });
   }

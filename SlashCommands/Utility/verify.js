@@ -16,6 +16,7 @@ module.exports = new SlashCommand({
   name: "verify",
   description: "გაიარეთ ვერიფიკაცია BTU-ს მეილით",
   cooldown: 3600,
+  premium: true,
   options: [
     {
       type: "STRING",
@@ -113,11 +114,7 @@ module.exports = new SlashCommand({
         const memberRole = interaction.guild.roles.cache.find(
           (r) => r.name === "BTU Member"
         );
-        const unverifiedRole = interaction.guild.roles.cache.find(
-          (r) => r.name === "Unverified"
-        );
 
-        if (unverifiedRole) interaction.member.roles.remove(unverifiedRole);
         if (memberRole) interaction.member.roles.add(memberRole);
 
         collector.stop();
