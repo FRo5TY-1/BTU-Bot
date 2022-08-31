@@ -7,6 +7,7 @@ module.exports = new SlashCommand({
   description: "🎵 Get Lyrics Of Current Song",
 
   async run(interaction, args, client) {
+    await interaction.deferReply();
     const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue?.playing)
@@ -43,6 +44,6 @@ module.exports = new SlashCommand({
     if (embed.description.length >= 2048)
       embed.description = `${embed.description.slice(0, 2045)}...`;
 
-    return interaction.reply({ embeds: [embed] });
+    return interaction.followUp({ embeds: [embed] });
   },
 });

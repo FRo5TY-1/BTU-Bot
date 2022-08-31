@@ -1,9 +1,10 @@
 const SlashCommand = require("../../Structures/SlashCommand.js");
 const Discord = require("discord.js");
-const rolesModel = require("../../DBModels/buttonRolesSchema.js");
+const { ButtonRole } = require("../../Database/index");
+
 const Logo = new Discord.MessageAttachment("./Assets/BTULogo.png");
 const emojiRegex =
-  /[\u{1f300}-\u{1f5ff}\u{1f900}-\u{1f9ff}\u{1f600}-\u{1f64f}\u{1f680}-\u{1f6ff}\u{2600}-\u{26ff}\u{2700}-\u{27bf}\u{1f1e6}-\u{1f1ff}\u{1f191}-\u{1f251}\u{1f004}\u{1f0cf}\u{1f170}-\u{1f171}\u{1f17e}-\u{1f17f}\u{1f18e}\u{3030}\u{2b50}\u{2b55}\u{2934}-\u{2935}\u{2b05}-\u{2b07}\u{2b1b}-\u{2b1c}\u{3297}\u{3299}\u{303d}\u{00a9}\u{00ae}\u{2122}\u{23f3}\u{24c2}\u{23e9}-\u{23ef}\u{25b6}\u{23f8}-\u{23fa}]/gu;
+  /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
 
 module.exports = new SlashCommand({
   name: "button-role",
@@ -95,21 +96,19 @@ module.exports = new SlashCommand({
   ],
 
   async run(interaction, args, client) {
-    async function updateButtons(message, messageID) {
-      const buttonsData = await rolesModel
-        .find({
-          messageID: messageID,
-        })
-        .exec();
+    async function updateButtons(message, messageId) {
+      const buttonsData = await ButtonRole.find({
+        messageId: messageId,
+      });
 
       const buttonsArray = [];
 
       buttonsData.forEach((obj) => {
         const button = new Discord.MessageButton()
-          .setCustomId(obj.buttonCustomID)
+          .setCustomId(obj.buttonCustomId)
           .setLabel(obj.buttonLabel)
           .setStyle(obj.buttonStyle);
-        if (obj.buttonEmojiID) button.setEmoji(obj.buttonEmojiID);
+        if (obj.buttonEmojiId) button.setEmoji(obj.buttonEmojiId);
         buttonsArray.push(button);
       });
 
@@ -146,21 +145,26 @@ module.exports = new SlashCommand({
     }
     if (interaction.options.getSubcommand() === "add") {
       const channel = interaction.options.getChannel("channel");
-      const messageID = interaction.options.getString("message-id");
-      const customID = interaction.options.getString("custom-id");
+      const messageId = interaction.options.getString("message-id");
+      const customId = interaction.options.getString("custom-id");
       const style = interaction.options.getString("style");
-      const roleID = interaction.options.getString("role-id");
+      const roleId = interaction.options.getString("role-id");
       const changale = interaction.options.getBoolean("changable");
       const label = interaction.options.getString("button-name") || " ";
       const emoji = interaction.options.getString("emoji") || null;
-      const role = interaction.guild.roles.cache.get(roleID);
+      const role = interaction.guild.roles.cache.get(roleId);
 
-      const matcher = emoji.match(/\d+/g) ? emoji.match(/\d+/g)[0] : null;
+      const emojiMatch = emoji.match(/(<a?:)?\w*:?\d{18}>?/);
 
-      if (
-        emoji &&
-        !(emoji.match(emojiRegex) || client.emojis.cache.get(matcher))
-      ) {
+      const baseEmojiMatch = emoji.match(emojiRegex);
+
+      const emojiId = baseEmojiMatch
+        ? baseEmojiMatch[0]
+        : emojiMatch
+        ? emojiMatch[0].replace(/\D+/g, "")
+        : null;
+
+      if (emoji && !(baseEmojiMatch || client.emojis.cache.get(emojiId))) {
         return interaction.reply({
           content: "Invalid Emoji",
           ephemeral: true,
@@ -173,7 +177,7 @@ module.exports = new SlashCommand({
           ephemeral: true,
         });
 
-      const message = await channel.messages?.fetch(messageID);
+      const message = await channel.messages?.fetch(messageId);
 
       if (!message)
         return interaction.reply({
@@ -181,18 +185,18 @@ module.exports = new SlashCommand({
           ephemeral: true,
         });
 
-      await rolesModel.create({
-        guildID: interaction.guild.id,
-        messageID: messageID,
-        buttonCustomID: customID,
+      await ButtonRole.create({
+        guildId: interaction.guild.id,
+        messageId: messageId,
+        buttonCustomId: customId,
         buttonStyle: style,
         buttonLabel: label,
-        buttonEmojiID: emoji,
-        roleID: roleID,
+        buttonEmojiId: emojiId,
+        roleId: roleId,
         changable: changale,
       });
 
-      updateButtons(message, messageID);
+      updateButtons(message, messageId);
 
       const embed = new Discord.MessageEmbed();
 
@@ -219,12 +223,12 @@ module.exports = new SlashCommand({
       });
     } else if (interaction.options.getSubcommand() === "remove") {
       const channel = interaction.options.getChannel("channel");
-      const customID = interaction.options.getString("custom-id");
+      const customId = interaction.options.getString("custom-id");
 
       const findButton =
-        (await rolesModel.findOne({
-          guildID: interaction.guild.id,
-          buttonCustomID: customID,
+        (await ButtonRole.findOne({
+          guildId: interaction.guild.id,
+          buttonCustomId: customId,
         })) || null;
 
       if (findButton === null)
@@ -233,9 +237,9 @@ module.exports = new SlashCommand({
           ephemeral: true,
         });
 
-      const messageID = findButton.messageID;
+      const messageId = findButton.messageId;
 
-      const message = await channel.messages?.fetch(messageID);
+      const message = await channel.messages?.fetch(messageId);
 
       if (!message)
         return interaction.reply({
@@ -243,12 +247,12 @@ module.exports = new SlashCommand({
           ephemeral: true,
         });
 
-      await rolesModel.deleteOne({
-        guildID: interaction.guild.id,
-        buttonCustomID: customID,
+      await ButtonRole.deleteOne({
+        guildId: interaction.guild.id,
+        buttonCustomId: customId,
       });
 
-      updateButtons(message, messageID);
+      updateButtons(message, messageId);
 
       const embed = new Discord.MessageEmbed();
 

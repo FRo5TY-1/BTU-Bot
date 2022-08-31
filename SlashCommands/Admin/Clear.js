@@ -18,12 +18,14 @@ module.exports = new SlashCommand({
   async run(interaction) {
     let amount = interaction.options.getInteger("amount") || 10;
 
-    interaction.channel.bulkDelete(amount).catch((err) => {
+    try {
+      await interaction.channel.bulkDelete(amount);
+    } catch (err) {
       return interaction.reply({
-        content: "Messages Older Which Are Older Than 14 Days Can't Be Deleted",
+        content: "Messages Which Are Older Than 14 Days Can't Be Deleted",
         ephemeral: true,
       });
-    });
+    }
 
     return interaction.reply({
       content: `Successfully Deleted ${amount} Messages`,

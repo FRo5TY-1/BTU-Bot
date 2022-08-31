@@ -1,31 +1,42 @@
-const Discord = require("discord.js");
+const { Client, Intents, Collection } = require("discord.js");
 const SlashCommand = require("./SlashCommand.js");
 const Event = require("./Event.js");
-const config = require("../Data/config.json");
-const intents = new Discord.Intents(32767);
 const fs = require("fs");
 const PlayerEvent = require("./PlayerEvent.js");
 const { Player } = require("discord-player");
 const ContextMenu = require("./ContextMenu.js");
 
-class Client extends Discord.Client {
-  constructor() {
-    super({ intents, partials: ["MESSAGE", "CHANNEL", "REACTION"] });
+class ExtendedClient extends Client {
+  /**
+   * @param {string} token Bot Token
+   */
+  constructor(token) {
+    super({
+      intents: new Intents(32767),
+      partials: ["MESSAGE", "CHANNEL", "REACTION"],
+    });
+
+    this.token = token;
 
     /**
-     * @type {Discord.Collection<string, SlashCommand>}
+     * @type {Collection<string, SlashCommand>}
      */
-    this.slashCommands = new Discord.Collection();
+    this.slashCommands = new Collection();
 
     /**
-     * @type {Discord.Collection<string, ContextMenu>}
+     * @type {Collection<string, ContextMenu>}
      */
-    this.contextMenus = new Discord.Collection();
+    this.contextMenus = new Collection();
 
     /**
-     * @type {Discord.Collection<string, Discord.Collector>}
+     * @type {Collection<string, Discord.Collector>}
      */
-    this.collectors = new Discord.Collection();
+    this.collectors = new Collection();
+
+    /**
+     * @type {Collection<string, NodeJS.Timeout>}
+     */
+    this.musicTimeouts = new Collection();
 
     /**
      * @type {Player}
@@ -36,9 +47,11 @@ class Client extends Discord.Client {
         highWaterMark: 1 << 25,
       },
     });
+
+    this.start();
   }
 
-  start(token) {
+  start() {
     fs.readdirSync("./SlashCommands").forEach((dir) => {
       const slashCommands = fs
         .readdirSync(`./SlashCommands/${dir}/`)
@@ -48,11 +61,12 @@ class Client extends Discord.Client {
          * @type {SlashCommand}
          */
         const slashCommand = require(`../SlashCommands/${dir}/${file}`);
-        console.log(`Slash Command ${slashCommand.name} loaded`);
         if (slashCommand.permissions) slashCommand.defaultPermission = false;
         this.slashCommands.set(slashCommand.name, slashCommand);
       }
     });
+
+    console.log(`${this.slashCommands.size} Slash Commands Loaded !`);
 
     fs.readdirSync("./ContextMenus")
       .filter((file) => file.endsWith(".js"))
@@ -61,9 +75,10 @@ class Client extends Discord.Client {
          * @type {ContextMenu}
          */
         const contextMenu = require(`../ContextMenus/${file}`);
-        console.log(`Context Menu ${contextMenu.name} loaded`);
         this.contextMenus.set(contextMenu.name, contextMenu);
       });
+
+    console.log(`${this.contextMenus.size} Context Menus Loaded !`);
 
     fs.readdirSync("./Events")
       .filter((file) => file.endsWith(".js"))
@@ -72,7 +87,6 @@ class Client extends Discord.Client {
          * @type {Event}
          */
         const event = require(`../Events/${file}`);
-        console.log(`Event ${event.event} loaded`);
         this.on(event.event, event.run.bind(null, this));
       });
 
@@ -83,12 +97,13 @@ class Client extends Discord.Client {
          * @type {PlayerEvent}
          */
         const event = require(`../PlayerEvents/${file}`);
-        console.log(`Player Event ${event.event} loaded`);
         this.player.on(event.event, event.run.bind(null, this));
       });
 
-    this.login(token);
+    this.login(this.token);
   }
 }
 
-module.exports = Client;
+const client = new ExtendedClient(process.env.CLIENT_TOKEN);
+
+module.exports = client;

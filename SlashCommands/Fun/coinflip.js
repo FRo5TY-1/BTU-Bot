@@ -8,8 +8,7 @@ module.exports = new SlashCommand({
   async run(interaction) {
     const Logo = new Discord.MessageAttachment("./Assets/BTULogo.png");
     const embed = new Discord.MessageEmbed();
-    const coins = ["Heads", "Tails"];
-    const coin = coins[Math.floor(Math.random() * 2)];
+    const coin = Math.random() > 0.5 ? "Heads" : "Tails";
     const coinPng = new Discord.MessageAttachment(`./Assets/Coins/${coin}.png`);
     embed
       .setTitle("Flipped coin is...")

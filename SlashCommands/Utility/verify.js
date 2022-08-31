@@ -1,8 +1,8 @@
 const SlashCommand = require("../../Structures/SlashCommand.js");
 const Discord = require("discord.js");
 const nodemailer = require("nodemailer");
-const profileModel = require("../../DBModels/profileSchema.js");
 const { PotFriend } = require("../../Data/emojis.json");
+const { Profile } = require("../../Database/index");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -105,7 +105,7 @@ module.exports = new SlashCommand({
 
     collector.on("collect", async (message) => {
       if (message.content == verificationCode) {
-        await profileModel.findOneAndUpdate(
+        await Profile.findOneAndUpdate(
           { guildId: interaction.guildId, userID: interaction.user.id },
           { $set: { email: email } },
           { upsert: true }

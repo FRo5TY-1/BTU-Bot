@@ -19,6 +19,7 @@ module.exports = new SlashCommand({
       name: "channel",
       description: "Chanel Where Poll Will Be Held",
       required: true,
+      channelTypes: ["GUILD_TEXT"],
     },
     {
       type: "INTEGER",
@@ -159,16 +160,23 @@ module.exports = new SlashCommand({
     if (emoji1.length) row.components[0].setEmoji(emoji1);
     if (emoji2.length) row.components[1].setEmoji(emoji2);
 
-    interaction.reply({
-      content: `Poll შეიქმნა და გაიგზავნა`,
-      ephemeral: true,
-    });
+    const message = await channel
+      .send({
+        content: content.replaceAll(("|", "\n")),
+        embeds: [embed],
+        components: [row],
+        files: [Logo],
+      })
+      .catch((err) => {
+        return interaction.reply({
+          content: `There Was An Error While Sending Message To The Channel`,
+          ephemeral: true,
+        });
+      });
 
-    const message = await channel.send({
-      content: content.replaceAll(("|", "\n")),
-      embeds: [embed],
-      components: [row],
-      files: [Logo],
+    interaction.reply({
+      content: `Poll Was Made Successfully!`,
+      ephemeral: true,
     });
 
     const collector = message.createMessageComponentCollector({
@@ -188,7 +196,7 @@ module.exports = new SlashCommand({
         option1MemberArray.push(i.user.id);
         text1Count += 1;
         embed.fields[0].value = `**\` ${text1Count} \`**`;
-        message?.edit({ embeds: [embed] });
+        message.edit({ embeds: [embed] }).catch((err) => {});
       } else if (i.customId === "voteno") {
         if (option2MemberArray.includes(i.user.id)) return;
         else if (option1MemberArray.includes(i.user.id)) {
@@ -200,16 +208,20 @@ module.exports = new SlashCommand({
         option2MemberArray.push(i.user.id);
         text2Count += 1;
         embed.fields[1].value = `**\` ${text2Count} \`**`;
-        message?.edit({ embeds: [embed] });
+        message.edit({ embeds: [embed] }).catch((err) => {});
       }
     });
 
     collector.on("end", (reason) => {
-      embed.fields[2].value = `Voting Ended ${date}`;
-      message?.edit({
-        embeds: [embed],
-        components: [],
-      });
+      embed.fields[2].value = `Voting Closed ${date}`;
+      row.components[0].setDisabled(true);
+      row.components[1].setDisabled(true);
+      message
+        .edit({
+          embeds: [embed],
+          components: [row],
+        })
+        .catch((err) => {});
       logsChannel?.send({ content: `Poll Named \`${title}\` Ended` });
       logsChannel?.send({
         content: `People Who Voted ${text1} ${emoji1} : ${option1MemberArray.map(

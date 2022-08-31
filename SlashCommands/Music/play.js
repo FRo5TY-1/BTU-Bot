@@ -39,6 +39,7 @@ module.exports = new SlashCommand({
     const queue = await player.createQueue(interaction.guild, {
       metadata: interaction.channel,
       leaveOnEmptyCooldown: 240000,
+      leaveOnEnd: false,
     });
 
     if (!queue.connection)

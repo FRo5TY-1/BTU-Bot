@@ -1,5 +1,5 @@
 const SlashCommand = require("../../Structures/SlashCommand.js");
-const profileModel = require("../../DBModels/profileSchema.js");
+const { Profile } = require("../../Database/index");
 const Discord = require("discord.js");
 const ms = require("ms");
 const { FeelsBadMan } = require("../../Data/emojis.json");
@@ -25,9 +25,9 @@ module.exports = new SlashCommand({
       client.users.cache.get(interaction.options.getMember("user")?.id) ||
       interaction.user;
 
-    const profileData = await profileModel.findOne({
+    const profileData = await Profile.findOne({
       guildId: interaction.guild.id,
-      userID: target.id,
+      userId: target.id,
     });
 
     if (!profileData) return interaction.reply({ content: "User Not Found" });

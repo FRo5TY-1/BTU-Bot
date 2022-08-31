@@ -6,15 +6,17 @@ module.exports = new SlashCommand({
   description: "🎵 Stop Playing Music",
 
   async run(interaction, args, client) {
+    await interaction.deferReply();
+    await interaction.deleteReply();
     const player = client.player;
     const queue = player.getQueue(interaction.guild);
     if (!queue)
       return interaction.reply({
-        content: "ამჟამად მუსიკა არაა ჩართული",
+        content: "Music Is Not Being Played",
       });
 
     const collector = client.collectors.get(queue.guild.id);
-    collector.stop();
+    collector?.stop();
 
     const Logo = new Discord.MessageAttachment("./Assets/BTULogo.png");
     const embed = new Discord.MessageEmbed();

@@ -1,18 +1,10 @@
 console.clear();
 
-const Client = require("./Structures/Client.js");
-const client = new Client();
-const mongoose = require("mongoose");
+require("dotenv").config();
 
-//process.env.MONGODB
-//process.env.TOKEN
+import "./Structures/Client.js";
 
-mongoose
-  .connect(process.env.MONGODB, {})
-  .then(() => {
-    console.log("connected to MongoDB");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-client.start(process.env.TOKEN);
+import { connect } from "./Database/index";
+connect();
+
+import "./api/server.ts";

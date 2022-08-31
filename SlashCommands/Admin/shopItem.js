@@ -1,6 +1,5 @@
 const SlashCommand = require("../../Structures/SlashCommand.js");
-const Discord = require("discord.js");
-const itemModel = require("../../DBModels/shopItemsSchema.js");
+const { ShopItem } = require("../../Database/index");
 
 module.exports = new SlashCommand({
   name: "shop-item",
@@ -57,6 +56,8 @@ module.exports = new SlashCommand({
   ],
 
   async run(interaction, args, client) {
+    await interaction.deferReply({ ephemeral: true });
+
     if (interaction.options.getSubcommand() === "add") {
       const rarity = interaction.options.getString("rarity");
       const name = interaction.options.getString("name");
@@ -73,9 +74,9 @@ module.exports = new SlashCommand({
           : 5;
 
       if (name.length > 128)
-        return interaction.reply({ content: "Name Too Long", ephemeral: true });
+        return interaction.followUp({ content: "Name Too Long" });
 
-      const rarityItems = await itemModel.find({
+      const rarityItems = await ShopItem.find({
         guildId: interaction.guild.id,
         rarity: rarity,
       });
@@ -86,7 +87,7 @@ module.exports = new SlashCommand({
           ephemeral: true,
         });
 
-      const itemData = await itemModel.create({
+      const itemData = await ShopItem.create({
         guildId: interaction.guild.id,
         tier: tier,
         rarity: rarity,
@@ -94,13 +95,12 @@ module.exports = new SlashCommand({
         price: price,
       });
       itemData.save();
-      return interaction.reply({
+      return interaction.followUp({
         content: "Successfully Added Item To Shop",
-        ephemeral: true,
       });
     } else if (interaction.options.getSubcommand() === "remove") {
       const name = interaction.options.getString("name");
-      const item = await itemModel.find({
+      const item = await ShopItem.find({
         guildId: interaction.guild.id,
         name: name,
       });
@@ -110,13 +110,12 @@ module.exports = new SlashCommand({
           content: "Item Does Not Exist",
           ephemeral: true,
         });
-      await itemModel.findOneAndDelete({
+      await ShopItem.findOneAndDelete({
         guildId: interaction.guild.id,
         name: name,
       });
-      return interaction.reply({
+      return interaction.followUp({
         content: "Successfully Removed Item From Shop",
-        ephemeral: true,
       });
     }
   },

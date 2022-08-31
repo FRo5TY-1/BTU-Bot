@@ -1,5 +1,5 @@
 const SlashCommand = require("../../Structures/SlashCommand.js");
-const profileModel = require("../../DBModels/profileSchema.js");
+const { Profile } = require("../../Database/index");
 const { FeelsBadMan } = require("../../Data/emojis.json");
 
 module.exports = new SlashCommand({
@@ -22,10 +22,18 @@ module.exports = new SlashCommand({
   ],
 
   async run(interaction, args, client) {
-    const profileData = await profileModel.findOne({
+    let profileData = await Profile.findOne({
       guildId: interaction.guildId,
-      userID: interaction.user.id,
+      userId: interaction.user.id,
     });
+
+    if (!profileData) {
+      profileData = await Profile.create({
+        guildId: interaction.guild.id,
+        userId: interaction.user.id,
+      });
+      profileData.save();
+    }
 
     if (interaction.options.getMember("user")?.roles.botRole)
       return interaction.reply({
@@ -45,29 +53,30 @@ module.exports = new SlashCommand({
         ephemeral: true,
       });
     const amount = interaction.options.getInteger("amount");
-    if (amount > profileData.BTUcoins)
+    if (amount > profileData?.BTUcoins)
       return interaction.reply({
-        content: `Insufficent Funds!\nYour Balance: ${profileData.BTUcoinss}`,
+        content: `Insufficent Funds!\nYour Balance: ${profileData.BTUcoins}`,
         ephemeral: true,
       });
     const cutAmount = amount - amount * 0.02;
 
-    await profileModel.findOneAndUpdate(
+    await Profile.findOneAndUpdate(
       {
         guildId: interaction.guild.id,
-        userID: interaction.user.id,
+        userId: interaction.user.id,
       },
       {
         $inc: {
           BTUcoins: -amount,
         },
-      }
+      },
+      { upsert: true }
     );
 
-    await profileModel.findOneAndUpdate(
+    await Profile.findOneAndUpdate(
       {
         guildId: interaction.guild.id,
-        userID: target.id,
+        userId: target.id,
       },
       {
         $inc: {

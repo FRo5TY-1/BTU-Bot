@@ -1,5 +1,5 @@
-const SlashCommand = require("../../Structures/SlashCommand.js");
-const profileModel = require("../../DBModels/profileSchema.js");
+const SlashCommand = require("../../Structures/SlashCommand");
+const { Profile } = require("../../Database/index");
 
 module.exports = new SlashCommand({
   name: "daily",
@@ -9,8 +9,8 @@ module.exports = new SlashCommand({
   async run(interaction) {
     const randomNumber = Math.floor(Math.random() * (50 - 25) + 25);
 
-    const profileData = await profileModel.findOneAndUpdate(
-      { guildId: interaction.guildId, userID: interaction.user.id },
+    await Profile.findOneAndUpdate(
+      { guildId: interaction.guildId, userId: interaction.user.id },
       { $inc: { BTUcoins: +randomNumber } },
       { upsert: true }
     );

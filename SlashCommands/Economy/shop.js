@@ -1,7 +1,5 @@
 const SlashCommand = require("../../Structures/SlashCommand.js");
-const profileModel = require("../../DBModels/profileSchema.js");
-const itemModel = require("../../DBModels/shopItemsSchema.js");
-const inventoryModel = require("../../DBModels/inventorySchema.js");
+const { Inventory, Profile, ShopItem } = require("../../Database/index");
 const Discord = require("discord.js");
 const {
   Expensive,
@@ -26,7 +24,7 @@ module.exports = new SlashCommand({
           description: "Choose Page",
           min_value: 1,
           max_value: 2,
-          required: true,
+          required: false,
         },
       ],
     },
@@ -48,15 +46,9 @@ module.exports = new SlashCommand({
   async run(interaction, args, client) {
     const Logo = new Discord.MessageAttachment("./Assets/BTULogo.png");
 
-    const items = await itemModel
-      .find({
-        guildId: interaction.guild.id,
-      })
-      .sort({ tier: 1, price: -1 });
-
-    const sliceItems = items.map((i, index) => {
-      return `${index + 1}. ${i.name} | ${i.price} BTU Coins`;
-    });
+    const items = await ShopItem.find({
+      guildId: interaction.guild.id,
+    }).sort({ tier: 1, price: -1 });
 
     function filterItems(tier) {
       const tierEmoji =
@@ -82,7 +74,9 @@ module.exports = new SlashCommand({
     }
 
     if (interaction.options.getSubcommand() === "see") {
-      const page = interaction.options.getInteger("page");
+      await interaction.deferReply();
+
+      const page = interaction.options.getInteger("page") || 1;
       const embed = new Discord.MessageEmbed();
       embed
         .setDescription(
@@ -123,7 +117,7 @@ module.exports = new SlashCommand({
         );
       }
 
-      return interaction.reply({ embeds: [embed], files: [Logo] });
+      return interaction.followUp({ embeds: [embed], files: [Logo] });
     } else {
       //buy sub command starts here
 
@@ -135,28 +129,32 @@ module.exports = new SlashCommand({
           ephemeral: true,
         });
 
-      const profileData = await profileModel.findOne({
+      await interaction.deferReply();
+
+      let profileData = await Profile.findOne({
         guildId: interaction.guild.id,
-        userID: interaction.user.id,
+        userId: interaction.user.id,
       });
 
-      const moneyBefore = profileData.BTUcoins;
+      if (!profileData) {
+        profileData = await Profile.create({
+          guildId: interaction.guild.id,
+          userId: interaction.user.id,
+        });
+        profileData.save();
+      }
 
-      if (profileData.BTUcoins < items[itemIndex].price) {
-        return interaction.reply({
+      const coins = profileData.BTUcoins;
+
+      if (coins < items[itemIndex].price) {
+        return interaction.followUp({
           content: "Not Enough Funds",
         });
       } else {
-        let itemData = await inventoryModel.findOne({
-          guildId: interaction.guild.id,
-          userID: interaction.user.id,
-          item: items[itemIndex],
-        });
-
-        await profileModel.findOneAndUpdate(
+        await Profile.findOneAndUpdate(
           {
             guildId: interaction.guild.id,
-            userID: interaction.user.id,
+            userId: interaction.user.id,
           },
           {
             $inc: {
@@ -165,35 +163,25 @@ module.exports = new SlashCommand({
           }
         );
 
-        if (itemData !== null) {
-          await inventoryModel.findOneAndUpdate(
-            {
-              guildId: interaction.guild.id,
-              userID: interaction.user.id,
-              item: items[itemIndex],
-            },
-            {
-              $inc: {
-                amount: +1,
-              },
-            }
-          );
-        } else {
-          itemData = await inventoryModel.create({
+        await Inventory.findOneAndUpdate(
+          {
             guildId: interaction.guild.id,
-            userID: interaction.user.id,
+            userId: interaction.user.id,
             item: items[itemIndex],
-          });
-          itemData.save();
-        }
+          },
+          {
+            $inc: { amount: +1 },
+          },
+          { upsert: true }
+        );
 
         const embed = new Discord.MessageEmbed();
         embed
           .setTitle("Success")
           .setDescription(
             `წარმატებით შეიძინეთ \`${items[itemIndex].name}\`
-            \nძველი ბალანსი: \`${moneyBefore}\`, ახალი: \`${
-              moneyBefore - items[itemIndex].price
+            \nძველი ბალანსი: \`${coins}\`, ახალი: \`${
+              coins - items[itemIndex].price
             }\``
           )
           .setAuthor({
@@ -206,7 +194,7 @@ module.exports = new SlashCommand({
             iconURL: "attachment://BTULogo.png",
           })
           .setTimestamp();
-        return interaction.reply({ embeds: [embed], files: [Logo] });
+        return interaction.followUp({ embeds: [embed], files: [Logo] });
       }
     }
   },

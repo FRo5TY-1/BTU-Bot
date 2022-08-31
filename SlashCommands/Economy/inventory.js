@@ -1,7 +1,7 @@
 const SlashCommand = require("../../Structures/SlashCommand.js");
-const inventoryModel = require("../../DBModels/inventorySchema.js");
 const Discord = require("discord.js");
 const { FeelsBadMan } = require("../../Data/emojis.json");
+const { Inventory } = require("../../Database/index");
 
 module.exports = new SlashCommand({
   name: "inventory",
@@ -20,6 +20,9 @@ module.exports = new SlashCommand({
       return interaction.reply({
         content: `Bots Don't Use Our Services ${FeelsBadMan.emoji}`,
       });
+
+    await interaction.deferReply();
+
     const target =
       client.users.cache.get(interaction.options.getMember("user")?.id) ||
       interaction.user;
@@ -39,36 +42,30 @@ module.exports = new SlashCommand({
       })
       .setTimestamp();
 
-    inventoryModel
-      .find({
-        guildId: interaction.guild.id,
-        userID: target.id,
-      })
-      .sort({ "item.tier": 1 })
-      .exec((err, res) => {
-        if (res.length < 1) {
-          embed.setDescription("```Inventory Is Empty```");
-          return interaction.reply({ embeds: [embed], files: [Logo] });
-        }
+    const items = await Inventory.find({
+      guildId: interaction.guild.id,
+      userId: target.id,
+    }).sort({ "item.tier": 1 });
 
-        const itemArray = [];
+    const itemsArray = items.map((item, i) => {
+      const tierEmoji =
+        item.tier == 1
+          ? "🟠"
+          : item.tier == 2
+          ? "🔴"
+          : item.tier == 3
+          ? "🔵"
+          : item.tier == 4
+          ? "🟢"
+          : "⚫";
+      return `${tierEmoji} ${item.name} x ${item.amount}`;
+    });
 
-        for (i = 0; i < 15; i++) {
-          if (!res[i]) continue;
-          const tierEmoji =
-            res[i].item.tier == 1
-              ? "🟠"
-              : res[i].item.tier == 2
-              ? "🔴"
-              : res[i].item.tier == 3
-              ? "🔵"
-              : res[i].item.tier == 4
-              ? "🟢"
-              : "⚫";
-          itemArray.push(`${tierEmoji} ${res[i].item.name} x ${res[i].amount}`);
-        }
-        embed.setDescription(`**\`\`\`${itemArray.join("\n")}\`\`\`**`);
-        return interaction.reply({ embeds: [embed], files: [Logo] });
-      });
+    embed.setDescription(
+      `**\`\`\`${
+        itemsArray.slice(0, 20).join("\n") || "This Page Is Empty"
+      }\`\`\`**`
+    );
+    return interaction.followUp({ embeds: [embed], files: [Logo] });
   },
 });

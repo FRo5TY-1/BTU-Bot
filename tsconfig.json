@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "module": "CommonJS",
+    "noEmit": true
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "lib": ["esnext"]
+}

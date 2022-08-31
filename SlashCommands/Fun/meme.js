@@ -49,11 +49,13 @@ module.exports = new SlashCommand({
           text: `👍 ${score} 💬 ${comments}`,
           iconURL: "attachment://BTULogo.png",
         });
-        interaction.editReply({
-          embeds: [embed],
-          components: [row],
-          files: [Logo],
-        });
+        interaction
+          .editReply({
+            embeds: [embed],
+            components: [row],
+            files: [Logo],
+          })
+          .catch((err) => {});
       });
     }
 
@@ -75,7 +77,9 @@ module.exports = new SlashCommand({
     });
 
     collector.on("end", (reason) => {
-      interaction.editReply({ components: [] });
+      row.components[0].setDisabled(true);
+      row.components[1].setDisabled(true);
+      interaction.editReply({ components: [row] }).catch((err) => {});
     });
   },
 });

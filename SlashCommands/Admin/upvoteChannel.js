@@ -1,5 +1,5 @@
 const SlashCommand = require("../../Structures/SlashCommand.js");
-const channelModel = require("../../DBModels/upvoteChannelsSchema.js");
+const { UpvoteChannel } = require("../../Database/index");
 
 module.exports = new SlashCommand({
   name: "upvote-channel",
@@ -16,6 +16,7 @@ module.exports = new SlashCommand({
           name: "channel",
           description: "Choose The Channel",
           required: true,
+          channelTypes: ["GUILD_TEXT"],
         },
       ],
     },
@@ -29,49 +30,38 @@ module.exports = new SlashCommand({
           name: "channel",
           description: "Choose The Channel",
           required: true,
+          channelTypes: ["GUILD_TEXT"],
         },
       ],
     },
   ],
 
   async run(interaction, args, client) {
+    await interaction.deferReply({ ephemeral: true });
     const channel = interaction.options.getChannel("channel");
     if (!channel) return;
     if (interaction.options.getSubcommand() === "add") {
       const channel_ids = (
-        await channelModel.find({ guildId: interaction.guild.id })
+        await UpvoteChannel.find({ guildId: interaction.guild.id })
       ).map((i) => i.channelId);
 
       if (channel_ids.includes(channel.id))
-        return interaction.reply({
-          content: "Channel Already Added",
-          ephemeral: true,
-        });
+        return interaction.followUp({ content: "Channel Already Added" });
       if (channel_ids.length >= 2)
-        return interaction.reply({
+        return interaction.followUp({
           content: "Maximum Of 2 Channels Per Guild",
-          ephemeral: true,
         });
-      channelModel.create({
+      UpvoteChannel.create({
         guildId: interaction.guild.id,
         channelId: channel.id,
       });
-      return interaction.reply({
-        content: "Channel Added To The List",
-        ephemeral: true,
-      });
+      return interaction.followUp({ content: "Channel Added To The List" });
     } else if (interaction.options.getSubcommand() === "remove") {
-      const confirm = await channelModel.findOne({ channelId: channel.id });
+      const confirm = await UpvoteChannel.findOne({ channelId: channel.id });
       if (!confirm)
-        return interaction.reply({
-          content: "Channel Not In The List",
-          ephemeral: true,
-        });
-      await channelModel.findOneAndDelete({ channelId: channel.id });
-      return interaction.reply({
-        content: "Channel Removed From The List",
-        ephemeral: true,
-      });
+        return interaction.followUp({ content: "Channel Not In The List" });
+      await UpvoteChannel.findOneAndDelete({ channelId: channel.id });
+      return interaction.followUp({ content: "Channel Removed From The List" });
     }
   },
 });

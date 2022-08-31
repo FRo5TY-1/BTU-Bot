@@ -1,7 +1,5 @@
 const Event = require("../Structures/Event.js");
-const rolesModel = require("../DBModels/buttonRolesSchema.js");
-const premiumServersModel = require("../DBModels/premiumServersSchema.js");
-const cooldownModel = require("../DBModels/cooldownsSchema.js");
+const { ButtonRole, Cooldown, PremiumServer } = require("../Database/index");
 const Discord = require("discord.js");
 
 module.exports = new Event(
@@ -43,20 +41,20 @@ module.exports = new Event(
           ephemeral: false,
         });
 
-      const premiumServers = await premiumServersModel.find({});
+      const premServer = await PremiumServer.findOne({
+        guildId: interaction.guildId,
+      });
 
-      const premiumServerIds = premiumServers.map((v) => v.guildId);
-
-      if (cmd.premium && !premiumServerIds.includes(interaction.guildId))
+      if (cmd.premium && !premServer)
         return interaction.reply({
           content: `This Is A Premium Feature, Contact <@!420910957376569345> For More Information`,
           ephemeral: true,
         });
 
       if (cmd.cooldown) {
-        let cooldownData = await cooldownModel.findOne({
+        let cooldownData = await Cooldown.findOne({
           guildId: interaction.guildId,
-          userID: interaction.user.id,
+          userId: interaction.user.id,
           command: cmd.name,
         });
 
@@ -70,10 +68,10 @@ module.exports = new Event(
         } else {
           const response = await cmd.run(interaction, args, client);
           if (response === true) {
-            await cooldownModel.findOneAndUpdate(
+            await Cooldown.findOneAndUpdate(
               {
                 guildId: interaction.guild.id,
-                userID: interaction.user.id,
+                userId: interaction.user.id,
                 command: cmd.name,
               },
               {
@@ -106,40 +104,36 @@ module.exports = new Event(
     if (interaction.isButton()) {
       if (interaction.message.partial) await interaction.message.fetch();
       const message = interaction.message;
-
       const Member = interaction.member;
+
       const roleDeviderRole = interaction.guild.roles.cache.find(
         (r) => r.name === "ㅤ⊱─── { Gaming Roles } ───⊰ㅤㅤ"
       );
 
-      const nonchangable_roles = await rolesModel
-        .find({
-          guildID: interaction.guild.id,
-          messageID: message.id,
-          changable: false,
-        })
-        .exec();
-      const changable_roles = await rolesModel
-        .find({
-          guildID: interaction.guild.id,
-          messageID: message.id,
-          changable: true,
-        })
-        .exec();
+      const nonchangable_roles = await ButtonRole.find({
+        guildId: interaction.guild.id,
+        messageId: message.id,
+        changable: false,
+      }).exec();
+      const changable_roles = await ButtonRole.find({
+        guildId: interaction.guild.id,
+        messageId: message.id,
+        changable: true,
+      }).exec();
 
       const BIDList = nonchangable_roles
-        .map((v) => v.buttonCustomID)
-        .concat(changable_roles.map((v) => v.buttonCustomID));
+        .map((v) => v.buttonCustomId)
+        .concat(changable_roles.map((v) => v.buttonCustomId));
       if (!BIDList.includes(interaction.customId)) return;
 
       await interaction.deferUpdate();
 
       if (Member.roles.cache.some((role) => role.name === "BTU Member")) {
-        const nonchangable_IDs = nonchangable_roles.map((v) => v.roleID);
+        const nonchangable_IDs = nonchangable_roles.map((v) => v.roleId);
         for (i = 0; i < nonchangable_roles.length; i++) {
           const button = nonchangable_roles[i];
-          const role = interaction.guild.roles.cache.get(button.roleID);
-          if (interaction.customId === button.buttonCustomID) {
+          const role = interaction.guild.roles.cache.get(button.roleId);
+          if (interaction.customId === button.buttonCustomId) {
             if (
               Member.roles.cache.some((r) => nonchangable_IDs.includes(r.id))
             ) {
@@ -160,8 +154,8 @@ module.exports = new Event(
         }
         for (i = 0; i < changable_roles.length; i++) {
           const button = changable_roles[i];
-          if (interaction.customId === button.buttonCustomID) {
-            const role = interaction.guild.roles.cache.get(button.roleID);
+          if (interaction.customId === button.buttonCustomId) {
+            const role = interaction.guild.roles.cache.get(button.roleId);
             if (Member.roles.cache.some((r) => role.id === r.id)) {
               interaction.followUp({
                 content: `**\`\`\`${role.name} Role Was Successfully Removed!\`\`\`**`,
@@ -174,7 +168,7 @@ module.exports = new Event(
                 content: `**\`\`\`${role.name} Role Was Successfully Added!\`\`\`**`,
                 ephemeral: true,
               });
-              Member.roles.add([button.roleID, roleDeviderRole.id]);
+              Member.roles.add([button.roleId, roleDeviderRole.id]);
               break;
             }
           }

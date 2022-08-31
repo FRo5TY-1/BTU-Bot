@@ -1,5 +1,5 @@
 const SlashCommand = require("../../Structures/SlashCommand.js");
-const profileModel = require("../../DBModels/profileSchema.js");
+const { Profile } = require("../../Database/index");
 const Discord = require("discord.js");
 
 module.exports = new SlashCommand({
@@ -35,17 +35,15 @@ module.exports = new SlashCommand({
     let userArray = [];
 
     if (option == "local") {
-      const data = await profileModel
-        .find({
-          guildId: interaction.guild.id,
-        })
-        .sort([["BTUcoins", -1]]);
+      const data = await Profile.find({
+        guildId: interaction.guild.id,
+      }).sort([["BTUcoins", -1]]);
 
       userArray = data.map((u, i) => {
         return `**${i + 1}.** <@!${u.userID}> \` | \` **${u.BTUcoins}** Coins`;
       });
     } else {
-      const data = await profileModel.find({}).sort([["BTUcoins", -1]]);
+      const data = await Profile.find({}).sort([["BTUcoins", -1]]);
 
       userArray = data.map((u, i) => {
         return `**${i + 1}.** <@!${u.userID}> \` | \` **${
@@ -103,7 +101,7 @@ module.exports = new SlashCommand({
             userArray.slice(end - 10, end).join("\n") || "This Page Is Empty"
           }`;
           embed.footer.text = `Page ${page}`;
-          return message?.edit({ embeds: [embed] });
+          return message.edit({ embeds: [embed] }).catch((err) => {});
         }
       } else if (i.customId === "nextpage") {
         page += 1;
@@ -112,12 +110,14 @@ module.exports = new SlashCommand({
           userArray.slice(end - 10, end).join("\n") || "This Page Is Empty"
         }`;
         embed.footer.text = `Page ${page}`;
-        return message?.edit({ embeds: [embed] });
+        return message.edit({ embeds: [embed] }).catch((err) => {});
       }
     });
 
     collector.on("end", (reason) => {
-      message?.edit({ components: [] });
+      row.components[0].setDisabled(true);
+      row.components[1].setDisabled(true);
+      message?.edit({ components: [row] }).catch((err) => {});
     });
   },
 });

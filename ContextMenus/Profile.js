@@ -1,5 +1,5 @@
 const ContextMenu = require("../Structures/ContextMenu.js");
-const profileModel = require("../DBModels/profileSchema.js");
+const { Profile } = require("../Database/index");
 const { FeelsBadMan } = require("../Data/emojis.json");
 const Discord = require("discord.js");
 const ms = require("ms");
@@ -18,7 +18,7 @@ module.exports = new ContextMenu({
         ephemeral: true,
       });
 
-    const profileData = await profileModel.findOne({
+    const profileData = await Profile.findOne({
       guildId: interaction.guildId,
       userID: interaction.targetId,
     });

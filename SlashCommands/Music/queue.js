@@ -12,7 +12,7 @@ module.exports = new SlashCommand({
     let end = page * 5;
     let start = end - 5;
     const queue = player.getQueue(interaction.guild);
-    if (!queue?.playing)
+    if (!queue)
       return interaction.reply({
         content: "Music Is Not Being Played",
       });
@@ -45,10 +45,6 @@ module.exports = new SlashCommand({
           name: `Previous Tracks \`( Total: ${prevTracks.length} )\``,
           value: `${prevTracks.slice(start, end).join("\n") || "No Tracks"}`,
           inline: true,
-        },
-        {
-          name: "Now Playing",
-          value: `${CatJam.emoji} | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`,
         }
       )
       .setFooter({
@@ -57,6 +53,13 @@ module.exports = new SlashCommand({
       })
       .setColor("PURPLE")
       .setTimestamp();
+
+    if (queue?.playing) {
+      embed.addField(
+        "Now Playing",
+        `${CatJam.emoji} | [**\`${queue.current.title}\`**](${queue.current.url}) - <@!${queue.current.requestedBy.id}>`
+      );
+    }
 
     const row = new Discord.MessageActionRow().addComponents(
       new Discord.MessageButton()
@@ -97,7 +100,7 @@ module.exports = new SlashCommand({
             prevTracks.slice(start, end).join("\n") || "No Tracks"
           }`;
           embed.footer.text = `Page ${page}`;
-          return message.edit({ embeds: [embed] });
+          return message.edit({ embeds: [embed] }).catch((err) => {});
         }
       } else if (i.customId === "nextpage") {
         page += 1;
@@ -110,12 +113,14 @@ module.exports = new SlashCommand({
           prevTracks.slice(start, end).join("\n") || "No Tracks"
         }`;
         embed.footer.text = `Page ${page}`;
-        return message.edit({ embeds: [embed] });
+        return message.edit({ embeds: [embed] }).catch((err) => {});
       }
     });
 
     collector.on("end", (reason) => {
-      message?.edit({ components: [] });
+      row.components[0].setDisabled(true);
+      row.components[1].setDisabled(true);
+      message?.edit({ components: [row] }).catch((err) => {});
     });
   },
 });

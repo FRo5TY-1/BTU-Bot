@@ -23,6 +23,7 @@ module.exports = new SlashCommand({
       name: "channel",
       description: "Which Channel To Send In",
       required: true,
+      channelTypes: ["GUILD_TEXT"],
     },
     {
       type: "USER",
@@ -133,7 +134,7 @@ module.exports = new SlashCommand({
     }
 
     interaction.reply({
-      content: `Embed შეიქმნა და გაიგზავნა`,
+      content: `Embed Sent Successfully`,
       ephemeral: true,
     });
     channel.send({

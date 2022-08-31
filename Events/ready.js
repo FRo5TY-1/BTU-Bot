@@ -12,6 +12,6 @@ module.exports = new Event("ready", async (client) => {
     status: "online",
   });
 
-  const commands = client.slashCommands.concat(client.contextMenus);
-  client.application.commands.set(commands);
+  // const commands = client.slashCommands.concat(client.contextMenus);
+  // client.application.commands.set(commands);
 });
